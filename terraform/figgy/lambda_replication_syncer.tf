@@ -1,6 +1,6 @@
 module "replication_syncer" {
   source = "./modules/figgy_lambda"
-  deploy_bucket = data.aws_s3_bucket.deploy_bucket.id
+  deploy_bucket = local.lambda_bucket_id
   description = "Incrementally synchronizes the replication across all parameters in case something gets out-of-wack"
   handler = "functions/replication_syncer.handle"
   lambda_name = "figgy-replication-syncer"

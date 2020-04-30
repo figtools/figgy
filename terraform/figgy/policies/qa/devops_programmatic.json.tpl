@@ -9,8 +9,7 @@
                 "kms:Decrypt"
             ],
             "Resource": [
-               "${devops_key_arn}",
-               "${app_key_arn}"
+               "${devops_key_arn}"
            ]
         },
         {
@@ -20,8 +19,7 @@
                 "kms:Encrypt"
             ],
             "Resource": [
-                "${devops_key_arn}",
-                "${app_key_arn}"
+                "${devops_key_arn}"
             ]
         },
         {
@@ -46,7 +44,6 @@
             ],
             "Resource": [
                 "arn:aws:ssm:*:${account_id}:parameter/shared/*",
-                "arn:aws:ssm:*:${account_id}:parameter/app/*",
                 "arn:aws:ssm:*:${account_id}:parameter/devops/*"
             ]
         },

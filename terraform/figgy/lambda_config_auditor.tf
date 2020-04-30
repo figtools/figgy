@@ -1,6 +1,6 @@
 module "config_auditor" {
   source = "./modules/figgy_lambda"
-  deploy_bucket = data.aws_s3_bucket.deploy_bucket.id
+  deploy_bucket = local.lambda_bucket_id
   description = "Maintains the figgy audit database that is used for configuration restoration."
   handler = "functions/config_auditor.handle"
   lambda_name = "figgy-config-auditor"

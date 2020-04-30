@@ -42,8 +42,7 @@
             ],
             "Resource": [
                 "arn:aws:ssm:*:${account_id}:parameter/shared/*",
-                "arn:aws:ssm:*:${account_id}:parameter/sre/*",
-                "arn:aws:ssm:*:${account_id}:parameter/app/*",
+                "arn:aws:ssm:*:${account_id}:parameter/sre/*"
             ]
         },
         {

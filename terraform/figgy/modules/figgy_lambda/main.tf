@@ -10,10 +10,10 @@ resource "aws_lambda_function" "figgy_lambda" {
   role             = aws_iam_role.figgy_role.arn
   runtime          = "python3.7"
   description      = var.description
-  depends_on       = [aws_iam_role.figgy_role]
   timeout          = var.lambda_timeout
   source_code_hash = filebase64sha256(var.zip_path)
   reserved_concurrent_executions = var.concurrent_executions
+  depends_on       = [aws_iam_role.figgy_role, aws_s3_bucket_object.figgy_deploy]
 }
 
 resource "aws_s3_bucket_object" "figgy_deploy" {

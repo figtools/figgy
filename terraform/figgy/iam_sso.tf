@@ -4,7 +4,7 @@
 # Todo: You will need to provide your own metadata.xml file!
 resource "aws_iam_saml_provider" "okta" {
   name                   = "OKTA"
-  saml_metadata_document = file("saml/metadata.xml")
+  saml_metadata_document = file("saml/metadata-${var.run_env}.xml")
 }
 
 resource "aws_iam_user" "sso_user" {
