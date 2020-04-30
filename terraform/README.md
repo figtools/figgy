@@ -5,8 +5,9 @@ you intend to provision Figgy for. For each environment, you'll want to update t
 
 variables/{ENV}/vars.tfvars
 
-If you wish to choose different environment names that is 100% ok, just be sure to update the directory names and the 
-`Figgy` configs to match these new names you've selected here.
+If you wish to choose different environment names that is 100% ok, just be sure to update the var file names and the 
+`Figgy` configs to match these new names you've selected here. Also, if you are configuring SSO, you will want to 
+make sure you saml/metadata-${RUN_ENV}.xml files match your new environment names.
 
 
 Files you may need to update to configure Figgy deployment to your AWS account(s):
