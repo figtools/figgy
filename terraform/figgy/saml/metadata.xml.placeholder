@@ -1,0 +1,2 @@
+# In here you would add your metadata.xml from your SAML provider. This will make it so your SAML provider can
+# authenticate with AWS :)

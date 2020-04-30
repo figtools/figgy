@@ -1,0 +1,37 @@
+{
+    "app_parameters": [
+        "/app/ci-test/v1/config9"
+    ],
+    "merged_parameters": {
+        "/app/ci-test/replicated/sql/sql-conn-string": [
+            "mysql://",
+            "${/app/ci-test/replicated/sql/db/user:uri}",
+            ":",
+            "${/app/ci-test/replicated/sql/db/password:uri}",
+            "//",
+            "${/app/ci-test/replicated/sql/db/db_name:uri}"
+        ]
+    },
+    "namespace": "/app/ci-test/",
+    "plugins": [
+        "cpu_autoscaling",
+        "canary_deploy",
+        "bucket_rw",
+        "bucket_read",
+        "iam_policy",
+        "parameter_store_access"
+    ],
+    "replication_config": {
+        "/shared/jordan/testrepl": "/app/ci-test/repl_repl",
+        "/shared/jordan/testrepl3": "/app/ci-test/replicated/sql/db/password",
+        "/shared/jordan/testrepl4": "/app/ci-test/replicated/sql/db/db_name"
+    },
+    "service": "default_service",
+    "shared_parameters": [
+        "/app/ci-test/replicated/jordan/test/1",
+        "/app/ci-test/replicated/jordan/test/2",
+        "/app/ci-test/replicated/jordan/test/3"
+    ]
+}
+
+
