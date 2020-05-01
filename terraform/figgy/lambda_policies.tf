@@ -114,14 +114,7 @@ data "aws_iam_policy_document" "config_replication_document" {
       "kms:Encrypt"
     ]
 
-    resources = [ 
-      aws_kms_key.app_key.arn,
-      aws_kms_key.data_key.arn,
-      aws_kms_key.dba_key.arn,
-      aws_kms_key.devops_key.arn,
-      aws_kms_key.replication_key.arn,
-      aws_kms_key.sre_key.arn
-    ]
+    resources = concat([ for x in aws_kms_key.encryption_key: x.arn ], [aws_kms_key.replication_key.arn])
   }
   
   statement {
@@ -141,7 +134,16 @@ data "aws_iam_policy_document" "config_replication_document" {
     "ssm:GetParametersByPath",
     "ssm:PutParameter"
   ]
-    resources = [for x in var.parameter_namespaces: format("arn:aws:ssm:*:%s:parameter%s/*", var.aws_account_id, x)]
+    resources = distinct(concat(
+      [
+        for x in local.root_namespaces:
+          format("arn:aws:ssm:*:%s:parameter%s/*", data.aws_caller_identity.current.account_id, x)
+      ],
+      [
+        for ns in local.global_read_namespaces:
+          "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter${ns}/*"
+      ]
+    ))
   }
 
   statement {

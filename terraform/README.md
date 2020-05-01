@@ -12,6 +12,7 @@ make sure you saml/metadata-${RUN_ENV}.xml files match your new environment name
 
 Files you may need to update to configure Figgy deployment to your AWS account(s):
 
+figgy/A_configure_figgy.tf
 figgy/main.tf
 figgy/vars/dev.tfvars
 figgy/vars/qa.tfvars

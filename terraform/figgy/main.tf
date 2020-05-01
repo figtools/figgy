@@ -28,3 +28,5 @@ provider "aws" {
     role_arn     = "arn:aws:iam::${var.aws_account_id}:role/figgy-admin"
   }
 }
+
+data "aws_caller_identity" "current" {}

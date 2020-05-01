@@ -16,11 +16,6 @@ variable "account_id" {
   description = "Account id to enable role assumption for"
 }
 
-//
-//variable "okta_domain" {
-//  description = "Your OKTA domain without the `.okta.com` suffix. For a domain like `figgy.okta.com`, input `figgy`."
-//}
-
 variable "saml_provider" {
   description = "ARN of saml provider configured for SSO integration."
 }

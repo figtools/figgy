@@ -119,9 +119,9 @@ class Utils:
                 f'What key are you using to encrypt this secret? Options are: {self.c.fg_bl}{kms_keys}{self.c.rs}: ')
             self.validate(key_type in kms_keys,
                           f"You must input a valid kms key, valid options are {self.c.fg_bl}{kms_keys}{self.c.rs}.")
-            return kms_key_id_map[key_type]
+            return f'{shared_ns}/iam/{role.role}-key-id'
         else:
-            return usr_to_kms_map[role.role]
+            return f'{shared_ns}/iam/{role.role}-key-id'
 
     def merge_config_contents(self, a: Dict, b: Dict, a_path: str, b_path: str):
         for key in b:
@@ -237,16 +237,6 @@ class Utils:
                 standardized.append(param)
 
         return standardized
-
-    def get_role_arn(self, run_env: RunEnv, role_selection: Role):
-        role = {
-            dev: f'arn:aws:iam::{DEV_ACCOUNT_ID}:role/{role_name[role_selection.role]}',
-            qa: f'arn:aws:iam::{QA_ACCOUNT_ID}:role/{role_name[role_selection.role]}',
-            stage: f'arn:aws:iam::{STAGE_ACCOUNT_ID}:role/{role_name[role_selection.role]}',
-            prod: f'arn:aws:iam::{PROD_ACCOUNT_ID}:role/{role_name[role_selection.role]}'
-        }
-
-        return role[run_env.env]
 
     def get_namespace(self, config: Dict):
         if OPTIONAL_NAMESPACE in config:

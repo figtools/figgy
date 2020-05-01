@@ -73,12 +73,6 @@ SSM_STRING = "String"
 SSM_PUT = 'PutParameter'
 SSM_DELETE = 'DeleteParameter'
 
-# PS Config Keys
-APP_KEY_ID = "/shared/iam/app-key-id"
-DATA_KEY_ID = "/shared/iam/data-key-id"
-DEVOPS_KEY_ID = "/shared/iam/devops-key-id"
-DATA_SCIENCE_KEY_ID = "/shared/iam/data-key-id"
-
 # Other PS Config constants
 DEPLOY_GROUPS_PS_PREFIX = '/shared/deploy-groups/'
 

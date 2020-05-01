@@ -36,9 +36,10 @@ red = 'red'
 usr_data = 'data'
 usr_dev = 'dev'
 usr_devops = 'devops'
-usr_data_scientist = "data-sci"
+usr_sre = 'sre'
+usr_dba = 'dba'
 
-user_types = [usr_data, usr_dev, usr_devops, usr_data_scientist]
+user_types = [usr_data, usr_dev, usr_devops, usr_data, usr_dba, usr_sre]
 
 
 # Role name mappings
@@ -46,7 +47,8 @@ role_name = {
     usr_dev: 'developer-programmatic',
     usr_data: 'data-programmatic',
     usr_devops: 'devops-programmatic',
-    usr_data_scientist: 'data-sci-programmatic',
+    usr_dba: 'dba-programmatic',
+    usr_sre: 'sre-programmatic',
 }
 
 ACCOUNT_ID_MAP = {

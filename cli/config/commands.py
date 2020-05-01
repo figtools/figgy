@@ -222,10 +222,6 @@ kms_app = 'app'
 kms_data = 'data'
 kms_devops = 'devops'
 kms_keys = [kms_app, kms_data, kms_devops]
-kms_key_id_map = {kms_app: APP_KEY_ID,
-                  kms_data: DATA_KEY_ID, kms_devops: DEVOPS_KEY_ID}
-usr_to_kms_map = {usr_data: DATA_KEY_ID, usr_dev: APP_KEY_ID, usr_devops: DEVOPS_KEY_ID,
-                  usr_data_scientist: DATA_KEY_ID}
 
 # Validation Supported types
 plugin = "plugin"

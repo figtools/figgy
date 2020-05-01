@@ -14,7 +14,7 @@ variable "deploy_bucket" {
   description = "Bucket where your figgy lambdas will be deployed and versioned."
 }
 
-variable "parameter_namespaces" {
-  description = "List of top-level namespaces for figgy to know about and help manage. Figgy will only have access to these namespaces."
-  default = ["/app", "/data", "/devops", "/sre", "/dba", "/shared"]
+variable "max_session_duration" {
+  description = "Max session duration in seconds for this assumed role. Default: 12 hours"
+  default     = "43200"
 }

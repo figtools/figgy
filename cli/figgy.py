@@ -6,14 +6,13 @@ from zipfile import ZipFile
 import boto3
 from botocore.errorfactory import ClientError
 
-import input
+from input.input import Input
 from commands.command_factory import CommandFactory
 from commands.config.migrate import *
 from commands.figgy_context import FiggyContext
 from commands.types.command import Command
 from data.dao.ssm import SsmDao
 from extras.completer import Completer
-from input import *
 from models.defaults import CLIDefaults
 from svcs.session_manager import SessionManager
 from utils.secrets_manager import SecretsManager
@@ -291,7 +290,7 @@ class Figgy:
                 print(f"{self.c.fg_rd}Your version of the `{CLI_NAME}` is out of date. You are running "
                       f"{self.c.rs}{self.c.fg_bl}{VERSION}{self.c.rs} instead of "
                       f"{self.c.fg_bl}{latest_version}{self.c.rs}\n")
-                selection = input(f"Would you like to try the auto-upgrade? This should work for "
+                selection = input(f"W ould you like to try the auto-upgrade? This should work for "
                                   f"Linux/OS-X/Windows installations. (Y/n): ")
                 selection = selection if selection != '' else 'y'
                 if selection.lower() == "y":

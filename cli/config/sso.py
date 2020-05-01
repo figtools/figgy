@@ -11,3 +11,5 @@ OKTA_PRINCIPAL_ARN = f"arn:aws:iam::{OKTA_INTEGRATED_AWS_ACCOUNT_ID}:saml-provid
 FIGGY_KEYRING_NAMESPACE = "figgy"
 FIGGY_KEYRING_ASSERTION_NAME = "okta_assertion"
 OKTA_SESSION_CACHE_PATH = f"{HOME}/.figgy/devops/cache/okta/session"
+
+
