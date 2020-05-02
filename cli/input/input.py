@@ -27,7 +27,6 @@ class Input:
     @staticmethod
     def get_okta_password() -> str:
         okta_password = getpass.getpass('Please input OKTA password: ')
-
         Utils.stc_validate(okta_password != '', "You must input a valid OKTA password")
 
         return okta_password

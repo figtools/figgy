@@ -207,6 +207,7 @@ merge_suffixes = [merge_uri_suffix, empty_uri_suffix]
 config_commands = [sync, put, edit, delete, cleanup, get, share, generate,
                    list_com, migrate, browse, audit, dump, restore, promote]
 iam_commands = [export]
+help_commands = [configure, version]
 
 # Used to build out parser, map of resource to sub-commands
 resource_map = {
@@ -247,5 +248,6 @@ shared_ns = '/shared'
 app_ns = '/app'
 data_ns = '/data'
 devops_ns = '/devops'
+figgy_ns = '/figgy'
 DEV_PS_WRITE_NS = ['/shared', '/app']
 

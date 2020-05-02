@@ -1,22 +1,24 @@
 import random
 import boto3
-
+import logging
 from config.constants import *
 from lib.data.dynamo.audit_dao import AuditDao
+from lib.utils.utils import Utils
 
 dynamo_resource = boto3.resource("dynamodb")
 audit: AuditDao = AuditDao(dynamo_resource)
+log = Utils.get_logger(__name__, logging.INFO)
 
 
 def handle(event, context):
-    print(f"Event: {event}")
+    log.info(f"Event: {event}")
     detail = event["detail"]
     user_arn = detail["userIdentity"]["arn"]
     user = user_arn.split("/")[-1:][0]
     action = detail["eventName"]
 
     if 'errorMessage' in detail:
-        print(f'Not processing event due to this being an error event with message: {detail["errorMessage"]}')
+        log.info(f'Not processing event due to this being an error event with message: {detail["errorMessage"]}')
         return
 
     ps_name = detail.get('requestParameters', {}).get('name')
@@ -57,14 +59,14 @@ def handle(event, context):
                 ps_version,
             )
         else:
-            print(f"Unsupported action type found! --> {action}")
+            log.info(f"Unsupported action type found! --> {action}")
 
         # this requires a table scan, so don't do this _EVERY_ run. No big deal. 1 in 30 chance.
     if random.randint(1, 30) == 3:
-        print("Cleaning up.")
+        log.info("Cleaning up.")
         audit.cleanup_test_logs()
     else:
-        print("Skipping cleanup.")
+        log.info("Skipping cleanup.")
 
 
 def get_parameter_value(key):

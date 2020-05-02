@@ -2,7 +2,7 @@
 PS_ROOT_NAMESPACES = ['/app', '/shared', '/data', '/devops', '/sre', '/dba']
 
 # Replication Table
-REPL_TABLE_NAME = "service-config-replication"
+REPL_TABLE_NAME = "figgy-config-replication"
 REPL_DEST_KEY_NAME = "destination"
 REPL_RUN_ENV_KEY_NAME = "run_env"
 REPL_SOURCE_ATTR_NAME = "source"
@@ -13,12 +13,12 @@ REPL_TYPE_MERGE = 'merge'
 REPL_USER_ATTR_NAME = 'user'
 
 # Config cache table
-CONFIG_CACHE_TABLE_NAME = "config-cache"
+CONFIG_CACHE_TABLE_NAME = "figgy-config-cache"
 CONFIG_CACHE_PARAM_NAME_KEY = "parameter_name"
 CONFIG_CACHE_LAST_UPDATED_KEY = "last_updated"
 
 # Audit table
-AUDIT_TABLE_NAME = "config-auditor"
+AUDIT_TABLE_NAME = "figgy-config-auditor"
 AUDIT_PARAM_NAME_KEY = "parameter_name"
 AUDIT_TIME_KEY = "time"
 AUDIT_EVENT_TYPE_ATTR = "action"

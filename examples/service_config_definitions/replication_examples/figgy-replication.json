@@ -1,0 +1,12 @@
+{
+    "namespace": "/app/figgy-demo-repl",
+    "app_parameters": [
+      "api_key",
+      "logging/level",
+      "logging/format"
+    ],
+    "replication_config": {
+        "/shared/service-map/foo/hostname": "/app/figgy-demo-repl/foo.hostname",
+        "/shared/service-map/foo/port": "/app/figgy-demo-repl/foo.port"
+    }
+}

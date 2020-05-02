@@ -1,7 +1,7 @@
 module "config_cache_manager" {
   source = "./modules/figgy_lambda"
   deploy_bucket = local.lambda_bucket_id
-  description = "Manages a DDB cache of items that figgy uses to populate auto-complete locally."
+  description = "Manages a DDB cache of items that figgy uses to populate auto-complete for CLI users."
   handler = "functions/config_cache_manager.handle"
   lambda_name = "figgy-config-cache-manager"
   lambda_timeout = 60
@@ -32,5 +32,5 @@ module "config_cache_manager_trigger" {
     ]
   }
 }
-  PATTERN
+PATTERN
 }

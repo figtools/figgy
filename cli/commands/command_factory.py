@@ -2,12 +2,14 @@ import boto3
 import botocore
 import time
 import logging
+import json
 
 from prompt_toolkit.completion import WordCompleter
 
-
 from commands.config_context import ConfigContext
 from commands.config_factory import ConfigFactory
+from commands.help_context import HelpContext
+from commands.help_factory import HelpFactory
 from commands.iam_context import IAMContext
 from commands.iam_factory import IAMFactory
 from commands.factory import Factory
@@ -39,8 +41,7 @@ class CommandFactory(Factory):
         self._context = context
         self._utils = Utils(context.colors_enabled)
         self._cli_defaults = cli_defaults
-        self._session_manager = SessionManager(self._context.colors_enabled, self._cli_defaults)
-
+        self._session_mgr = None
         self._env_session = None
         self._mgmt_session = None
         self._next_env = None
@@ -53,13 +54,23 @@ class CommandFactory(Factory):
         self._config_svc = None
         self._cache_mgr = None
 
+    def __session_manager(self):
+        """
+        Lazy load the session manager, only create a session if this command requires it.
+        :return: 
+        """
+        if not self._session_mgr:
+            self._session_mgr = SessionManager(self._context.colors_enabled, self._cli_defaults)
+
+        return self._session_mgr
+
     def __env_session(self) -> boto3.session.Session:
         """
         Lazy load an ENV session object for the ENV selected in the FiggyContext
         :return: Hydrated session for the selected environment.
         """
         if not self._env_session:
-            self._env_session = self._session_manager.get_session(
+            self._env_session = self.__session_manager().get_session(
                 self._context.run_env,
                 self._context.selected_role,
                 prompt=False)
@@ -72,7 +83,7 @@ class CommandFactory(Factory):
         :return: Hydrated session for the mgmt environment.
         """
         if not self._mgmt_session:
-            self._mgmt_session = self._session_manager.get_session(
+            self._mgmt_session = self.__session_manager().get_session(
                 RunEnv(mgmt),
                 self._context.selected_role,
                 prompt=False)
@@ -86,7 +97,7 @@ class CommandFactory(Factory):
         """
         if not self._next_env:
             next_env = Utils.get_next_env(self._context.run_env)
-            self._next_env: boto3.Session = self._session_manager.get_session(
+            self._next_env: boto3.Session = self.__session_manager().get_session(
                 next_env,
                 self._context.selected_role,
                 prompt=False)
@@ -141,7 +152,7 @@ class CommandFactory(Factory):
 
             with ThreadPoolExecutor(max_workers=10) as pool:
                 session_futures: Dict[str, thread] = {
-                    env: pool.submit(self._session_manager.get_session, RunEnv(env),
+                    env: pool.submit(self.__session_manager().get_session, RunEnv(env),
                                      self._context.selected_role, prompt=False)
                     for env in envs
                 }
@@ -167,6 +178,30 @@ class CommandFactory(Factory):
 
         return self._config_svc
 
+    # TOdo should I move this?
+    def __get_authed_namespaces(self) -> List[str]:
+        """
+        Looks up the user-defined namespaces that users of this type can access. This enables us to prevent the
+        auto-complete from showing parameters the user doesn't actually have access to.
+
+        Leverages an expiring local cache to save ~200ms on each figgy bootstrap
+        """
+        cache_key = f'{self._context.selected_role.role}-authed-nses'
+        rbac_role_path = f'{figgy_ns}/rbac/{self._context.selected_role.role}'
+        cache_mgr = self.__cache_mgr()
+
+        es, authed_nses = cache_mgr.get_or_refresh(cache_key, self.__ssm().get_parameter, rbac_role_path)
+
+        if authed_nses:
+            authed_nses = json.loads(authed_nses)
+
+        if not isinstance(authed_nses, list):
+            raise ValueError(f"Invalid value found at path: {rbac_role_path}. It must be a valid json List[str]")
+
+        return authed_nses
+
+    ## Todo should I move this somehow?
+    @Utils.trace
     def __config_completer(self):
         """
         This is used to be a slow operation since it involves pulling all parameter names from Parameter Store.
@@ -174,12 +209,20 @@ class CommandFactory(Factory):
         but it is much faster now that we have implemented caching of existing parameter names in DynamoDb and
         locally.
         """
+        # Not the most efficient, but plenty fast since we know the # of authed_nses is gonna be ~<=5
+        # Tested at 30k params and it takes ~25ms
         if not self._config_completer:
             all_names = sorted(self.__config_service().get_parameter_names())
-            self._config_completer = WordCompleter(all_names, sentence=True, match_middle=True)
+            authed_nses = self.__get_authed_namespaces() + [shared_ns]
+            new_names = []
+            for ns in authed_nses:
+                filtered_names = [name for name in all_names if name.startswith(ns)]
+                new_names = new_names + filtered_names
 
-        return self._config_completer
+            self._config_completer = WordCompleter(new_names, sentence=True, match_middle=True)
+
         # print(f"Cache Count: {len(all_names)}")
+        return self._config_completer
 
     def instance(self):
         """
@@ -187,7 +230,6 @@ class CommandFactory(Factory):
         """
         factory: Factory = None
         start = time.time()
-
         if self._context.command in config_commands and self._context.resource == config:
             context = ConfigContext(self._context.run_env, self._context.selected_role, self._context.args, config)
             futures = set()
@@ -210,9 +252,17 @@ class CommandFactory(Factory):
             context = IAMContext(self._context.run_env, self._context.selected_role, self._context.colors_enabled, iam)
             factory = IAMFactory(self._context.command, context, self.__env_session(), self.__mgmt_session(),
                                  all_sessions=self.__all_sessions())
+        elif self._context.find_matching_optional_arguments(help_commands) or self._context.command in help_commands:
+            optional_args = self._context.find_matching_optional_arguments(help_commands)
+            context = HelpContext(self._context.resource, self._context.command, optional_args, self._context.run_env)
+            factory = HelpFactory(self._context.command, context)
         else:
-            self._utils.error_exit(
-                f"Command: {self._utils.get_first(self._context.command)} was not found in this version of figgy.")
+            if self._context.command is None or self._context.resource:
+                self._utils.error_exit("Propery figgy syntax is `figgy {resource} {command}`. "
+                                       "For example `figgy config get`. Either resource or command were not supplied.")
+            else:
+                self._utils.error_exit(
+                    f"Command: {self._utils.get_first(self._context.command)} was not found in this version of figgy.")
 
         logger.info(f"Init completed in {time.time() - start} seconds.")
         return factory.instance()

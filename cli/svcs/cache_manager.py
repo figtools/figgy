@@ -1,7 +1,7 @@
 import logging
 import json
 import os
-from typing import Dict, Any, Union, Set, Tuple, List
+from typing import Dict, Any, Union, Set, Tuple, List, Callable
 from config import *
 from utils.utils import Utils
 
@@ -47,10 +47,22 @@ class CacheManager:
     _STORE_KEY = 'cache'
     _LAST_WRITE_KEY = 'last_write'
     _LAST_REFRESH_KEY = 'last_refresh'
+    DEFAULT_REFRESH_INTERVAL = 60 * 60 * 24 * 7 * 1000  # 1 week in MS
 
     def __init__(self, cache_name: str):
         self._cache_file: str = f'{CACHE_OTHER_DIR}/{cache_name}-cache.json'
         os.makedirs(CACHE_OTHER_DIR, exist_ok=True)
+
+    @prime_cache
+    @wipe_bad_cache
+    def get_or_refresh(self, cache_key: str, refresher: Callable, *args) -> Tuple[int, Any]:
+        last_write, val = self.get(cache_key)
+        if Utils.millis_since_epoch() - last_write > CacheManager.DEFAULT_REFRESH_INTERVAL or not val:
+            new_val = refresher(*args)
+            self.write(cache_key, new_val)
+            return Utils.millis_since_epoch(), new_val
+        else:
+            return last_write, val
 
     @prime_cache
     @wipe_bad_cache
@@ -92,7 +104,7 @@ class CacheManager:
 
     @prime_cache
     @wipe_bad_cache
-    def get(self, cache_key: str) -> Tuple[int, Union[Dict, List]]:
+    def get(self, cache_key: str) -> Tuple[int, Any]:
         """
         Retrieve an item from the cache.
         :param cache_key: Key to return from the cache.

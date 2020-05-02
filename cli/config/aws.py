@@ -1,16 +1,14 @@
+# TODO TURN THIS INTO A CONFIG
+PROD_ACCOUNT_ID = "816636370623"
+STAGE_ACCOUNT_ID = "750075891372"
+QA_ACCOUNT_ID = "713117490776"
+DEV_ACCOUNT_ID = "106481321259"
+MGMT_ACCOUNT_ID = "816219277933"
 
-PROD_ACCOUNT_ID = "999999999999"
-STAGE_ACCOUNT_ID = "999999999999"
-QA_ACCOUNT_ID = "999999999999"
-DEV_ACCOUNT_ID = "999999999999"
-
-MGMT_ACCOUNT_ID = "999999999999"
 MGMT_SNS_ERROR_TOPIC_NAME = 'figgy-error-notifications'
 MGMT_SNS_ERROR_TOPIC_ARN = f'arn:aws:sns:us-east-1:{MGMT_ACCOUNT_ID}:{MGMT_SNS_ERROR_TOPIC_NAME}'
 
 AWS_REGION = "us-east-1"
-# TODO: SET THIS
-PROFILE_SETUP_URL = "SOME_URL"
 ENV_SESSION_DURATION = 43200  # 12 hours
 BASTION_PROFILE_ENV_NAME = 'FIGGY_AWS_PROFILE'
 DEFAULT_USER_NAME = 'FIGGY_DEFAULT_USER'
@@ -21,8 +19,6 @@ qa = 'qa'
 stage = 'stage'
 prod = 'prod'
 mgmt = 'mgmt'
-
-standard_envs = [dev, qa, stage, prod]
 
 # THIS MUST BE IN ORDER -- this means that `mgmt` must be last and `prod` must be second to last.
 envs = [dev, qa, stage, prod, mgmt]
@@ -40,16 +36,6 @@ usr_sre = 'sre'
 usr_dba = 'dba'
 
 user_types = [usr_data, usr_dev, usr_devops, usr_data, usr_dba, usr_sre]
-
-
-# Role name mappings
-role_name = {
-    usr_dev: 'developer-programmatic',
-    usr_data: 'data-programmatic',
-    usr_devops: 'devops-programmatic',
-    usr_dba: 'dba-programmatic',
-    usr_sre: 'sre-programmatic',
-}
 
 ACCOUNT_ID_MAP = {
     dev: DEV_ACCOUNT_ID,

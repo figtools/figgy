@@ -1,4 +1,6 @@
 import re
+import logging
+import sys
 
 
 class Utils:
@@ -13,3 +15,10 @@ class Utils:
         if not bool:
             print(f"'ERROR: ' {error_msg}")
             exit(1)
+
+    @staticmethod
+    def get_logger(name, log_level):
+        root_logger = logging.getLogger()
+        root_logger.setLevel(log_level)
+
+        return logging.getLogger(name)

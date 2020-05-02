@@ -1,5 +1,5 @@
 from botocore.exceptions import ClientError
-from typing import Dict, List
+from typing import Dict, List, Set
 
 SSM_SECURE_STRING = "SecureString"
 

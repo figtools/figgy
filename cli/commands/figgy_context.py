@@ -5,7 +5,7 @@ from config import *
 from models.run_env import RunEnv
 from models.role import Role
 from utils.utils import Utils
-from typing import Optional, Dict, Union
+from typing import Optional, Dict, Union, List, Set
 
 logger = logging.getLogger(__name__)
 
@@ -17,9 +17,8 @@ class FiggyContext:
 
     def __init__(self, colors_enabled: bool, resource: frozenset, command: frozenset,
                  run_env: RunEnv, role: Role, args: argparse.Namespace):
-
-        Utils.stc_validate(args.command is not None, "No command found. Proper format is "
-                                                     "`figgy <resource> <command> --option(s)`")
+        # Utils.stc_validate(args.command is not None, "No command found. Proper format is "
+        #                                              "`figgy <resource> <command> --option(s)`")
         self.colors_enabled = colors_enabled
         self.command: frozenset = command
         self.resource: frozenset = resource
@@ -28,7 +27,6 @@ class FiggyContext:
         self.selected_role: Role = role
         self.ci_config_path = Utils.attr_if_exists(config, args)
         self.from_path = Utils.attr_if_exists(from_path, args)
-        self.locals = Utils.attr_if_exists(locals_path, args)
         self.out_file = Utils.attr_if_exists(out, args)
         self.query_prefix = Utils.attr_if_exists(prefix, args)
         self.service = Utils.attr_if_exists(service, args)
@@ -39,5 +37,18 @@ class FiggyContext:
         self.point_in_time = Utils.is_set_true(point_in_time, args)
         self.all_profiles = Utils.is_set_true(all_profiles, args)
         self.skip_upgrade = Utils.is_set_true(skip_upgrade, args)
+        self.configure = Utils.is_set_true(configure, args)
+        self.version = Utils.is_set_true(version, args)
 
         logger.info(self.__dict__)
+
+    def has_optional_arguments(self, argument: frozenset):
+        return Utils.is_set_true(argument, self.args)
+
+    def find_matching_optional_arguments(self, arguments: List[frozenset]) -> Set[frozenset]:
+        optional_args = set()
+        for arg in arguments:
+            if Utils.is_set_true(arg, self.args):
+                optional_args.add(arg)
+
+        return optional_args

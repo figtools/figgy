@@ -1,13 +1,15 @@
 import boto3
-
+import logging
 from config.constants import *
 from lib.data.dynamo.config_cache_dao import ConfigCacheDao
 from lib.data.ssm.ssm import SsmDao
+from lib.utils.utils import Utils
 
 dynamo_resource = boto3.resource("dynamodb")
 ssm_client = boto3.client('ssm')
 ssm_dao = SsmDao(ssm_client)
 cache_dao: ConfigCacheDao = ConfigCacheDao(dynamo_resource)
+log = Utils.get_logger(__name__, logging.INFO)
 
 
 def handle(event, context):
@@ -18,11 +20,11 @@ def handle(event, context):
     to_delete = cached_names.difference(param_names)
 
     for param in missing_params:
-        print(f"Storing in cache: {param}")
+        log.info(f"Storing in cache: {param}")
         cache_dao.put_in_cache(param)
 
     for param in to_delete:
-        print(f"Deleting from cache: {param}")
+        log.info(f"Deleting from cache: {param}")
         cache_dao.delete_from_cache(param)
 
 

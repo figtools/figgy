@@ -1,5 +1,5 @@
 resource "aws_dynamodb_table" "config_replication" {
-  name           = "config-replication"
+  name           = "figgy-config-replication"
   hash_key       = "destination"
   range_key      = "run_env"
   billing_mode = "PAY_PER_REQUEST"
@@ -21,7 +21,7 @@ resource "aws_dynamodb_table" "config_replication" {
   }
 
   tags = {
-    Name        = "config-replication"
+    Name        = "figgy-config-replication"
     Environment = var.run_env
     owner = "devops"
     application = "figgy"
@@ -30,7 +30,7 @@ resource "aws_dynamodb_table" "config_replication" {
 }
 
 resource "aws_dynamodb_table" "config_auditor" {
-  name           = "config-auditor"
+  name           = "figgy-config-auditor"
   hash_key       = "parameter_name"
   range_key      = "time"
   billing_mode = "PAY_PER_REQUEST"
@@ -51,7 +51,7 @@ resource "aws_dynamodb_table" "config_auditor" {
   }
 
   tags = {
-    Name        = "config-auditor"
+    Name        = "figgy-config-auditor"
     Environment = var.run_env
     owner = "devops"
     application = "figgy"
@@ -60,7 +60,7 @@ resource "aws_dynamodb_table" "config_auditor" {
 }
 
 resource "aws_dynamodb_table" "config_cache" {
-  name           = "config-cache"
+  name           = "figgy-config-cache"
   hash_key       = "parameter_name"
   range_key      = "last_updated"
   billing_mode = "PAY_PER_REQUEST"
@@ -76,7 +76,7 @@ resource "aws_dynamodb_table" "config_cache" {
   }
 
   tags = {
-    Name        = "config-cache"
+    Name        = "figgy-config-cache"
     Environment = var.run_env
     owner = "devops"
     application = "figgy"

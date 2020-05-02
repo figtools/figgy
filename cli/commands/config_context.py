@@ -20,7 +20,6 @@ class ConfigContext(CommandContext):
         self.args = args
         self.ci_config_path = Utils.attr_if_exists(config, args)
         self.from_path = Utils.attr_if_exists(from_path, args)
-        self.locals = Utils.attr_if_exists(locals_path, args)
         self.out_file = Utils.attr_if_exists(out, args)
         self.prefix = Utils.attr_if_exists(prefix, args)
         self.service = Utils.attr_if_exists(service, args)

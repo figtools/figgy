@@ -1,8 +1,13 @@
+import json
+import logging
+import os
 import boto3
+
 from botocore.errorfactory import ClientError
 from botocore.exceptions import NoCredentialsError, ParamValidationError
-
+from json import JSONDecodeError
 from input import *
+from config import *
 from models.defaults import CLIDefaults
 from models.okta_config import OktaConfig
 from models.okta_primary_auth import OktaPrimaryAuth
@@ -11,6 +16,7 @@ from models.role import Role
 from models.run_env import RunEnv
 from svcs.okta import Okta
 from utils.secrets_manager import SecretsManager
+from utils.utils import Utils, InvalidSessionError
 
 log = logging.getLogger(__name__)
 
@@ -40,7 +46,7 @@ class SessionManager:
         with open(OKTA_SESSION_CACHE_PATH, "w") as cache:
             cache.write(session)
 
-    @Utils.trace
+    # @Utils.trace
     def _get_okta(self, prompt: bool) -> Okta:
         """
         Pulls the last okta session from cache, if cache doesn't exist, generates a new session and writes it to cache.
@@ -69,6 +75,7 @@ class SessionManager:
                     user = self._get_okta_user(prompt)
                     password = self._get_okta_password(user, prompt)
                     primary_auth = OktaPrimaryAuth(user, password, Input.get_okta_mfa())
+                    print("I AM HERE")
                     self._write_okta_session_to_cache(primary_auth.to_json())
 
                     return Okta(OktaConfig(primary_auth))
@@ -76,7 +83,6 @@ class SessionManager:
                     log.error(f"Caught error when authing with OKTA & caching session: {e}")
                     print("Authentication failed with OKTA, please reauthenticate. Likely invalid MFA or Password?\r\n")
 
-    @Utils.trace
     def _get_okta_user(self, prompt: bool) -> str:
         """
         Get the OKTA user either from cache, or prompt the user.
@@ -90,7 +96,6 @@ class SessionManager:
         else:
             return Input.get_okta_user()
 
-    @Utils.trace
     def _get_okta_password(self, user_name, prompt: bool, save: bool = False) -> str:
         """
         Get the OKTA pw either from keyring, or prompt the user.
@@ -137,7 +142,8 @@ class SessionManager:
                 try:
                     log.info("Trying to write session to cache...")
                     self._write_okta_session_to_cache(primary_auth.to_json())
-                except InvalidSessionError:
+                except InvalidSessionError as e:
+                    log.info(f"GOt invalid session: {e}")
                     return self._get_okta_assertion(prompt=True)
                 else:
                     return self._get_okta_assertion(prompt=True)
@@ -157,7 +163,7 @@ class SessionManager:
         Returns: hydrated boto3.session in the MGMT account. This role is used to jump into other roles.
         """
 
-        role_arn = f'{ROLE_ARN_MAP[env.env]}{role_name[role.role]}'
+        role_arn = f'{ROLE_ARN_MAP[env.env]}figgy-{role.role}'
         cache_path = f"{HOME}/.figgy/devops/cache/sts/{env.env}-{role.role}"
         principal_arn = f"arn:aws:iam::{ACCOUNT_ID_MAP[env.env]}:saml-provider/{OKTA_PROVIDER_NAME}"
         forced = False

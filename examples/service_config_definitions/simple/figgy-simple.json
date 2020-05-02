@@ -1,0 +1,8 @@
+{
+    "namespace": "/app/figgy-demo-simple",
+    "app_parameters": [
+      "api_key",
+      "logging/level",
+      "logging/format"
+    ]
+}

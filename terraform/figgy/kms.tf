@@ -17,13 +17,6 @@ resource "aws_kms_alias" "encryption_key_alias" {
   target_key_id = aws_kms_key.encryption_key[count.index].key_id
 }
 
-# Need to store this parameter for some of our lambdas :) - this is not a secret!
-resource "aws_ssm_parameter" "encryption_key_id" {
-  count = length(local.encryption_keys)
-  name  = "/shared/iam/${local.encryption_keys[count.index]}-key-id"
-  type  = "String"
-  value = aws_kms_key.encryption_key[count.index].key_id
-}
 
 ## Replication encryption key - this is required by figgy for the configuration sharing features (essential)
 resource "aws_kms_key" "replication_key" {

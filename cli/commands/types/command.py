@@ -37,10 +37,10 @@ class Command(ABC):
         print(f"Command: {self.c.fg_bl}{self.command_printable}{self.c.rs}")
         # print(f"Accepted aliases: {self.c.fg_bl}{com_list[1:]}{self.c.rs}")
         if len(required_params) > 0:
-            print(f"Required parameters: {self.c.fg_bl}{Utils.printable_set(required_params)}{self.c.rs}")
+            print(f"Required parameters: {self.c.fg_bl}{CollectionUtils.printable_set(required_params)}{self.c.rs}")
 
         if len(optional_params) > 0:
-            print(f"Optional parameters: {self.c.fg_bl}{Utils.printable_set(optional_params)}{self.c.rs}")
+            print(f"Optional parameters: {self.c.fg_bl}{CollectionUtils.printable_set(optional_params)}{self.c.rs}")
 
         print(f"Example: {self.example}")
         print(f"\n\n{HELP_TEXT_MAP[self.type]}\n")

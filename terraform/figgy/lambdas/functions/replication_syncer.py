@@ -1,10 +1,16 @@
 import time
+import boto3
 
-from lib.init.repl_init import *
+from lib.data.dynamo.replication_dao import ReplicationDao
+from lib.data.ssm.ssm import SsmDao
+from lib.svcs.replication import ReplicationService
+
+repl_dao: ReplicationDao = ReplicationDao(boto3.resource('dynamodb'))
+ssm: SsmDao = SsmDao(boto3.client('ssm'))
+repl_svc: ReplicationService = ReplicationService(repl_dao, ssm)
 
 
 def handle(event, context):
-    lazy_init()
 
     repl_configs = repl_dao.get_all()
     for config in repl_configs:

@@ -1,0 +1,12 @@
+{
+    "namespace": "/app/figgy-demo-shared",
+    "app_parameters": [
+      "api_key",
+      "logging/level",
+      "logging/format"
+    ],
+    "shared_parameters": [
+      "/app/figgy-demo-shared/db/user",
+      "/app/figgy-demo-shared/db/password"
+    ]
+}

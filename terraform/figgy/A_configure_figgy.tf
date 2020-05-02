@@ -5,9 +5,14 @@
 ## these resources to be removed/recreated which would probably be a pretty bad thing~!
 
 locals {
-  # If you __DO NOT_ want figgy to create its own S3 bucket, set this to true, then specify the `var.deploy_bucket`
-  # with the appropriate deployment bucket name variable.
-  custom_bucket = false
+
+  # If you want figgy to create its own S3 bucket, set this to true, then specify the `var.deploy_bucket`
+  # with the appropriate deployment bucket name variable. This bucket is used to store figgy deployment artifacts.
+  create_deploy_bucket = true
+
+  # If you dot not already have cloudtrail logging enabled, it is required by figgy. We can turn it on for you, or
+  # you can enable it on your own.
+  configure_cloudtrail = true
 
   # How many unique roles will figgy users need? Each of these types should map to a particular figgy user story.
   role_types = ["devops", "data", "dba", "sre", "dev"]
@@ -21,17 +26,18 @@ locals {
   root_namespaces = ["/shared", "/app", "/data", "/devops", "/sre", "/dba"]
 
   # Configure access permissions by mapping your role_types to namespace access levels. Be careful to ensure you
-  # don't have any typos here. These must match items role_types and root_namespace configurations
-  # Format: Map[str:List[str]], or more specifically Map[encryption_key:List[namespace]]
+  # don't have any typos here. These must match the above `role_types` and `root_namespaces` configurations
+  # Format: Map[str:List[str]], or more specifically Map[role_type:List[namespace]]
   role_to_ns_access = {
     "devops" = ["/app", "/devops", "/data", "/sre"],
     "data" = ["/app", "/data"],
     "sre" = ["/sre", "/app", "/data"],
     "dev" = ["/app"],
-    "dba" = ["/dba"]
+    "dba" = ["/dba", "/app"]
   }
 
   # Map role type access to various encryption keys provisioned by figgy.
+  # Format: Map[str:List[str]], specifically Map[role_type:List[encryption_key]]
   role_to_kms_access = {
     "devops" = [ "devops", "app", "data" ]
     "data" = [ "data", "app" ]

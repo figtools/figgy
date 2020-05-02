@@ -1,5 +1,7 @@
 import sys
 import traceback
+import getpass
+from config import *
 from typing import Optional
 from zipfile import ZipFile
 
@@ -11,6 +13,7 @@ from commands.command_factory import CommandFactory
 from commands.config.migrate import *
 from commands.figgy_context import FiggyContext
 from commands.types.command import Command
+from commands.help.configure import Configure
 from data.dao.ssm import SsmDao
 from extras.completer import Completer
 from models.defaults import CLIDefaults
@@ -57,28 +60,7 @@ class Figgy:
 
         return parser.parse_args()
 
-    @staticmethod
-    def configure():
-        """
-        Orchestrates the --configure option. Writes selections to a defaults file in user's home dir.
-        """
-        role: Role = Input.select_role()
-        colors: bool = Input.select_enable_colors()
-        user: str = Input.get_okta_user()
-        password: str = Input.get_okta_password()
-        env: RunEnv = Input.select_default_account()
 
-        opts: Dict = {DEFAULTS_ROLE_KEY: role.role,
-                      COLORS_ENABLED_KEY: colors, OKTA_USER_KEY: user,
-                      DEFAULT_ENV_KEY: env.env}
-
-        SecretsManager.set_password(user, password)
-
-        os.makedirs(os.path.dirname(DEFAULTS_FILE_PATH), exist_ok=True)
-        with open(DEFAULTS_FILE_PATH, "w") as cache:
-            cache.write(json.dumps(opts))
-
-        print(f"{CLI_NAME} successfully configured.")
 
     @staticmethod
     def get_defaults() -> Optional[CLIDefaults]:
@@ -307,7 +289,7 @@ class Figgy:
                     print("You can still manual upgrade. To download the latest version run this "
                           f"command: {command}\nYou will need to add {CLI_NAME} to your path manually.")
 
-    def __init__(self, run_env: RunEnv, args: argparse.Namespace):
+    def __init__(self, args):
         """
         Initializes global shared properties
 
@@ -319,22 +301,45 @@ class Figgy:
         self._mgmt_ssm = None
         self._profile = None
         self._command_factory = None
+        self._session_manager = None
         self.c = Color(self.get_colors_enabled())
         self._utils = Utils(self.get_colors_enabled())
         self._sts = boto3.client('sts')
-        self._session_manager = SessionManager(self.get_colors_enabled(), self.get_defaults())
-
+        self._run_env = Figgy.get_defaults().run_env
         role_override = args.role if hasattr(args, 'role') else None
         self._selected_role: Role = self.get_role(args.prompt, role_override=role_override)
 
-        self._utils.validate(args.command is not None, "No command found. Proper format is "
-                                                       f"`{CLI_NAME} <resource> <command> --option(s)`")
-        command: frozenset = frozenset({args.command})
-        resource: frozenset = frozenset({args.resource})
-        self._context = FiggyContext(self.get_colors_enabled(), resource, command, run_env, self._selected_role, args)
+        if not hasattr(args, 'env') or args.env is None:
+            print(f"{EMPTY_ENV_HELP_TEXT}{self._run_env.env}")
+        else:
+            Utils.stc_validate(Utils.valid_env(args.env), ENV_HELP_TEXT)
+            self._run_env = RunEnv(args.env)
 
-        if not self._context.skip_upgrade:
-            self.check_version()
+
+        # self._utils.validate(args.command is not None, "No command found. Proper format is "
+        #                                                f"`{CLI_NAME} <resource> <command> --option(s)`")
+        command_val = Utils.attr_if_exists(command, args)
+        resource_val = Utils.attr_if_exists(resource, args)
+        found_command: frozenset = frozenset({Utils.attr_if_exists(command, args)}) if command_val else None
+        found_resource: frozenset = frozenset({Utils.attr_if_exists(resource, args)}) if resource_val else None
+
+        log.info(f"Command {found_command}, resource: {found_resource}")
+
+        self._context = FiggyContext(self.get_colors_enabled(), found_resource, found_command,
+                                     self._run_env, self._selected_role, args)
+
+        # Todo: Solve for auto-upgrade in future
+        # if not self._context.skip_upgrade:
+        #     self.check_version()
+
+    def _get_session_manager(self):
+        """
+        Lazy load a hydrated session manager. This supports error reporting, auto-upgrade functionality, etc.
+        """
+        if not self._session_manager:
+            self._session_manager = SessionManager(self.get_colors_enabled(), self.get_defaults())
+
+        return self._session_manager
 
     def get_mgmt_session(self) -> boto3.session.Session:
         """
@@ -385,31 +390,14 @@ def main(arguments):
         utils = Utils(False)
         # Parse / Validate Args
         args = Figgy.parse_args()
-        if args.configure:
-            Figgy.configure()
-            exit(0)
-        elif args.version:
-            print(f"Version: {VERSION}")
-            exit(0)
-        elif args.resource is None:
-            print(f'No resource or command selected. Try `{CLI_NAME} --help`')
-            exit(1)
-
-        run_env: RunEnv = Figgy.get_defaults().run_env
-        if not hasattr(args, 'env') or args.env is None:
-            print(f"{EMPTY_ENV_HELP_TEXT}{run_env.env}")
-        else:
-            utils.validate(Utils.valid_env(args.env), ENV_HELP_TEXT)
-            run_env = RunEnv(args.env)
-
         if hasattr(args, 'debug') and args.debug:
             root_logger.setLevel(logging.INFO)
             root_logger.addHandler(stdout_handler)
 
-        cli: Figgy = Figgy(run_env, args)
+        cli: Figgy = Figgy(args)
         command: Command = cli.get_command()
 
-        if args.info:
+        if hasattr(args, 'info') and args.info:
             command.print_help_text()
             exit(0)
 

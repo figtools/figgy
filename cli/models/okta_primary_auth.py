@@ -4,10 +4,11 @@ import logging
 import requests
 from models.okta_auth import OktaSession, OktaAuth
 
+log = logging.getLogger(__name__)
+
 
 class OktaPrimaryAuth(OktaAuth):
     def __init__(self, user, password, mfa):
-        self.logger = logging
         self._user = user
         self._password = password
         self.https_base_url = f"https://{OKTA_BASE_URL}"
@@ -41,15 +42,15 @@ class OktaPrimaryAuth(OktaAuth):
             elif resp_json['status'] == 'SUCCESS':
                 session_token = resp_json['sessionToken']
             elif resp_json['status'] == 'MFA_ENROLL':
-                self.logger.warning("MFA not enrolled. Cannot continue. Please enroll a MFA factor in the Okta Web "
-                                    "UI first!")
+                log.warning("MFA not enrolled. Cannot continue. Please enroll a MFA factor in the Okta Web "
+                            "UI first!")
                 raise InvalidSessionError("Unable to auth through Okta.")
         elif resp.status_code != 200:
-            self.logger.error(resp_json['errorSummary'])
+            log.error(resp_json['errorSummary'])
             raise InvalidSessionError("Unable to auth through Okta.")
         else:
             print("Error creating OKTA session. Perhaps invalid MFA. Please retry.")
-            self.logger.error(resp_json)
+            log.error(resp_json)
             raise InvalidSessionError("Unable to auth through Okta.")
 
         session_id = self.get_session_id(session_token)
@@ -68,8 +69,8 @@ class OktaPrimaryAuth(OktaAuth):
             if factor['factorType'] in supported_factor_types:
                 supported_factors.append(factor)
             else:
-                self.logger.info("Unsupported factorType: %s" %
-                                 (factor['factorType'],))
+                log.info("Unsupported factorType: %s" %
+                         (factor['factorType'],))
 
         supported_factors = sorted(supported_factors,
                                    key=lambda factor: (
@@ -98,15 +99,15 @@ class OktaPrimaryAuth(OktaAuth):
                 if self.factor:
                     if self.factor == factor_provider:
                         factor_choice = index
-                        self.logger.info("Using pre-selected factor choice \
+                        log.info("Using pre-selected factor choice \
                                          from ~/.okta-aws")
                         break
                 else:
                     print("%d: %s" % (index + 1, factor_name))
             if not self.factor:
                 factor_choice = int(input('Please select the MFA factor: ')) - 1
-            self.logger.info("Performing secondary authentication using: %s" %
-                             supported_factors[factor_choice]['provider'])
+            log.info("Performing secondary authentication using: %s" %
+                     supported_factors[factor_choice]['provider'])
             session_token = self.verify_single_factor(supported_factors[factor_choice],
                                                       state_token)
         else:
@@ -120,10 +121,10 @@ class OktaPrimaryAuth(OktaAuth):
             "stateToken": state_token
         }
 
-        self.logger.debug(factor)
+        log.debug(factor)
         if factor['factorType'] == 'token:software:totp':
             if self.totp_token:
-                self.logger.debug("Using TOTP token from command line arg")
+                log.debug("Using TOTP token from command line arg")
                 req_data['answer'] = self.totp_token
             else:
                 req_data['answer'] = input('Enter MFA token: ')

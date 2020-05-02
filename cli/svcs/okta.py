@@ -14,12 +14,12 @@ import xml.etree.ElementTree as ET
 from utils.utils import *
 from models.okta_auth import OktaAuth, OktaSession
 
+log = logging.getLogger(__name__)
 
 class Okta:
     """ Handles auth to Okta and returns SAML assertion """
 
     def __init__(self, okta_config: OktaConfig):
-        self.logger = logging
         self.app_link = okta_config.app_link
         self.auth = okta_config.okta_auth
         self.https_base_url = f"https://{OKTA_BASE_URL}"
@@ -36,7 +36,7 @@ class Okta:
             if app['appName'] == "amazon_aws":
                 aws_apps.append(app)
         if not aws_apps:
-            self.logger.error("No AWS apps are available for your user. \
+            log.error("No AWS apps are available for your user. \
                 Exiting.")
             sys.exit(1)
 
@@ -49,7 +49,7 @@ class Okta:
                 print("%d: %s" % (index + 1, app_name))
 
             app_choice = int(input('Please select AWS app: ')) - 1
-        self.logger.debug("Selected app: %s" % aws_apps[app_choice]['label'])
+        log.info("Selected app: %s" % aws_apps[app_choice]['label'])
         return aws_apps[app_choice]['label'], aws_apps[app_choice]['linkUrl']
 
     def get_saml_assertion(self, html):
@@ -62,7 +62,7 @@ class Okta:
                 assertion = input_tag.get('value')
 
         if not assertion:
-            self.logger.error("SAML assertion not valid: " + assertion)
+            log.error("SAML assertion not valid: " + assertion)
 
         return assertion
 

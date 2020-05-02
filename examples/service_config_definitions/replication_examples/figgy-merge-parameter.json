@@ -1,0 +1,23 @@
+{
+    "namespace": "/app/figgy-demo-merge",
+    "app_parameters": [
+      "api_key",
+      "logging/level",
+      "logging/format"
+    ],
+    "merged_parameters": {
+      "/app/figgy-demo-merge/replicated/sql/sql-conn-string": [
+          "jdbc:mysql://",
+          "${/app/figgy-demo-merge/replicated/sql/db/user_name:uri}",
+          ":",
+          "${/app/figgy-demo-merge/replicated/sql/db/password:uri}",
+          "@",
+          "${/app/figgy-demo-merge/replicated/sql/db/host:uri}",
+          ":",
+          "${/app/figgy-demo-merge/replicated/sql/db/port:uri}",
+          "/",
+          "${/app/figgy-demo-merge/replicated/sql/db/name:uri}"
+
+      ]
+    }
+}

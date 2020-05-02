@@ -4,7 +4,7 @@
 resource "aws_iam_saml_provider" "okta" {
   count = local.enable_sso == true && local.sso_type == "okta" ? 1 : 0
   name                   = "OKTA"
-  saml_metadata_document = file("saml/metadata-${var.run_env}.xml")
+  saml_metadata_document = file("saml/metadata-okta.xml")
 }
 
 resource "aws_iam_user" "sso_user" {

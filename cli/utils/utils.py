@@ -168,13 +168,13 @@ class Utils:
             return self.get_config_key_safe(REPLICATION_KEY, conf, default=[])
 
     def get_ci_config(self, ci_config_path: str) -> Dict:
-        self.validate(ci_config_path.endswith('config.json'),
-                      "The ci-config file must end in the name 'config.json'. A name of ci-config.json is "
-                      "recommended for most use cases. (or config.json for cicd lambdas deployments)'.")
-        # Read & Validate ci-config.json
+        self.validate(ci_config_path.endswith('.json'),
+                      "The figgy config file must end with the extension '.json'. A name of `figgy.json` is "
+                      "recommended for most use cases..")
+        # Read & Validate figgy.json
         try:
             with open(ci_config_path, "r") as file:
-                base_matcher = re.search('^(.*)ci-config|config.json$', ci_config_path)
+                base_matcher = re.search('^(.*)figgy|figgy.json$', ci_config_path)
                 base_path = base_matcher.group(1)
                 contents = file.read()
                 self.validate(contents != '',
@@ -217,7 +217,7 @@ class Utils:
                 return ci_config
 
         except json.decoder.JSONDecodeError as e:
-            print(f"{self.c.fg_rd}Error decoding json in ci-config.json. Invalid JSON detected. "
+            print(f"{self.c.fg_rd}Error decoding json in figgy.json. Invalid JSON detected. "
                   f"Caught error: {e}{self.c.rs}")
             exit(1)
         except FileNotFoundError as e:
@@ -243,7 +243,7 @@ class Utils:
             namespace = config[OPTIONAL_NAMESPACE]
         else:
             self.validate(CONFIG_KEY in config, f"You must specify an {CONFIG_KEY} or {OPTIONAL_NAMESPACE} block, "
-            f"or both, in your ci-config.json file.")
+            f"or both, in your figgy.json file.")
             namespace = self.parse_namespace(self.get_first(set(config[CONFIG_KEY])))
 
         self.validate(namespace is not None, f"Invalid namespace provided, or unable to parse valid "
@@ -287,7 +287,7 @@ class Utils:
             ns = val.group(1)
         except (AttributeError, TypeError) as e:
             print(f"Unable to parse namespace from {app_key}. If your app_parameters block values do not begin with "
-                  f"the prefix /app/your-service-name , you must include the 'namespace' property in your ci-config.json "
+                  f"the prefix /app/your-service-name , you must include the 'namespace' property in your figgy.json "
                   f"with value /app/your-service-name/")
 
         return ns
@@ -313,12 +313,14 @@ class Utils:
         if not boolean:
             self.error_exit(error_msg)
 
+    #Todo do dynamic validation based on current role mappings.
     def validate_ps_name(self, ps_name: str):
-        self.validate(ps_name.startswith(app_ns) or
-                      ps_name.startswith(shared_ns) or
-                      ps_name.startswith(data_ns) or
-                      ps_name.startswith(devops_ns), "Invalidate PS Name specified. It must begin with "
-                      f"{app_ns}, {shared_ns}, {devops_ns}, or {data_ns}")
+        return True
+        # self.validate(ps_name.startswith(app_ns) or
+        #               ps_name.startswith(shared_ns) or
+        #               ps_name.startswith(data_ns) or
+        #               ps_name.startswith(devops_ns), "Invalidate PS Name specified. It must begin with "
+        #               f"{app_ns}, {shared_ns}, {devops_ns}, or {data_ns}")
 
     def is_valid_selection(self, selection: str, notify: bool):
         result = selection is not None and (selection.lower() == "y" or selection.lower() == "n")
@@ -330,14 +332,15 @@ class Utils:
     def is_valid_input(self, input: str, field_name: str, notify: bool):
         result = input is not None and input != ""
         if notify and not result:
-            msg = f"ERROR: Your input of >> {input} << is not valid for {field_name}. You cannot input an empty string or None"
+            msg = f"ERROR: Your input of >> {input} << is not valid for {field_name}. " \
+                  f"You cannot input an empty string or None"
             print(f"{self.c.fg_rd}{msg}{self.c.rs}")
         return result
 
     @staticmethod
     def format_config(config: Dict) -> OrderedDict:
         """
-        Takes a formatted config.json file dictionary and converts it to an ordered dictionary. This makes it possible
+        Takes a formatted figgy.json file dictionary and converts it to an ordered dictionary. This makes it possible
         to write the file back out as a more readable and logically formatted file.
         """
 
