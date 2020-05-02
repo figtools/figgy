@@ -2,6 +2,7 @@ import logging
 from typing import Set
 
 from data.dao.config import ConfigDao
+from data.models.config_item import ConfigState, ConfigItem
 from models.run_env import RunEnv
 from svcs.cache_manager import CacheManager
 from utils.utils import Utils
@@ -47,11 +48,24 @@ class ConfigService:
             last_write, cached_contents = self._cache_mgr.get(cache_key)
 
             # Find new items added to remote cache table since last local cache write
-            new_names = self._config_dao.get_config_names_after(last_write)
+            updated_items: Set[ConfigItem] = self._config_dao.get_config_names_after(last_write)
 
             # Add new names to cache
-            self._cache_mgr.append(cache_key, new_names)
+            added_names, deleted_names = set(), set()
+            for item in updated_items:
+                if item.state is ConfigState.ACTIVE:
+                    log.info(f"ADDING NEW: {item}")
+                    added_names.add(item.name)
+                elif item.state is ConfigState.DELETED:
+                    log.info(f"ADDING DELETED: {item}")
+                    deleted_names.add(item.name)
+                else:
+                    # Default to add if no state set
+                    added_names.add(item.name)
 
-            all_parameters = set(cached_contents) | new_names
+            self._cache_mgr.append(cache_key, added_names)
+            self._cache_mgr.delete(cache_key, deleted_names)
+
+            all_parameters = set(cached_contents) - deleted_names | added_names
 
         return all_parameters

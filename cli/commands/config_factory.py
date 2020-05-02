@@ -1,41 +1,33 @@
-from commands.factory import Factory
-from config import *
-from commands.config.cleanup import Cleanup
-from commands.config.delete import Delete
-from commands.config.get import Get
-from commands.config.migrate import Migrate
-from commands.config.audit import Audit
-from commands.config.promote import Promote
-from commands.config.put import Put
-from commands.config.share import *
-from commands.config.dump import Dump
-from commands.config.sync import *
-from commands.config.browse import Browse
-from commands.config_context import ConfigContext
-from commands.config.restore import Restore
-from commands.config.edit import Edit
-from commands.config.generate import Generate
-from svcs.cache_manager import CacheManager
-from prompt_toolkit.completion import WordCompleter
-import commands.config.list
-from utils.utils import *
-from svcs.kms import KmsSvc
-from svcs.config import ConfigService
 from boto3.resources.base import ServiceResource
 
+import commands.config.list
+from commands.config.audit import Audit
+from commands.config.browse import Browse
+from commands.config.cleanup import Cleanup
+from commands.config.delete import Delete
+from commands.config.dump import Dump
+from commands.config.edit import Edit
+from commands.config.generate import Generate
+from commands.config.migrate import Migrate
+from commands.config.promote import Promote
+from commands.config.restore import Restore
+from commands.config.share import *
+from commands.config.sync import *
+from commands.config_context import ConfigContext
+from commands.factory import Factory
+from svcs.kms import KmsSvc
+from views.rbac_limited_config import RBACLimitedConfigView
+from utils.utils import *
 
-# Todo move many of these init variables into context, pass in hydrated context.
+
 class ConfigFactory(Factory):
     """
-    This class wasn't so bad when there were like 4 commands, now it's kinda insane and I apologize.
-    #Todo - Do something better. Dependency injection, etc.
-
     This factory is used to initialize and return all different types of CONFIG commands. For other resources, there
     would hypothetically be other factories.
     """
 
     def __init__(self, command: frozenset, context: ConfigContext, ssm: SsmDao, cfg: ConfigDao, kms: KmsSvc,
-                 s3_resource: ServiceResource, colors_enabled: bool, config_completer: WordCompleter,
+                 s3_resource: ServiceResource, colors_enabled: bool, config_view: RBACLimitedConfigView,
                  dest_ssm: SsmDao = None):
 
         self._command: frozenset = command
@@ -44,11 +36,12 @@ class ConfigFactory(Factory):
         self._config: ConfigDao = cfg
         self._kms: KmsSvc = kms
         self._colors_enabled: bool = colors_enabled
-        self._config_completer = config_completer
+        self._config_view = config_view
         self._s3_resource: ServiceResource = s3_resource
         self._utils = Utils(colors_enabled)
         self._args = context.args
         self._dest_ssm: SsmDao = dest_ssm
+        self._config_completer = self._config_view.get_config_completer()
 
     def instance(self):
         return self.get(self._command)
@@ -78,7 +71,7 @@ class ConfigFactory(Factory):
                            self._config_completer)
         elif command == browse:
             return Browse(self._ssm, self._config, self._colors_enabled, self._config_context, self.get(get),
-                          self.get(delete))
+                          self.get(delete), self._config_view)
         elif command == audit:
             return Audit(self._ssm, self._config, self._config_completer, self._colors_enabled, self._config_context)
         elif command == dump:
@@ -96,4 +89,4 @@ class ConfigFactory(Factory):
 
         else:
             self._utils.error_exit(f"{Utils.get_first(command)} is not a valid command. You must select from: "
-                                   f"[{Utils.printable_set(config_commands)}]. Try using --help for more info.")
+                                   f"[{CollectionUtils.printable_set(config_commands)}]. Try using --help for more info.")

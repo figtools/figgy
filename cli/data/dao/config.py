@@ -1,6 +1,7 @@
 from boto3.dynamodb.conditions import Key, Attr
 from decimal import *
 from config import *
+from data.models.config_item import ConfigItem
 from models.replication_config import ReplicationConfig, ReplicationType
 from models.restore_config import RestoreConfig
 from models.run_env import RunEnv
@@ -334,7 +335,7 @@ class ConfigDao:
             f"seconds with {len(configs)} configs.")
         return configs
 
-    def get_config_names_after(self, millis_since_epoch: int) -> Set[str]:
+    def get_config_names_after(self, millis_since_epoch: int) -> Set[ConfigItem]:
         """
         Retrieve all key names from the Dynamo DB config-cache table in each account. Much more efficient than
         querying SSM directly.
@@ -355,21 +356,18 @@ class ConfigDao:
 
         start_time = time.time()
         response = self._cache_table.scan(
-            # ExpressionAttributeNames=request['attribute_names'],
-            # ExpressionAttributeValues=request['attribute_values'],
             FilterExpression=request['expression']
         )
 
         items = response.get('Items', [])
 
         while 'LastEvaluatedKey' in response:
-            response = self._cache_table.query(ExclusiveStartKey=response['LastEvaluatedKey'])
-            items.append(response['Items'])
+            response = self._cache_table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+            items = items + response.get('Items', [])
 
-        configs: Set[str] = set()
+        configs: Set[ConfigItem] = set()
         for item in items:
-            name = item[CACHE_PARAMETER_KEY_NAME]
-            configs.add(name)
+            configs.add(ConfigItem.from_dict(item))
 
         log.info(f"Returning {len(configs)} parameter names from dynamo cache after time: [{millis_since_epoch}] in "
                  f"{time.time() - start_time} seconds.")

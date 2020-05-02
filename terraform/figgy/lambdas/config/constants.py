@@ -15,7 +15,10 @@ REPL_USER_ATTR_NAME = 'user'
 # Config cache table
 CONFIG_CACHE_TABLE_NAME = "figgy-config-cache"
 CONFIG_CACHE_PARAM_NAME_KEY = "parameter_name"
+CONFIG_CACHE_STATE_ATTR_NAME = "state"
 CONFIG_CACHE_LAST_UPDATED_KEY = "last_updated"
+CONFIG_CACHE_STATE_DELETED = 'DELETED'
+CONFIG_CACHE_STATE_ACTIVE = 'ACTIVE'
 
 # Audit table
 AUDIT_TABLE_NAME = "figgy-config-auditor"

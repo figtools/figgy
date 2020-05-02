@@ -1,7 +1,10 @@
+from typing import List, Set
+
 import boto3
 import logging
+import time
 from config.constants import *
-from lib.data.dynamo.config_cache_dao import ConfigCacheDao
+from lib.data.dynamo.config_cache_dao import ConfigCacheDao, ConfigItem
 from lib.data.ssm.ssm import SsmDao
 from lib.utils.utils import Utils
 
@@ -10,22 +13,38 @@ ssm_client = boto3.client('ssm')
 ssm_dao = SsmDao(ssm_client)
 cache_dao: ConfigCacheDao = ConfigCacheDao(dynamo_resource)
 log = Utils.get_logger(__name__, logging.INFO)
+MAX_DELETED_AGE = 60 * 60 * 24 * 14 * 1000  # 2 weeks in MS
+
+
+def remove_old_deleted_items():
+    """
+    Cleanup items marked as DELETED that are > MAX_AGE old
+    """
+    deleted_items: List[ConfigItem] = cache_dao.get_deleted_configs()
+    for item in deleted_items:
+        if int(time.time() * 1000) - item.last_updated > MAX_DELETED_AGE:
+            log.info(f"Item: {item.name} is older than {MAX_DELETED_AGE/1000}"
+                     f" seconds and is marked deleted. Removing from cache...")
+            cache_dao.delete(item)
 
 
 def handle(event, context):
     param_names = ssm_dao.get_all_param_names(PS_ROOT_NAMESPACES)
-    cached_names = cache_dao.get_cached_names()
-
-    missing_params = param_names.difference(cached_names)
-    to_delete = cached_names.difference(param_names)
+    cached_configs: Set[ConfigItem] = cache_dao.get_all_configs()
+    cached_names = set([config.name for config in cached_configs])
+    missing_params: Set[str] = param_names.difference(cached_names)
+    names_to_delete: Set[str] = cached_names.difference(param_names)
+    to_delete = [item for item in cached_configs if item.name in names_to_delete]
 
     for param in missing_params:
         log.info(f"Storing in cache: {param}")
         cache_dao.put_in_cache(param)
 
     for param in to_delete:
-        log.info(f"Deleting from cache: {param}")
-        cache_dao.delete_from_cache(param)
+        log.info(f"Marking deleted from cache: {param}")
+        cache_dao.mark_deleted(param)
+
+    remove_old_deleted_items()
 
 
 if __name__ == "__main__":

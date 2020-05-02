@@ -13,6 +13,7 @@ from data.dao.config import ConfigDao
 from data.dao.ssm import SsmDao
 from utils.utils import *
 from utils.utils import Utils
+from views.rbac_limited_config import RBACLimitedConfigView
 
 log = logging.getLogger(__name__)
 
@@ -20,11 +21,12 @@ log = logging.getLogger(__name__)
 class Browse(ConfigCommand, npyscreen.NPSApp):
 
     def __init__(self, ssm_init: SsmDao, config_init: ConfigDao, colors_enabled: bool, context: ConfigContext,
-                 get_command: Get, delete_command: Delete):
+                 get_command: Get, delete_command: Delete, config_view: RBACLimitedConfigView):
         super().__init__(browse, colors_enabled, context)
         self._ssm = ssm_init
         self._config: ConfigDao = config_init
         self._get = get_command
+        self._config_view = config_view
         self.selected_ps_paths = []
         self.deleted_ps_paths = []
         self.dirs = set()
@@ -64,27 +66,27 @@ class Browse(ConfigCommand, npyscreen.NPSApp):
 
         diff_children = all_children.difference(first_children)
 
-        child_dirs = set(list(map(lambda x: f"{prefix}/{x.replace(f'{prefix}/', '').split('/')[0]}", diff_children)))
+        child_dirs = set(list(map(lambda x: f"{prefix}/{x.replace(f'{prefix}/', '', 1).split('/')[0]}", diff_children)))
         self.dirs = self.dirs | child_dirs
 
         for child in sorted(first_children):
-            child_name = child.replace(prefix, '')
+            child_name = child.replace(prefix, '', 1)
             if child_name != '/':
                 td_node.newChild(content=child_name, selectable=True, expanded=False)
 
         for child_dir in sorted(child_dirs):
-            child_name = child_dir.replace(prefix, '')
+            child_name = child_dir.replace(prefix, '', 1)
             if child_name != '/':
                 grand_children = set(list(filter(lambda x: x.startswith(f'{prefix}{child_name}/'), all_children)))
                 calculated_first_children = set(list(filter(
                     lambda x: len(x.split('/')) == len(prefix.split('/')) + 2, grand_children)))
 
-                dir_node = td_node.newChild(content=child_dir.replace(prefix, ''), selectable=False, expanded=False)
+                dir_node = td_node.newChild(content=child_dir.replace(prefix, '', 1), selectable=False, expanded=False)
                 self.add_children(child_dir, dir_node, all_children=grand_children,
                                   first_children=calculated_first_children)
 
     def _browse(self):
-        browse_app = BrowseApp(self)
+        browse_app = BrowseApp(self, self._config_view)
         browse_app.run()
 
     def _print_val(self, path, val, desc):
@@ -175,8 +177,9 @@ class BrowseApp(NPSApp):
     Extends NPSApp class to add support for getting a list of deleted tree nodes that were marked for deletion.
     """
 
-    def __init__(self, browse: Browse):
+    def __init__(self, browse: Browse, config_view: RBACLimitedConfigView):
         self._browse = browse
+        self._config_view = config_view
 
     def main(self):
         global npy_form
@@ -194,27 +197,17 @@ class BrowseApp(NPSApp):
             children = [prefix_child]
         else:
             log.info(f"--{Utils.get_first(prefix)} missing, defaulting to normal browse tree.")
-            app = td.newChild(content=app_ns, selectable=False, expanded=False)
-            shared = td.newChild(content=shared_ns, selectable=False, expanded=False)
-            data = td.newChild(content=data_ns, selectable=False, expanded=False)
-            devops = td.newChild(content=devops_ns, selectable=False, expanded=False)
-            children = [app, shared, data, devops]
+            for namespace in self._config_view.get_authed_namespaces():
+                child = td.newChild(content=namespace, selectable=False, expanded=False)
+                children.append(child)
 
         for child in children:
             self._browse.dirs.add(child.getContent())
-        # # We need to manually add the root nodes as dirs.
-        # self._browse.dirs.add(app_ns)
-        # self._browse.dirs.add(shared_ns)
-        # self._browse.dirs.add(data_ns)
-        # self._browse.dirs.add(devops_ns)
+
         futures = []
         with ThreadPoolExecutor(max_workers=10) as pool:
             for child in children:
                 futures.append(pool.submit(self._browse.add_children, child.getContent(), child))
-            # app_res = pool.submit(self._browse.add_children, app_ns, app)
-            # shared_res = pool.submit(self._browse.add_children, shared_ns, shared)
-            # data_res = pool.submit(self._browse.add_children, data_ns, data)
-            # devops_res = pool.submit(self._browse.add_children, devops_ns, devops)
 
         for future in as_completed(futures):
             pass

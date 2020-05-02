@@ -167,3 +167,49 @@ class CacheManager:
                 cache.write(json.dumps(contents))
         else:
             log.info('No cached items found to add to cache.')
+
+    def delete(self, cache_key: str, objects: Union[Dict, Set[Any]]):
+        """
+        If any of these items exist in the cache for this set of stored values, delete them.
+        :param cache_key: Key to potentially delete items from
+        :param objects: *Keys* in the cached DICT to delete, or items in a cached LIST to delete.
+        """
+
+        if isinstance(objects, Set):
+            objects = list(objects)
+
+        if len(objects) > 0:
+            log.info(f'Deleting {len(objects)} items from local cache: {objects}')
+
+            with open(self._cache_file, "r") as cache:
+                contents: Dict = json.loads(cache.read())
+                cache = contents.get(cache_key, {})
+                refresh_time = cache.get(self._LAST_REFRESH_KEY, 0)
+                cache_obj = cache.get(self._STORE_KEY)
+                log.info(f'In cache: {cache_obj}')
+                if isinstance(cache_obj, Dict) and isinstance(objects, Dict) or cache_obj is None:
+                    log.info(f'Cache Obj is a dict')
+                    if cache_obj:
+                        for obj in objects:
+                            del cache_obj[obj]
+                elif isinstance(cache_obj, List) and isinstance(objects, List) or cache_obj is None:
+                    log.info(f"Cache obj is a list..")
+                    if cache_obj:
+                        cache_obj = list(set(cache_obj) - set(objects))
+
+                else:
+                    raise RuntimeError(
+                        "Invalid state detected. Cache contains an invalid type that cannot be appended to, "
+                        "or the type provided does not match the type stored in the cache.")
+
+                log.info(f'New cache obj: {cache_obj}')
+                contents[cache_key] = {
+                    self._STORE_KEY: cache_obj,
+                    self._LAST_WRITE_KEY: Utils.millis_since_epoch(),
+                    self._LAST_REFRESH_KEY: refresh_time,
+                }
+
+            with open(self._cache_file, 'w') as cache:
+                cache.write(json.dumps(contents))
+        else:
+            log.info('No cached items found to add to cache.')
