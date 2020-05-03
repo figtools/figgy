@@ -1,10 +1,6 @@
 import boto3
-import botocore
 import time
 import logging
-import json
-
-from prompt_toolkit.completion import WordCompleter
 
 from commands.config_context import ConfigContext
 from commands.config_factory import ConfigFactory
@@ -15,17 +11,16 @@ from commands.iam_factory import IAMFactory
 from commands.factory import Factory
 from models.defaults import CLIDefaults
 from models.run_env import RunEnv
-from models.role import Role
 from commands.figgy_context import FiggyContext
 from svcs.kms import KmsSvc
 from svcs.config import ConfigService
 from svcs.cache_manager import CacheManager
-from svcs.session_manager import SessionManager
+from svcs.sso.session_manager import SessionManager
 from data.dao.config import ConfigDao
 from utils.utils import Utils
 from config import *
 from data.dao.ssm import SsmDao
-from typing import Optional, List, Dict, Tuple
+from typing import Dict
 from concurrent.futures import ThreadPoolExecutor, thread, as_completed
 
 from views.rbac_limited_config import RBACLimitedConfigView
@@ -45,7 +40,6 @@ class CommandFactory(Factory):
         self._cli_defaults = cli_defaults
         self._session_mgr = None
         self._env_session = None
-        self._mgmt_session = None
         self._next_env = None
         self._ssm = None
         self._config = None
@@ -74,24 +68,10 @@ class CommandFactory(Factory):
         """
         if not self._env_session:
             self._env_session = self.__session_manager().get_session(
-                self._context.run_env,
                 self._context.selected_role,
                 prompt=False)
 
         return self._env_session
-
-    def __mgmt_session(self) -> boto3.session.Session:
-        """
-        Lazy load an MGMT session object for the MGMT environment
-        :return: Hydrated session for the mgmt environment.
-        """
-        if not self._mgmt_session:
-            self._mgmt_session = self.__session_manager().get_session(
-                RunEnv(mgmt),
-                self._context.selected_role,
-                prompt=False)
-
-        return self._mgmt_session
 
     def __next_env(self) -> boto3.session.Session:
         """
@@ -99,10 +79,8 @@ class CommandFactory(Factory):
         :return: Hydrated session for the selected + 1 environment.
         """
         if not self._next_env:
-            next_env = Utils.get_next_env(self._context.run_env)
             self._next_env: boto3.Session = self.__session_manager().get_session(
-                next_env,
-                self._context.selected_role,
+                self._context.next_env_role,
                 prompt=False)
 
         return self._next_env
@@ -137,12 +115,12 @@ class CommandFactory(Factory):
         """
         return ConfigDao(self.__env_session().resource('dynamodb'))
 
-    def __mgmt_s3_resource(self):
+    def __s3_resource(self):
         """
         Returns a hydrated boto3 S3 Resource for the mgmt account.
         """
         if not self._mgmt_s3_rsc:
-            self._mgmt_s3_rsc = self.__mgmt_session().resource('s3')
+            self._mgmt_s3_rsc = self.__env_session().resource('s3')
 
         return self._mgmt_s3_rsc
 
@@ -183,7 +161,7 @@ class CommandFactory(Factory):
 
     def __rbac_config_view(self) -> RBACLimitedConfigView:
         if not self._rbac_config_view:
-            self._rbac_config_view = RBACLimitedConfigView(self._context.selected_role, self.__cache_mgr(),
+            self._rbac_config_view = RBACLimitedConfigView(self._context.role, self.__cache_mgr(),
                                                            self.__ssm(), self.__config_service())
         return self._rbac_config_view
 
@@ -194,31 +172,31 @@ class CommandFactory(Factory):
         factory: Factory = None
         start = time.time()
         if self._context.command in config_commands and self._context.resource == config:
-            context = ConfigContext(self._context.run_env, self._context.selected_role, self._context.args, config)
+            context = ConfigContext(self._context.run_env, self._context.role, self._context.args, config)
             futures = set()
 
             # Multiple threads to init resources saves 500 - 1000 MS
             with ThreadPoolExecutor(max_workers=5) as pool:
                 futures.add(pool.submit(self._ssm))
                 futures.add(pool.submit(self.__kms))
-                futures.add(pool.submit(self.__mgmt_s3_resource))
+                futures.add(pool.submit(self.__s3_resource()))
                 futures.add(pool.submit(self.__next_ssm))
 
             for future in as_completed(futures):
                 pass  # Force lazy init for all futures.
 
             factory = ConfigFactory(self._context.command, context, self.__ssm(), self.__config(), self.__kms(),
-                                    self.__mgmt_s3_resource(), self._context.colors_enabled, self.__rbac_config_view(),
+                                    self.__s3_resource(), self._context.colors_enabled, self.__rbac_config_view(),
                                     dest_ssm=self.__next_ssm())
 
         elif self._context.command in iam_commands and self._context.resource == iam:
-            context = IAMContext(self._context.run_env, self._context.selected_role, self._context.colors_enabled, iam)
-            factory = IAMFactory(self._context.command, context, self.__env_session(), self.__mgmt_session(),
+            context = IAMContext(self._context.run_env, self._context.role, self._context.colors_enabled, iam)
+            factory = IAMFactory(self._context.command, context, self.__env_session(),
                                  all_sessions=self.__all_sessions())
         elif self._context.find_matching_optional_arguments(help_commands) or self._context.command in help_commands:
             optional_args = self._context.find_matching_optional_arguments(help_commands)
             context = HelpContext(self._context.resource, self._context.command, optional_args, self._context.run_env)
-            factory = HelpFactory(self._context.command, context)
+            factory = HelpFactory(self._context.command, context, self.__session_manager())
         else:
             if self._context.command is None or self._context.resource:
                 self._utils.error_exit("Propery figgy syntax is `figgy {resource} {command}`. "

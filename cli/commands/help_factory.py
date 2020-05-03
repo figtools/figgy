@@ -3,22 +3,24 @@ from commands.help.version import Version
 from commands.help_context import HelpContext
 from commands.help.configure import Configure
 from config import *
+from svcs.sso.session_manager import SessionManager
 from utils.utils import Utils, CollectionUtils
 
 
 class HelpFactory(Factory):
-    def __init__(self, command: frozenset, context: HelpContext):
+    def __init__(self, command: frozenset, context: HelpContext, session_manager: SessionManager):
         self._command = command
         self._context = context
         self._options = context.options
         self._utils = Utils(False)
+        self._session_manager: SessionManager = session_manager
 
     def instance(self):
         return self.get(self._command)
 
     def get(self, command: frozenset):
         if configure in self._options:
-            return Configure(self._context)
+            return Configure(self._context, self._session_manager)
         if version in self._options:
             return Version(self._context)
         else:

@@ -1,8 +1,8 @@
 import sys
 import traceback
 import getpass
-from config import *
-from typing import Optional
+import jsonpickle
+from typing import Optional, Tuple
 from zipfile import ZipFile
 
 import boto3
@@ -13,12 +13,12 @@ from commands.command_factory import CommandFactory
 from commands.config.migrate import *
 from commands.figgy_context import FiggyContext
 from commands.types.command import Command
-from commands.help.configure import Configure
 from data.dao.ssm import SsmDao
 from extras.completer import Completer
+from models.assumable_role import AssumableRole
 from models.defaults import CLIDefaults
-from svcs.session_manager import SessionManager
-from utils.secrets_manager import SecretsManager
+from svcs.cache_manager import CacheManager
+from svcs.sso.session_manager import SessionManager
 
 root_logger = logging.getLogger()
 root_logger.setLevel(logging.CRITICAL)
@@ -60,34 +60,27 @@ class Figgy:
 
         return parser.parse_args()
 
-
-
     @staticmethod
-    def get_defaults() -> Optional[CLIDefaults]:
+    def get_defaults(skip: bool = False) -> Optional[CLIDefaults]:
         """Lookup a user's defaults as configured by --configure option.
-
+        :param skip - Boolean, if this is true, exit and return none.
         :return: hydrated CLIDefaults object of default values stored in cache file or None if no cache found
         """
+        if skip:
+            return CLIDefaults.unconfigured()
 
+        cache_mgr = CacheManager(DEFAULTS_FILE_CACHE_KEY)
         os.makedirs(os.path.dirname(DEFAULTS_FILE_PATH), exist_ok=True)
-
         try:
-            with open(DEFAULTS_FILE_PATH, "r") as cache:
-                contents = cache.read()
-        except FileNotFoundError:
-            Utils.stc_error_exit(f"{CLI_NAME.capitalize()} is unconfigured, please run `{CLI_NAME} "
-                                 f"--{Utils.get_first(configure)}` before attempting any other commands")
-        else:
-            defaults: Dict = json.loads(contents)
-            if not OKTA_USER_KEY in defaults:
-                print("Figgy is now leveraging OKTA credentials, please reconfigure.")
-                Figgy.configure()
-                sys.exit(0)
+            last_write, defaults = cache_mgr.get(DEFAULTS_FILE_CACHE_KEY)
 
-            if defaults is not None:
-                return CLIDefaults.from_dict(defaults)
-            else:
-                return None
+            if not defaults:
+                Utils.stc_error_exit(f'{CLI_NAME} has not been configured. '
+                                     f'Please run {CLI_NAME} --{Utils.get_first(configure)}')
+
+            return defaults
+        except JSONDecodeError:
+            return None
 
     def get_profile(self, prompt: bool) -> str:
         """Returns the user's profile.
@@ -104,7 +97,7 @@ class Figgy:
         if BASTION_PROFILE_ENV_NAME in os.environ and not prompt:
             return os.environ.get(BASTION_PROFILE_ENV_NAME)
         else:
-            defaults = self.get_defaults()
+            defaults = self.get_defaults(self._configure_set)
             if defaults is not None and not prompt:
                 return defaults.profile
             else:
@@ -131,7 +124,7 @@ class Figgy:
                 and not prompt:
             return Role(os.environ.get(DEFAULT_USER_NAME))
         else:
-            defaults = self.get_defaults()
+            defaults = self.get_defaults(self._configure_set)
             if defaults is not None and not prompt:
                 return defaults.role
             else:
@@ -143,7 +136,7 @@ class Figgy:
         Returns: True/False
 
         """
-        defaults = self.get_defaults()
+        defaults = self.get_defaults(skip=self._configure_set)
         if defaults is not None:
             return defaults.colors_enabled
         else:
@@ -257,6 +250,18 @@ class Figgy:
                   f"to use the latest version!{self.c.rs}")
             exit()
 
+    def find_assumable_roles(self, env: RunEnv, role: Role, skip: bool = False) -> Tuple[AssumableRole, AssumableRole]:
+        matching_role, next_role = None, None
+        defaults = self.get_defaults(skip=skip)
+        assumable_roles: List[AssumableRole] = self.get_defaults(skip=skip).assumable_roles
+        matching_role = [ar for ar in assumable_roles if ar.role == role and ar.run_env == env]
+        if matching_role:
+            matching_role = matching_role.pop()
+            next_idx = assumable_roles.index(matching_role) + 1
+            next_role = assumable_roles[next_idx] if next_idx < len(assumable_roles) else None
+
+        return matching_role, next_role
+
     def check_version(self):
         """
         Looks up the current latest version from P.S. Offers automated installation if possible, otherwise tells user
@@ -292,8 +297,6 @@ class Figgy:
     def __init__(self, args):
         """
         Initializes global shared properties
-
-        :param run_env: dev/qa/stage/prod
         :param args: Arguments passed in from user, collected from ArgParse
         """
         self._mgmt_session = None
@@ -302,19 +305,22 @@ class Figgy:
         self._profile = None
         self._command_factory = None
         self._session_manager = None
+        self._configure_set: bool = Utils.is_set_true(configure, args)
         self.c = Color(self.get_colors_enabled())
         self._utils = Utils(self.get_colors_enabled())
         self._sts = boto3.client('sts')
-        self._run_env = Figgy.get_defaults().run_env
-        role_override = args.role if hasattr(args, 'role') else None
-        self._selected_role: Role = self.get_role(args.prompt, role_override=role_override)
+        self._defaults: CLIDefaults = Figgy.get_defaults(skip=self._configure_set)
+        self._run_env = self._defaults.run_env
+        role_override = Utils.attr_if_exists(role, args)
+        self._role: Role = self.get_role(args.prompt, role_override=role_override)
 
+        self._assumable_role, self._next_assumable_role = self.find_assumable_roles(self._run_env, self._role,
+                                                                       skip=self._configure_set)
         if not hasattr(args, 'env') or args.env is None:
             print(f"{EMPTY_ENV_HELP_TEXT}{self._run_env.env}")
         else:
-            Utils.stc_validate(Utils.valid_env(args.env), ENV_HELP_TEXT)
+            Utils.stc_validate(RunEnv(args.env) in self._defaults.valid_envs, ENV_HELP_TEXT)
             self._run_env = RunEnv(args.env)
-
 
         # self._utils.validate(args.command is not None, "No command found. Proper format is "
         #                                                f"`{CLI_NAME} <resource> <command> --option(s)`")
@@ -326,7 +332,7 @@ class Figgy:
         log.info(f"Command {found_command}, resource: {found_resource}")
 
         self._context = FiggyContext(self.get_colors_enabled(), found_resource, found_command,
-                                     self._run_env, self._selected_role, args)
+                                     self._run_env, self._assumable_role, self._next_assumable_role, args)
 
         # Todo: Solve for auto-upgrade in future
         # if not self._context.skip_upgrade:
@@ -337,7 +343,8 @@ class Figgy:
         Lazy load a hydrated session manager. This supports error reporting, auto-upgrade functionality, etc.
         """
         if not self._session_manager:
-            self._session_manager = SessionManager(self.get_colors_enabled(), self.get_defaults())
+            self._session_manager = SessionManager(self.get_colors_enabled(),
+                                                   self.get_defaults(skip=self._configure_set))
 
         return self._session_manager
 
@@ -347,9 +354,9 @@ class Figgy:
         :return: boto3.Session session for mgmt account.
         """
         if not self._mgmt_session:
-            self._mgmt_session = self._session_manager.get_session(RunEnv(mgmt),
-                                                                   self._context.selected_role,
-                                                                   prompt=False, exit_on_fail=True)
+            self._mgmt_session = self._get_session_manager().get_session(RunEnv(mgmt),
+                                                                         self._context.selected_role,
+                                                                         prompt=False, exit_on_fail=True)
 
         return self._mgmt_session
 
@@ -369,7 +376,7 @@ class Figgy:
 
     def get_command_factory(self) -> CommandFactory:
         if not self._command_factory:
-            self._command_factory = CommandFactory(self._context, self.get_defaults())
+            self._command_factory = CommandFactory(self._context, self.get_defaults(skip=self._configure_set))
 
         return self._command_factory
 
@@ -408,7 +415,7 @@ def main(arguments):
         printable_exception = ''.join(traceback.format_exception(etype=type(e), value=e, tb=e.__traceback__))
         if cli is not None:
             mgmt_session = cli.get_mgmt_session()
-            user = Figgy.get_defaults().okta_user or getpass.getuser()
+            user = Figgy.get_defaults().user or getpass.getuser()
             sns = mgmt_session.client('sns')
             sns_msg = f"The following exception has been caught by user {user}: \n\n{printable_exception}"
             sns.publish(TopicArn=MGMT_SNS_ERROR_TOPIC_ARN, Message=sns_msg, Subject=SNS_EMAIL_SUBJECT)

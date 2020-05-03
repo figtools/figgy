@@ -2,7 +2,7 @@ from config import *
 from abc import ABC, abstractmethod
 from utils.utils import *
 import logging
-from models.okta_auth import OktaAuth
+from models.sso.okta.okta_auth import OktaAuth
 
 
 class OktaConfig:

@@ -1,4 +1,4 @@
-from models.okta_auth import OktaAuth, OktaSession
+from models.sso.okta.okta_auth import OktaAuth, OktaSession
 
 
 class OktaSessionAuth(OktaAuth):

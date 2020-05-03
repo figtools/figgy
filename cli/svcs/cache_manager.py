@@ -1,7 +1,8 @@
 import logging
 import json
 import os
-from typing import Dict, Any, Union, Set, Tuple, List, Callable
+import jsonpickle
+from typing import Dict, Any, Union, Set, Tuple, List, Callable, FrozenSet
 from config import *
 from utils.utils import Utils
 
@@ -10,7 +11,7 @@ log = logging.getLogger(__name__)
 
 def write_empty_cache_file(path: str):
     with open(path, "w") as cache:
-        cache.write(json.dumps({}))
+        cache.write(jsonpickle.dumps({}))
     log.info(f"Cache written at path: {path}")
 
 
@@ -49,7 +50,8 @@ class CacheManager:
     _LAST_REFRESH_KEY = 'last_refresh'
     DEFAULT_REFRESH_INTERVAL = 60 * 60 * 24 * 7 * 1000  # 1 week in MS
 
-    def __init__(self, cache_name: str):
+    def __init__(self, cache_name: Union[str,    FrozenSet]):
+        cache_name = Utils.get_first(cache_name) if isinstance(cache_name, frozenset) else cache_name
         self._cache_file: str = f'{CACHE_OTHER_DIR}/{cache_name}-cache.json'
         os.makedirs(CACHE_OTHER_DIR, exist_ok=True)
 
@@ -75,7 +77,7 @@ class CacheManager:
 
         with open(self._cache_file, "r") as cache:
             cache_string = cache.read()
-            contents: Dict = json.loads(cache_string)
+            contents: Dict = jsonpickle.decode(cache_string)
 
         return contents.get(cache_key, {}).get(self._LAST_REFRESH_KEY, 0)
 
@@ -88,19 +90,22 @@ class CacheManager:
                 the cache later.
         :param object: Any - Object to write, must be serializable by `json` library
         """
-        object = list(object) if isinstance(object, Set) else object  # set is not json serializable
+        try:
+            object = list(object) if isinstance(object, Set) else object  # set is not json serializable
 
-        with open(self._cache_file, "r") as cache:
-            contents: Dict = json.loads(cache.read())
+            with open(self._cache_file, "r") as cache:
+                contents: Dict = jsonpickle.decode(cache.read())
 
-        with open(self._cache_file, "w+") as cache:
-            contents[cache_key] = {
-                self._STORE_KEY: object,
-                self._LAST_WRITE_KEY: Utils.millis_since_epoch(),
-                self._LAST_REFRESH_KEY: Utils.millis_since_epoch()
-            }
+            with open(self._cache_file, "w+") as cache:
+                contents[cache_key] = {
+                    self._STORE_KEY: object,
+                    self._LAST_WRITE_KEY: Utils.millis_since_epoch(),
+                    self._LAST_REFRESH_KEY: Utils.millis_since_epoch()
+                }
 
-            cache.write(json.dumps(contents))
+                cache.write(jsonpickle.dumps(contents))
+        except Exception as e:
+            print(f"Error writing to cache key: {cache_key}: {e}")
 
     @prime_cache
     @wipe_bad_cache
@@ -113,10 +118,10 @@ class CacheManager:
 
         with open(self._cache_file, "r") as cache:
             cache_contents = cache.read()
-            contents: Dict = json.loads(cache_contents)
+            contents: Dict = jsonpickle.decode(cache_contents)
             cache = contents.get(cache_key, {})
-            result = cache.get(self._LAST_WRITE_KEY, 0), cache.get(self._STORE_KEY, {})
-            log.info(f'Returning {len(result[1])} items from cache for cache key: {cache_key}')
+            result = cache.get(self._LAST_WRITE_KEY, 0), cache.get(self._STORE_KEY, None)
+            log.info(f'Returning items from cache for cache key: {cache_key}')
 
         return result
 
@@ -140,7 +145,7 @@ class CacheManager:
             log.info(f'Appending {len(objects)} items to local cache: {objects}')
 
             with open(self._cache_file, "r") as cache:
-                contents: Dict = json.loads(cache.read())
+                contents: Dict = jsonpickle.decode(cache.read())
                 cache = contents.get(cache_key, {})
                 refresh_time = cache.get(self._LAST_REFRESH_KEY, 0)
                 cache_obj = cache.get(self._STORE_KEY)
@@ -164,7 +169,7 @@ class CacheManager:
                 }
 
             with open(self._cache_file, 'w') as cache:
-                cache.write(json.dumps(contents))
+                cache.write(jsonpickle.dumps(contents))
         else:
             log.info('No cached items found to add to cache.')
 
@@ -182,7 +187,7 @@ class CacheManager:
             log.info(f'Deleting {len(objects)} items from local cache: {objects}')
 
             with open(self._cache_file, "r") as cache:
-                contents: Dict = json.loads(cache.read())
+                contents: Dict = jsonpickle.decode(cache.read())
                 cache = contents.get(cache_key, {})
                 refresh_time = cache.get(self._LAST_REFRESH_KEY, 0)
                 cache_obj = cache.get(self._STORE_KEY)
@@ -210,6 +215,6 @@ class CacheManager:
                 }
 
             with open(self._cache_file, 'w') as cache:
-                cache.write(json.dumps(contents))
+                cache.write(jsonpickle.dumps(contents))
         else:
             log.info('No cached items found to add to cache.')

@@ -1,10 +1,7 @@
-from config.aws import envs
-
 
 class RunEnv:
 
     def __init__(self, env):
-        assert env in envs, f"Provided run_env must be one of: {envs}"
         self.env = env
 
     def __str__(self):

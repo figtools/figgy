@@ -2,7 +2,7 @@ import time
 from utils.utils import *
 import logging
 import requests
-from models.okta_auth import OktaSession, OktaAuth
+from models.sso.okta.okta_auth import OktaSession, OktaAuth
 
 log = logging.getLogger(__name__)
 

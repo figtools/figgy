@@ -13,6 +13,7 @@ repl_svc: ReplicationService = ReplicationService(repl_dao, ssm)
 
 log = Utils.get_logger(__name__, logging.INFO)
 
+
 def handle(event, context):
     log.info(f"Got Event: {event} with context {context}")
 

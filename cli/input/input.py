@@ -32,24 +32,24 @@ class Input:
         return okta_password
 
     @staticmethod
-    def select_role() -> Role:
-        input_role = prompt(f'What type of user are you? Options are: {user_types}: ',
-                            completer=WordCompleter(user_types))
-        Utils.stc_validate(input_role in user_types,
-                           f"{input_role} is not a valid user type. Please select from: {user_types}")
+    def select_role(valid_roles: List[str] = None) -> Role:
+        input_role = prompt(f'What type of user are you? Options are: {valid_roles}: ',
+                            completer=WordCompleter(valid_roles))
+
+        if valid_roles:
+            Utils.stc_validate(input_role in valid_roles,
+                               f"{input_role} is not a valid user type. Please select from: {valid_roles}")
 
         return Role(input_role)
 
     @staticmethod
-    def select_default_account() -> RunEnv:
-        environemnt = prompt(f'Please select a default account. Recommended default is `dev`: ',
-                               completer=WordCompleter(envs))
+    def select_default_account(valid_envs: List[str] = None) -> RunEnv:
+        environemnt = prompt(f'Please select a default account. Options are: {valid_envs}: ',
+                               completer=WordCompleter(valid_envs))
 
-        environemnt = dev if environemnt == '' else environemnt
-        Utils.stc_validate(environemnt in envs,
-                           f"{environemnt} is not a valid environment type. Please select from: {envs}")
-
-        Utils.stc_validate('prod' not in environemnt, "You may not select a production account as your default!")
+        if valid_envs:
+            Utils.stc_validate(environemnt in valid_envs,
+                               f"{environemnt} is not a valid environment type. Please select from: {valid_envs}")
 
         return RunEnv(environemnt)
 
@@ -77,10 +77,10 @@ class Input:
         return mfa
 
     @staticmethod
-    def select_run_env() -> RunEnv:
-        input_env = prompt(f'Select a RunEnvironment: {envs}: ',
-                           completer=WordCompleter(envs))
-        Utils.stc_validate(input_env in envs,
-                           f"{input_env} is not a valid Run Environment. Please select from: {envs}")
+    def select_run_env(valid_envs: List[str]) -> RunEnv:
+        input_env = prompt(f'Select a RunEnvironment: {valid_envs}: ',
+                           completer=WordCompleter(valid_envs))
+        Utils.stc_validate(input_env in valid_envs,
+                           f"{input_env} is not a valid Run Environment. Please select from: {valid_envs}")
 
         return RunEnv(input_env)

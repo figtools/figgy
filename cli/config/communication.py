@@ -32,7 +32,7 @@ REPLICATION_ONLY_HELP_TEXT = f"Sync a declarative replication-config json file t
 MANUAL_HELP_TEXT = f"Migrate any K/V Hierarchy, or a single KV Pair from Consul into anywhere in ParameterStore " \
     f"(that you have permissions)."
 IAM_HELP_TEXT = f"Manage your temporary credentials. [{CollectionUtils.printable_set(iam_commands)}]"
-ENV_HELP_TEXT = f"Valid values are: {envs}"
+ENV_HELP_TEXT = f"Valid values are:"
 INFO_HELP_TEXT = f"Prints out more detailed information about the selected subcommand."
 CONFIGURE_HELP_TEXT = f"(Optional) Setup default configurations to reduce redundant prompts."
 EMPTY_ENV_HELP_TEXT = f"No --env parameter found. Using default: "

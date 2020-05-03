@@ -100,6 +100,7 @@ repl_types = [REPL_TYPE_APP, REPL_TYPE_MERGE]
 
 # Defaults file names
 HOME = str(Path.home())
+DEFAULTS_FILE_CACHE_KEY = 'defaults'
 DECRYPTER_S3_PATH_PREFIX = f'figgy/decrypt/'
 DEFAULTS_FILE_PATH = f'{HOME}/.figgy/devops/defaults'
 AWS_CREDENTIALS_FILE_PATH = f'{HOME}/.aws/credentials'
@@ -114,7 +115,7 @@ DEFAULT_INSTALL_PATH = '/usr/local/bin/figgy'
 DEFAULTS_ROLE_KEY = 'role'
 DEFAULT_ENV_KEY = 'default_env'
 COLORS_ENABLED_KEY = 'colors'
-OKTA_USER_KEY = 'user'
+DEFAULTS_USER_KEY = 'user'
 
 # Cache File keys
 OKTA_SESSION_TOKEN_CACHE_KEY = 'session_token'

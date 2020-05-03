@@ -29,6 +29,7 @@ class Get(ConfigCommand):
                 print(f"{self.c.fg_rd}You do not have access to Parameter: {key}{self.c.rs}")
             else:
                 raise
+        return None, None
 
     def get_param_and_desc(self, key: str) -> Tuple[Optional[str], Optional[str]]:
         return self._ssm.get_parameter_with_description(key)

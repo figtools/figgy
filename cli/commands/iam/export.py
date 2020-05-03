@@ -13,12 +13,11 @@ class Export(IAMCommand):
     Returns audit history for a queried PS Name
     """
 
-    def __init__(self, iam_context: IAMContext, env_session: Session, mgmt_session: Session,
+    def __init__(self, iam_context: IAMContext, env_session: Session,
                  all_sessions: Optional[Dict[str, Session]]):
         super().__init__(export, iam_context)
         self._all_sessions: Optional[Dict[str, Session]] = all_sessions
         self._env_session: Session = env_session
-        self._mgmt_session: Session = mgmt_session
 
     def _write_credentials(self, access_key: str, secret_key: str, token: str, profile_name: str = 'default') -> None:
         """
@@ -93,10 +92,7 @@ class Export(IAMCommand):
 
     def _export(self):
         if not self._all_sessions:
-            if self.run_env == mgmt:
-                credentials: namedtuple = self._mgmt_session.get_credentials().get_frozen_credentials()
-            else:
-                credentials: namedtuple = self._env_session.get_credentials().get_frozen_credentials()
+            credentials: namedtuple = self._env_session.get_credentials().get_frozen_credentials()
             Utils.stc_validate(credentials is not None, f"Unable to generate credentials for environment: {self.run_env}")
             self._write_credentials(credentials.access_key, credentials.secret_key, credentials.token)
         else:

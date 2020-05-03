@@ -33,6 +33,7 @@ resource "aws_iam_policy" "config_auditor" {
 
 data "aws_iam_policy_document" "config_auditor_document" {
   statement {
+    sid = "AuditTableDDBAccess"
     actions = [
       "dynamodb:Get*",
       "dynamodb:List*",
@@ -44,6 +45,17 @@ data "aws_iam_policy_document" "config_auditor_document" {
       "dynamodb:UpdateTimeToLive"
     ]
     resources = [aws_dynamodb_table.config_auditor.arn]
+  }
+
+  statement {
+    sid = "AuditorPSRead"
+    actions =[
+      "ssm:GetParameter",
+      "ssm:GetParameters",
+      "ssm:List*",
+      "ssm:DescribeParameters"
+    ]
+    resources = [ "*" ]
   }
 }
 

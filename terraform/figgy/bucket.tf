@@ -62,6 +62,7 @@ resource "aws_cloudtrail" "figgy_cloudtrail" {
   name                          = "figgy-trail"
   s3_bucket_name                = var.deploy_bucket
   include_global_service_events = false
+  depends_on = [aws_s3_bucket_policy.cloudtrail_bucket_policy]
 }
 
 locals {

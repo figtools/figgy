@@ -18,7 +18,7 @@ locals {
   role_types = ["devops", "data", "dba", "sre", "dev"]
 
   # Encryption keys to allow certain roles to use to encrypt and decrypt secrets stored with figgy. You will map access below
-  encryption_keys = ["devops", "data", "dba", "app"]
+  encryption_keys = ["devops", "data", "app"]
 
   # List of namespaces at the root level of your parameter stoer namespace. Figgy (and its users)
   # will ONLY have access to configs under these namespaces.
@@ -41,7 +41,7 @@ locals {
   role_to_kms_access = {
     "devops" = [ "devops", "app", "data" ]
     "data" = [ "data", "app" ]
-    "dba" = [ "dba", "app" ]
+    "dba" = [ "data", "app" ]
     "sre" = [ "app" ]
     "dev" = [ "app"]
   }

@@ -1,11 +1,9 @@
-from config.aws import user_types
-
 
 class Role:
 
-    def __init__(self, role: str):
-        assert role in user_types, f"Provided role must be one of: {user_types}"
+    def __init__(self, role: str, full_name: str = None):
         self.role = role
+        self.full_name = full_name
 
     def __str__(self):
         return self.role

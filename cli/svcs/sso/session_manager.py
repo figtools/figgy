@@ -1,6 +1,8 @@
 import json
 import logging
 import os
+from typing import List
+
 import boto3
 
 from botocore.errorfactory import ClientError
@@ -8,13 +10,14 @@ from botocore.exceptions import NoCredentialsError, ParamValidationError
 from json import JSONDecodeError
 from input import *
 from config import *
+from models.assumable_role import AssumableRole
 from models.defaults import CLIDefaults
-from models.okta_config import OktaConfig
-from models.okta_primary_auth import OktaPrimaryAuth
-from models.okta_session_auth import OktaSessionAuth
+from models.sso.okta.okta_config import OktaConfig
+from models.sso.okta.okta_primary_auth import OktaPrimaryAuth
+from models.sso.okta.okta_session_auth import OktaSessionAuth
 from models.role import Role
 from models.run_env import RunEnv
-from svcs.okta import Okta
+from svcs.sso.okta.okta import Okta
 from utils.secrets_manager import SecretsManager
 from utils.utils import Utils, InvalidSessionError
 
@@ -28,7 +31,7 @@ class SessionManager:
         self._sts = boto3.client('sts')
         self._utils = Utils(colors_enabled)
         self._defaults = defaults
-        self._okta = self._get_okta(False)
+        self._okta = self._get_sso_session(False)
         self._failure_count = 0
 
     @Utils.retry
@@ -47,7 +50,8 @@ class SessionManager:
             cache.write(session)
 
     # @Utils.trace
-    def _get_okta(self, prompt: bool) -> Okta:
+    #Todo abstract oka specific stuff from here
+    def _get_sso_session(self, prompt: bool) -> Okta:
         """
         Pulls the last okta session from cache, if cache doesn't exist, generates a new session and writes it to cache.
         From this session, the OKTA SVC is hydrated and returned.
@@ -72,10 +76,9 @@ class SessionManager:
 
             except (FileNotFoundError, InvalidSessionError, JSONDecodeError, AttributeError) as e:
                 try:
-                    user = self._get_okta_user(prompt)
-                    password = self._get_okta_password(user, prompt)
+                    user = self._get_user(prompt)
+                    password = self._get_password(user, prompt)
                     primary_auth = OktaPrimaryAuth(user, password, Input.get_okta_mfa())
-                    print("I AM HERE")
                     self._write_okta_session_to_cache(primary_auth.to_json())
 
                     return Okta(OktaConfig(primary_auth))
@@ -83,7 +86,7 @@ class SessionManager:
                     log.error(f"Caught error when authing with OKTA & caching session: {e}")
                     print("Authentication failed with OKTA, please reauthenticate. Likely invalid MFA or Password?\r\n")
 
-    def _get_okta_user(self, prompt: bool) -> str:
+    def _get_user(self, prompt: bool) -> str:
         """
         Get the OKTA user either from cache, or prompt the user.
 
@@ -92,11 +95,11 @@ class SessionManager:
 
         defaults = self._defaults
         if defaults is not None and not prompt:
-            return defaults.okta_user
+            return defaults.user
         else:
             return Input.get_okta_user()
 
-    def _get_okta_password(self, user_name, prompt: bool, save: bool = False) -> str:
+    def _get_password(self, user_name, prompt: bool, save: bool = False) -> str:
         """
         Get the OKTA pw either from keyring, or prompt the user.
 
@@ -113,9 +116,11 @@ class SessionManager:
 
         return password
 
-    #Todo: Perhaps cache the last assertion?
+    def get_assumable_roles(self) -> List[AssumableRole]:
+        return self._okta.get_assumable_roles()
+
     @Utils.trace
-    def _get_okta_assertion(self, prompt: bool = False) -> str:
+    def get_saml_assertion(self, prompt: bool = False) -> str:
         """
         Lookup OKTA session from cache, if it's valid, use it, otherwise, generate new assertion with MFA
         Args:
@@ -129,13 +134,14 @@ class SessionManager:
             except InvalidSessionError as e:
                 if self._failure_count > 0:
                     print(e)
-                    print("Authentication failed with OKTA, please reauthenticate. Likely invalid MFA or Password?\r\n")
+                    print("Authentication failed with SSO provider, please reauthenticate."
+                          " Likely invalid MFA or Password?\r\n")
 
                 self._failure_count = self._failure_count + 1
                 log.info(f"GOT INVALID SESSION: {e}")
-                user = self._get_okta_user(prompt)
+                user = self._get_user(prompt)
                 primary_auth = OktaPrimaryAuth(user,
-                                               self._get_okta_password(user, prompt=prompt, save=True),
+                                               self._get_password(user, prompt=prompt, save=True),
                                                Input.get_okta_mfa())
 
                 self._okta = Okta(OktaConfig(primary_auth))
@@ -143,29 +149,29 @@ class SessionManager:
                     log.info("Trying to write session to cache...")
                     self._write_okta_session_to_cache(primary_auth.to_json())
                 except InvalidSessionError as e:
-                    log.info(f"GOt invalid session: {e}")
-                    return self._get_okta_assertion(prompt=True)
+                    log.info(f"Got invalid session: {e}")
+                    return self.get_saml_assertion(prompt=True)
                 else:
-                    return self._get_okta_assertion(prompt=True)
+                    return self.get_saml_assertion(prompt=True)
             else:
                 return assertion
 
+
     @Utils.trace
-    def get_session(self, env: RunEnv, role: Role, prompt: bool, exit_on_fail=True) -> boto3.Session:
+    def get_session(self, assumable_role: AssumableRole, prompt: bool, exit_on_fail=True) -> boto3.Session:
         """
         Creates a session in the specified ENV for the target role from a SAML assertion returned by OKTA authentication.
         Args:
-            env: RunEnv - the ENV you want a session for.
-            role: Role - the Role you need access to in that ENV
+            assumable_role: AssumableRole - The role to be leveraged to authenticate this session
             prompt: If prompt is set, we will not use a cached session and will generate new sessions for okta and mgmt.
             exit_on_fail: Exit the program if this session hydration fails.
 
-        Returns: hydrated boto3.session in the MGMT account. This role is used to jump into other roles.
+        returns: Hydrated session for role + account that match the specified one in the provided AssumableRole
         """
 
-        role_arn = f'{ROLE_ARN_MAP[env.env]}figgy-{role.role}'
-        cache_path = f"{HOME}/.figgy/devops/cache/sts/{env.env}-{role.role}"
-        principal_arn = f"arn:aws:iam::{ACCOUNT_ID_MAP[env.env]}:saml-provider/{OKTA_PROVIDER_NAME}"
+        role_arn = f"arn:aws:iam::{assumable_role.account_id}:role/{assumable_role.role.full_name}"
+        cache_path = f"{HOME}/.figgy/devops/cache/sts/{assumable_role.role.full_name}"
+        principal_arn = f"arn:aws:iam::{assumable_role.account_id}:saml-provider/{OKTA_PROVIDER_NAME}"
         forced = False
 
         log.info(f"Getting session for role: {role_arn} in env: {env}")
@@ -200,9 +206,8 @@ class SessionManager:
                 return session
             except (FileNotFoundError, JSONDecodeError, NoCredentialsError, InvalidSessionError) as e:
                 try:
-                    assertion = self._get_okta_assertion(prompt)
+                    assertion = self.get_saml_assertion(prompt)
                     log.info(f"Got SAML assersion: {assertion}")
-
                     response = self._sts.assume_role_with_saml(RoleArn=role_arn,
                                                                PrincipalArn=principal_arn,
                                                                SAMLAssertion=assertion,

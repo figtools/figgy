@@ -102,9 +102,9 @@ class Utils:
             return False
 
     @staticmethod
-    def attr_if_exists(attr: frozenset, args) -> Union[object, None]:
+    def attr_if_exists(attr: frozenset, args, default=None) -> Union[object, None]:
         attr_name = Utils.clean_attr_name(attr)
-        return args.__dict__.get(attr_name, None)
+        return args.__dict__.get(attr_name, default)
 
     @staticmethod
     def clean_attr_name(attr: frozenset):
@@ -273,10 +273,6 @@ class Utils:
             Utils.stc_error_exit(f"Unable to detect base name for parameter: {parameter_name}. {e}")
 
         return base_name
-
-    @staticmethod
-    def valid_env(env: str):
-        return env in envs
 
     @staticmethod
     def parse_namespace(app_key: str) -> str:
