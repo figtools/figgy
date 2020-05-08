@@ -4,7 +4,7 @@ locals {
 
 # Be careful if you change this name, it is used by SSO integrations. When we retrieve the SAML assertion from our SSO provider,
 # the role ARNs provide us the accountId -> run_env -> role mapping that is necessary for Figgy to operate properly.
-# The name format MSUT be something-${var.run_env}-${role_type} - you MAY replace 'figgy' with anything else you like.
+# The name format MUST be something-${var.run_env}-${role_type} - you MAY replace 'figgy' with anything else you like.
 resource "aws_iam_role" "sso_user_role" {
   count = length(local.role_types)
   name                 = "figgy-${var.run_env}-${local.role_types[count.index]}"

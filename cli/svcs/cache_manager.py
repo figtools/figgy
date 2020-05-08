@@ -50,9 +50,9 @@ class CacheManager:
     _LAST_REFRESH_KEY = 'last_refresh'
     DEFAULT_REFRESH_INTERVAL = 60 * 60 * 24 * 7 * 1000  # 1 week in MS
 
-    def __init__(self, cache_name: Union[str,    FrozenSet]):
+    def __init__(self, cache_name: Union[str, FrozenSet, None] = "default", file_override: Union[str, None] = None):
         cache_name = Utils.get_first(cache_name) if isinstance(cache_name, frozenset) else cache_name
-        self._cache_file: str = f'{CACHE_OTHER_DIR}/{cache_name}-cache.json'
+        self._cache_file: str = f'{CACHE_OTHER_DIR}/{cache_name}-cache.json' if not file_override else file_override
         os.makedirs(CACHE_OTHER_DIR, exist_ok=True)
 
     @prime_cache
@@ -113,7 +113,7 @@ class CacheManager:
         """
         Retrieve an item from the cache.
         :param cache_key: Key to return from the cache.
-        :return: Dictionary representing the cached object. Empty Dict if doesn't exist in cache.
+        :return: Tuple with last_write time, and the stored object.
         """
 
         with open(self._cache_file, "r") as cache:
@@ -192,11 +192,13 @@ class CacheManager:
                 refresh_time = cache.get(self._LAST_REFRESH_KEY, 0)
                 cache_obj = cache.get(self._STORE_KEY)
                 log.info(f'In cache: {cache_obj}')
+
                 if isinstance(cache_obj, Dict) and isinstance(objects, Dict) or cache_obj is None:
                     log.info(f'Cache Obj is a dict')
                     if cache_obj:
                         for obj in objects:
                             del cache_obj[obj]
+
                 elif isinstance(cache_obj, List) and isinstance(objects, List) or cache_obj is None:
                     log.info(f"Cache obj is a list..")
                     if cache_obj:

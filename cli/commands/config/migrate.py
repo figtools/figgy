@@ -22,7 +22,6 @@ class Migrate(ConfigCommand):
         self._consul_type = None  # fetched after validation.
         self._consul_svc = None  # initialized after validation.
         self._ci_config_path = config_context.ci_config_path
-        self._locals_path = config_context.locals
         self._s3_resource = s3_resource
         self._manual = config_context.manual
         self._namespace_suffix = ''
@@ -114,16 +113,6 @@ class Migrate(ConfigCommand):
             self._utils.validate(suffix != '', "Invalid selection, please input a valid suffix.")
 
         return suffix
-
-    def _parse_locals(self) -> Dict:
-        """
-        Parses the locals.tf file and returns it as a DICT
-        Returns: Dict with properties of locals.tf
-        """
-        with open(self._locals_path, 'r') as fp:
-            contents = fp.read()
-
-        return hcl.loads(contents)
 
     def _convert_json(self, consul_path) -> bool:
         """
@@ -473,27 +462,9 @@ class Migrate(ConfigCommand):
         # Validate & parse ci-config.json
         # There are issues parsing locals.tf with the HCL lib on windows - so opting for regex for now.
         # if self._utils.is_windows():
-        self._utils.validate(self._manual or (self._locals_path and self._ci_config_path),
-                             "If you are attempting to migrating K/V pairs one at a time you must provide the `--manual` flag. "
-                             "Otherwise, if you are attempting to migrate a Consul K/V Hiearchy (many keys at once), you must "
-                             "provide paths to your project's configurations through the `--config` and `--locals` parameters.")
-        self._utils.validate(self._locals_path and self._locals_path.endswith('locals.tf') or self._manual,
-                             'File provided for --locals parameter MUST be named `locals.tf`')
 
         self._consul_type = self._utils.get_consul_type()
         self._consul_svc = consul.Consul(host=consul_map[self.run_env.env][self._consul_type], port=consul_port)
 
         if self._manual:
             self._migrate_manual()
-        else:
-            with open(self._locals_path, 'r') as fp:
-                contents = fp.read()
-                base_matcher = re.search(r'^.*service_name.*=.*[\'|"]([A-Za-z0-9-_*]+)[\'|"].*$',
-                                         contents, re.MULTILINE)
-
-                self._utils.validate(base_matcher.group() is not None,
-                                     "Failure parsing your service_name from the provided "
-                                     "locals.tf. Are you sure it has a service_name defined?")
-                service_name = base_matcher.group(1)
-
-            self._migrate_kv_hierarchy(service_name)

@@ -113,9 +113,11 @@ DEFAULT_INSTALL_PATH = '/usr/local/bin/figgy'
 
 # Defaults file keys
 DEFAULTS_ROLE_KEY = 'role'
-DEFAULT_ENV_KEY = 'default_env'
-COLORS_ENABLED_KEY = 'colors'
+DEFAULTS_ENV_KEY = 'default_env'
+DEFAULTS_COLORS_ENABLED_KEY = 'colors'
 DEFAULTS_USER_KEY = 'user'
+DEFAULTS_PROVIDER_KEY = 'provider'
+DEFAULTS_PROFILE_KEY = 'profile'
 
 # Cache File keys
 OKTA_SESSION_TOKEN_CACHE_KEY = 'session_token'

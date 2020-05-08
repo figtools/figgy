@@ -16,7 +16,7 @@ from commands.types.command import Command
 from data.dao.ssm import SsmDao
 from extras.completer import Completer
 from models.assumable_role import AssumableRole
-from models.defaults import CLIDefaults
+from models.defaults.defaults import CLIDefaults
 from svcs.cache_manager import CacheManager
 from svcs.sso.session_manager import SessionManager
 
@@ -319,7 +319,10 @@ class Figgy:
         if not hasattr(args, 'env') or args.env is None:
             print(f"{EMPTY_ENV_HELP_TEXT}{self._run_env.env}")
         else:
-            Utils.stc_validate(RunEnv(args.env) in self._defaults.valid_envs, ENV_HELP_TEXT)
+            print(self._defaults.valid_envs)
+            print(args.env)
+            Utils.stc_validate(RunEnv(args.env) in self._defaults.valid_envs,
+                               f'{ENV_HELP_TEXT} {self._defaults.valid_envs}. Provided: {args.env}')
             self._run_env = RunEnv(args.env)
 
         # self._utils.validate(args.command is not None, "No command found. Proper format is "
@@ -334,7 +337,7 @@ class Figgy:
         self._context = FiggyContext(self.get_colors_enabled(), found_resource, found_command,
                                      self._run_env, self._assumable_role, self._next_assumable_role, args)
 
-        # Todo: Solve for auto-upgrade in future
+        # Todo: Solve for auto-upgrade in future & Solve for mgmt sessions
         # if not self._context.skip_upgrade:
         #     self.check_version()
 
@@ -342,9 +345,11 @@ class Figgy:
         """
         Lazy load a hydrated session manager. This supports error reporting, auto-upgrade functionality, etc.
         """
+        #Todo - fix this session mgr needing mgmt, etc.
         if not self._session_manager:
             self._session_manager = SessionManager(self.get_colors_enabled(),
-                                                   self.get_defaults(skip=self._configure_set))
+                                                   self.get_defaults(skip=self._configure_set),
+                                                   None)
 
         return self._session_manager
 
@@ -353,10 +358,10 @@ class Figgy:
         Returns a hydrated mgmt session object. This is needed for auto-upgrade functionality
         :return: boto3.Session session for mgmt account.
         """
-        if not self._mgmt_session:
-            self._mgmt_session = self._get_session_manager().get_session(RunEnv(mgmt),
-                                                                         self._context.selected_role,
-                                                                         prompt=False, exit_on_fail=True)
+        # if not self._mgmt_session:
+        #     self._mgmt_session = self._get_session_manager().get_session(RunEnv(mgmt),
+        #                                                                  self._context.selected_role,
+        #                                                                  prompt=False, exit_on_fail=True)
 
         return self._mgmt_session
 
@@ -394,7 +399,6 @@ def main(arguments):
     sys.argv = arguments
     cli: Optional[Figgy] = None
     try:
-        utils = Utils(False)
         # Parse / Validate Args
         args = Figgy.parse_args()
         if hasattr(args, 'debug') and args.debug:
@@ -412,7 +416,9 @@ def main(arguments):
     except AssertionError as e:
         Utils.stc_error_exit(e.args[0])
     except Exception as e:
+        print(f"CAUGHT EXCEPTION: {e}")
         printable_exception = ''.join(traceback.format_exception(etype=type(e), value=e, tb=e.__traceback__))
+        print(printable_exception)
         if cli is not None:
             mgmt_session = cli.get_mgmt_session()
             user = Figgy.get_defaults().user or getpass.getuser()

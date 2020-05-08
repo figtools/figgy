@@ -9,12 +9,14 @@ from commands.help_factory import HelpFactory
 from commands.iam_context import IAMContext
 from commands.iam_factory import IAMFactory
 from commands.factory import Factory
-from models.defaults import CLIDefaults
+from models.defaults.defaults import CLIDefaults
 from models.run_env import RunEnv
 from commands.figgy_context import FiggyContext
 from svcs.kms import KmsSvc
 from svcs.config import ConfigService
 from svcs.cache_manager import CacheManager
+from svcs.sso.provider.provider_factory import SessionProviderFactory
+from svcs.sso.provider.session_provider import SessionProvider
 from svcs.sso.session_manager import SessionManager
 from data.dao.config import ConfigDao
 from utils.utils import Utils
@@ -39,17 +41,24 @@ class CommandFactory(Factory):
         self._utils = Utils(context.colors_enabled)
         self._cli_defaults = cli_defaults
         self._session_mgr = None
+        self._session_provider = None
         self._env_session = None
         self._next_env = None
         self._ssm = None
         self._config = None
         self._kms = None
-        self._mgmt_s3_rsc = None
+        self._s3_rsc = None
         self._all_sessions = None
         self._config_completer = None
         self._config_svc = None
         self._cache_mgr = None
         self._rbac_config_view = None
+
+    def __session_provider(self) -> SessionProvider:
+        if not self._session_provider:
+            self._session_provider = SessionProviderFactory(self._cli_defaults).instance()
+
+        return self._session_provider
 
     def __session_manager(self):
         """
@@ -57,7 +66,8 @@ class CommandFactory(Factory):
         :return: 
         """
         if not self._session_mgr:
-            self._session_mgr = SessionManager(self._context.colors_enabled, self._cli_defaults)
+            self._session_mgr = SessionManager(self._context.colors_enabled, self._cli_defaults,
+                                               self.__session_provider())
 
         return self._session_mgr
 
@@ -119,10 +129,10 @@ class CommandFactory(Factory):
         """
         Returns a hydrated boto3 S3 Resource for the mgmt account.
         """
-        if not self._mgmt_s3_rsc:
-            self._mgmt_s3_rsc = self.__env_session().resource('s3')
+        if not self._s3_rsc:
+            self._s3_rsc = self.__env_session().resource('s3')
 
-        return self._mgmt_s3_rsc
+        return self._s3_rsc
 
     def __all_sessions(self) -> Dict[str, boto3.session.Session]:
         """
@@ -165,6 +175,14 @@ class CommandFactory(Factory):
                                                            self.__ssm(), self.__config_service())
         return self._rbac_config_view
 
+    def __init_sessions(self):
+        """
+        Bootstraps sessions (blocking) before we do threaded lookups that require these sessions.
+        """
+        self.__session_manager().get_session(
+                self._context.selected_role,
+                prompt=False)
+
     def instance(self):
         """
         Get an instance of a particular command based on the FiggyContext provided into this factory.
@@ -172,14 +190,18 @@ class CommandFactory(Factory):
         factory: Factory = None
         start = time.time()
         if self._context.command in config_commands and self._context.resource == config:
+            print("INITING")
+            self.__init_sessions()
+            print("INITED!")
             context = ConfigContext(self._context.run_env, self._context.role, self._context.args, config)
-            futures = set()
 
+
+            futures = set()
             # Multiple threads to init resources saves 500 - 1000 MS
             with ThreadPoolExecutor(max_workers=5) as pool:
                 futures.add(pool.submit(self._ssm))
                 futures.add(pool.submit(self.__kms))
-                futures.add(pool.submit(self.__s3_resource()))
+                futures.add(pool.submit(self.__s3_resource))
                 futures.add(pool.submit(self.__next_ssm))
 
             for future in as_completed(futures):
@@ -190,13 +212,14 @@ class CommandFactory(Factory):
                                     dest_ssm=self.__next_ssm())
 
         elif self._context.command in iam_commands and self._context.resource == iam:
+            self.__init_sessions()
             context = IAMContext(self._context.run_env, self._context.role, self._context.colors_enabled, iam)
             factory = IAMFactory(self._context.command, context, self.__env_session(),
                                  all_sessions=self.__all_sessions())
         elif self._context.find_matching_optional_arguments(help_commands) or self._context.command in help_commands:
             optional_args = self._context.find_matching_optional_arguments(help_commands)
             context = HelpContext(self._context.resource, self._context.command, optional_args, self._context.run_env)
-            factory = HelpFactory(self._context.command, context, self.__session_manager())
+            factory = HelpFactory(self._context.command, context)
         else:
             if self._context.command is None or self._context.resource:
                 self._utils.error_exit("Propery figgy syntax is `figgy {resource} {command}`. "

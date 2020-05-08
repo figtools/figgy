@@ -1,10 +1,10 @@
-from models.sso.okta.okta_auth import OktaAuth, OktaSession
+from models.sso.okta.okta_auth import OktaAuth
+from models.sso.okta.okta_session import OktaSession
 
 
 class OktaSessionAuth(OktaAuth):
-    def __init__(self, session_token: str, session_id: str):
-        self._session_token = session_token
-        self._session_id = session_id
+    def __init__(self, session: OktaSession):
+        self.session = session
 
     def get_session(self):
-        return OktaSession(self._session_token, self._session_id)
+        return self.session

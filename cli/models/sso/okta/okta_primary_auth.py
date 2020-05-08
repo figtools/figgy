@@ -1,8 +1,11 @@
 import time
+from dataclasses import dataclass
+
+from models.sso.okta.okta_session import OktaSession
 from utils.utils import *
 import logging
 import requests
-from models.sso.okta.okta_auth import OktaSession, OktaAuth
+from models.sso.okta.okta_auth import OktaAuth
 
 log = logging.getLogger(__name__)
 
@@ -15,6 +18,10 @@ class OktaPrimaryAuth(OktaAuth):
         self.totp_token = mfa
         self.factor = OKTA_FACTOR
         self._session: OktaSession = None
+
+    def get_session(self):
+        return OktaSession(session_id=self.get_session().session_id,
+                           session_token=self.get_session().session_token)
 
     def to_json(self) -> str:
 

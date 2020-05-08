@@ -1,5 +1,5 @@
 boto3==1.12.47
-prompt_toolkit==2.0.7
+prompt_toolkit==3.0.5
 sty==1.0.0b8
 click==7.1.2
 pyreadline==2.1

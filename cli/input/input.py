@@ -1,3 +1,4 @@
+from models.defaults.provider import Provider
 from utils.utils import *
 from config import *
 import getpass
@@ -18,40 +19,48 @@ class Input:
         return profile
 
     @staticmethod
-    def get_okta_user() -> str:
+    def get_user() -> str:
         okta_username = input('Please input OKTA username: ')
         Utils.stc_validate(okta_username != '', "You must input a valid OKTA username")
 
         return okta_username
 
     @staticmethod
-    def get_okta_password() -> str:
+    def get_bastion_profile() -> str:
+        profile = input('Please input your aws profile linked to your credentials in your `bastion` account: ')
+        Utils.stc_validate(profile != '', "You must input a valid profile name.")
+
+        return profile
+
+    @staticmethod
+    def get_password() -> str:
         okta_password = getpass.getpass('Please input OKTA password: ')
         Utils.stc_validate(okta_password != '', "You must input a valid OKTA password")
 
         return okta_password
 
     @staticmethod
-    def select_role(valid_roles: List[str] = None) -> Role:
-        input_role = prompt(f'What type of user are you? Options are: {valid_roles}: ',
-                            completer=WordCompleter(valid_roles))
-
-        if valid_roles:
-            Utils.stc_validate(input_role in valid_roles,
-                               f"{input_role} is not a valid user type. Please select from: {valid_roles}")
+    def select_role(valid_roles: List[str]) -> Role:
+        input_role = None
+        while input_role not in valid_roles:
+            input_role = prompt(f'What type of user are you? Options are: {valid_roles}: ',
+                                completer=WordCompleter(valid_roles))
+            if input_role not in valid_roles:
+                print(f"{input_role} is not a valid user type. Please select from: {valid_roles}")
 
         return Role(input_role)
 
     @staticmethod
-    def select_default_account(valid_envs: List[str] = None) -> RunEnv:
-        environemnt = prompt(f'Please select a default account. Options are: {valid_envs}: ',
-                               completer=WordCompleter(valid_envs))
+    def select_default_account(valid_envs: List[str]) -> RunEnv:
+        environment = None
+        while environment not in valid_envs:
+            environment = prompt(f'Please select a default account. Options are: {valid_envs}: ',
+                                 completer=WordCompleter(valid_envs))
 
-        if valid_envs:
-            Utils.stc_validate(environemnt in valid_envs,
-                               f"{environemnt} is not a valid environment type. Please select from: {valid_envs}")
+            if environment not in valid_envs:
+                print(f"{environment} is not a valid environment type. Please select from: {valid_envs}")
 
-        return RunEnv(environemnt)
+        return RunEnv(environment)
 
     @staticmethod
     def select_enable_colors() -> bool:
@@ -63,15 +72,18 @@ class Input:
         return selection == 'y'
 
     @staticmethod
-    def get_mfa() -> str:
-        mfa = input('Please input the MFA associated with your first.last_programmatic user in the MGMT account: ')
-        Utils.stc_validate(mfa != '', "You must input a valid mfa")
+    def select_provider() -> Provider:
+        selection = Provider.UNSELECTED
+        completer = WordCompleter(words=Provider.names())
+        while selection is Provider.UNSELECTED:
+            selection = prompt(f'Please select an authentication provider. Options are: {Provider.names()}: ',
+                               completer=completer)
 
-        return mfa
+        return Provider[selection]
 
     @staticmethod
-    def get_okta_mfa() -> str:
-        mfa = input('Please input the MFA associated with your OKTA account: ')
+    def get_mfa() -> str:
+        mfa = input('Please input the MFA associated with your user: ')
         Utils.stc_validate(mfa != '', "You must input a valid mfa")
 
         return mfa

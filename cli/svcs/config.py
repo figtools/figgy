@@ -10,6 +10,7 @@ from utils.utils import Utils
 log = logging.getLogger(__name__)
 
 
+# Todo, lots more from SSMDao should be moved here.
 class ConfigService:
     __CACHE_REFRESH_INTERVAL = 60 * 60 * 24 * 7 * 1000  # 1 week in MS
     """
