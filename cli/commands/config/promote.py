@@ -6,6 +6,7 @@ from data.dao.ssm import SsmDao
 from utils.utils import *
 
 
+# Todo: FIX - Prompt user for next environment since we can no longer assume what the next environment is
 class Promote(ConfigCommand):
 
     def __init__(self, source_ssm: SsmDao, dest_ssm: SsmDao, config_completer_init: WordCompleter,

@@ -9,28 +9,37 @@ from models.assumable_role import AssumableRole
 from models.defaults.defaults import CLIDefaults
 from utils.secrets_manager import SecretsManager
 from utils.utils import Utils
-
+from threading import Lock
 log = logging.getLogger(__name__)
 
 
 class SessionProvider(ABC):
-
     def __init__(self, defaults: CLIDefaults):
         self._defaults = defaults
+        self._valid_tokens = set()
+        self._lock = Lock()
 
     @Utils.retry
     @Utils.trace
     def _is_valid_session(self, session: boto3.Session):
         """Tests whether a cached session is valid or not."""
-        try:
-            sts = session.client('sts')
-            sts.get_caller_identity()
-            return True
-        except ClientError:
-            return False
+        with self._lock:
+            token = session.get_credentials().get_frozen_credentials().token
+            if token in self._valid_tokens:
+                log.info(f"Session with token: {token} was already validated.")
+                return True
+            else:
+                try:
+                    log.info(f"Testing session with token: {token}")
+                    sts = session.client('sts')
+                    sts.get_caller_identity()
+                    self._valid_tokens.add(token)
+                    return True
+                except ClientError:
+                    return False
 
     @abstractmethod
-    def get_session(self, assuamble_role: AssumableRole, prompt: bool, exit_on_fail=True) -> boto3.Session:
+    def get_session(self, assumable_role: AssumableRole, prompt: bool, exit_on_fail=True) -> boto3.Session:
         pass
 
     #Todo later decide whether to move this to SSOSessionProvider

@@ -22,3 +22,9 @@ class Provider(Enum):
     def values():
         return [provider.value for provider in Provider]
 
+    @staticmethod
+    def new(name: str):
+        if name not in Provider.names():
+            return Provider.UNSELECTED
+        else:
+            return Provider[name]

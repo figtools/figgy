@@ -11,6 +11,7 @@ from botocore.exceptions import NoCredentialsError, ParamValidationError, Client
 from config import *
 from models.assumable_role import AssumableRole
 from models.defaults.defaults import CLIDefaults
+from svcs.cache_manager import CacheManager
 from svcs.sso.provider.session_provider import SessionProvider
 from utils.utils import InvalidSessionError, Utils
 
@@ -24,6 +25,7 @@ class SSOSessionProvider(SessionProvider, ABC):
         super().__init__(defaults)
         self._utils = Utils(defaults.colors_enabled)
         self._sts = boto3.client('sts')
+        self._sts_cache: CacheManager = CacheManager(file_override=STS_SESSION_CACHE_PATH)
 
     @abstractmethod
     def cleanup_session_cache(self):
@@ -49,7 +51,7 @@ class SSOSessionProvider(SessionProvider, ABC):
         principal_arn = f"arn:aws:iam::{assumable_role.account_id}:saml-provider/{OKTA_PROVIDER_NAME}"
         forced = False
 
-        log.info(f"Getting session for role: {role_arn} in env: {env}")
+        log.info(f"Getting session for role: {role_arn} in env: {assumable_role.run_env.env}")
         attempts = 0
         while True:
             try:
@@ -67,7 +69,7 @@ class SSOSessionProvider(SessionProvider, ABC):
                         aws_access_key_id=response['Credentials']['AccessKeyId'],
                         aws_secret_access_key=response['Credentials']['SecretAccessKey'],
                         aws_session_token=response['Credentials']['SessionToken'],
-                        region_name=AWS_REGION
+                        region_name=self._defaults.region
                     )
 
                 if not self._is_valid_session(session):

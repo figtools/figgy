@@ -3,7 +3,6 @@
 ## IMPORTANT:
 ## If you have already provisioned figgy, rearranging values under `encryption_keys` or `user_types` could require
 ## these resources to be removed/recreated which would probably be a pretty bad thing~!
-
 locals {
 
   # If you want figgy to create its own S3 bucket, set this to true, then specify the `var.deploy_bucket`
@@ -20,8 +19,8 @@ locals {
   # Encryption keys to allow certain roles to use to encrypt and decrypt secrets stored with figgy. You will map access below
   encryption_keys = ["devops", "data", "app"]
 
-  # List of namespaces at the root level of your parameter stoer namespace. Figgy (and its users)
-  # will ONLY have access to configs under these namespaces.
+  # List of namespaces at the root level of your parameter store namespace. Figgy (and its users)
+  # will ONLY have access to _AT MOST_ configs under these namespaces.
   # ** /shared is required by figgy, all otheres are optional
   root_namespaces = ["/shared", "/app", "/data", "/devops", "/sre", "/dba"]
 
@@ -46,9 +45,15 @@ locals {
     "dev" = [ "app"]
   }
 
-  # Enable sso true/false
-  enable_sso = true
+  # Set to "false" for the "bastion" authentication type, or "true" for all other SSO auth types.
+  enable_sso = false
 
   # SSO Type: Options are okta/google
   sso_type = "okta"
+
+  # Bastion account #. Set to your bastion account # if you are leveraging bastion based authentication. Otherwise ignore.
+  bastion_account_number = "816219277933"
+
+  # MFA Enabled - "true/false" - Require MFA for authentication?
+  mfa_enabled = true
 }

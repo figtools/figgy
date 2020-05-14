@@ -51,7 +51,6 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
         while True:
             try:
                 if prompt:
-                    print("SHITS INVALID")
                     raise InvalidSessionError("Forcing new session due to prompt.")
 
                 cached_session = self._get_session_from_cache()
@@ -63,9 +62,7 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
 
             except (FileNotFoundError, InvalidSessionError, JSONDecodeError, AttributeError) as e:
                 try:
-                    print("GONNA GET A NEW ONE BRO")
                     password = SecretsManager.get_password(self._defaults.user)
-                    print("FROM 1 HERE")
                     primary_auth = OktaPrimaryAuth(self._defaults.user, password, Input.get_mfa())
                     self._write_okta_session_to_cache(primary_auth.get_session())
                     return Okta(OktaConfig(primary_auth))
@@ -84,7 +81,6 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
             force_new: Forces a new session, abandons one from cache
         """
         invalid_session = True
-        print("FROM HERE THO")
         okta = self.get_sso_session(prompt)
         failure_count = 0
         while invalid_session:
@@ -99,7 +95,6 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
 
                 log.info(f"GOT INVALID SESSION: {e}")
                 user = self._get_user(prompt)
-                print("From 2 here")
                 primary_auth = OktaPrimaryAuth(user,
                                                self._get_password(user, prompt=prompt, save=True),
                                                Input.get_mfa())
@@ -108,7 +103,6 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
                     log.info("Trying to write session to cache...")
                     self._write_okta_session_to_cache(primary_auth.get_session())
                 except InvalidSessionError as e:
-                    print("IT IN VALID")
                     log.info(f"Got invalid session: {e}")
                     return self.get_saml_assertion(prompt=True)
                 else:

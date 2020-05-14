@@ -1,6 +1,7 @@
 import boto3
 import time
 import logging
+import uuid
 
 from commands.config_context import ConfigContext
 from commands.config_factory import ConfigFactory
@@ -26,7 +27,7 @@ from typing import Dict
 from concurrent.futures import ThreadPoolExecutor, thread, as_completed
 
 from views.rbac_limited_config import RBACLimitedConfigView
-
+from threading import Lock
 logger = logging.getLogger(__name__)
 
 
@@ -37,13 +38,13 @@ class CommandFactory(Factory):
     """
 
     def __init__(self, context: FiggyContext, cli_defaults: CLIDefaults):
+        self._id = uuid.uuid4()
         self._context = context
         self._utils = Utils(context.colors_enabled)
         self._cli_defaults = cli_defaults
         self._session_mgr = None
         self._session_provider = None
         self._env_session = None
-        self._next_env = None
         self._ssm = None
         self._config = None
         self._kms = None
@@ -53,6 +54,8 @@ class CommandFactory(Factory):
         self._config_svc = None
         self._cache_mgr = None
         self._rbac_config_view = None
+        self.__env_lock = Lock()
+        self.__mgr_lock = Lock()
 
     def __session_provider(self) -> SessionProvider:
         if not self._session_provider:
@@ -65,9 +68,10 @@ class CommandFactory(Factory):
         Lazy load the session manager, only create a session if this command requires it.
         :return: 
         """
-        if not self._session_mgr:
-            self._session_mgr = SessionManager(self._context.colors_enabled, self._cli_defaults,
-                                               self.__session_provider())
+        with self.__mgr_lock:
+            if not self._session_mgr:
+                self._session_mgr = SessionManager(self._context.colors_enabled, self._cli_defaults,
+                                                   self.__session_provider())
 
         return self._session_mgr
 
@@ -76,30 +80,13 @@ class CommandFactory(Factory):
         Lazy load an ENV session object for the ENV selected in the FiggyContext
         :return: Hydrated session for the selected environment.
         """
-        if not self._env_session:
-            self._env_session = self.__session_manager().get_session(
-                self._context.selected_role,
-                prompt=False)
+        with self.__env_lock:
+            if not self._env_session:
+                self._env_session = self.__session_manager().get_session(
+                    self._context.selected_role,
+                    prompt=False)
 
         return self._env_session
-
-    def __next_env(self) -> boto3.session.Session:
-        """
-        Lazy load an ENV session object for the ENV AFTER the selected ENV in the FiggyContext
-        :return: Hydrated session for the selected + 1 environment.
-        """
-        if not self._next_env:
-            self._next_env: boto3.Session = self.__session_manager().get_session(
-                self._context.next_env_role,
-                prompt=False)
-
-        return self._next_env
-
-    def __next_ssm(self) -> SsmDao:
-        """
-        Returns an SSMDao initialized with a session for the next higher environment.
-        """
-        return SsmDao(self.__next_env().client('ssm'))
 
     def __ssm(self) -> SsmDao:
         """
@@ -190,9 +177,7 @@ class CommandFactory(Factory):
         factory: Factory = None
         start = time.time()
         if self._context.command in config_commands and self._context.resource == config:
-            print("INITING")
             self.__init_sessions()
-            print("INITED!")
             context = ConfigContext(self._context.run_env, self._context.role, self._context.args, config)
 
 
@@ -202,14 +187,12 @@ class CommandFactory(Factory):
                 futures.add(pool.submit(self._ssm))
                 futures.add(pool.submit(self.__kms))
                 futures.add(pool.submit(self.__s3_resource))
-                futures.add(pool.submit(self.__next_ssm))
 
             for future in as_completed(futures):
                 pass  # Force lazy init for all futures.
 
             factory = ConfigFactory(self._context.command, context, self.__ssm(), self.__config(), self.__kms(),
-                                    self.__s3_resource(), self._context.colors_enabled, self.__rbac_config_view(),
-                                    dest_ssm=self.__next_ssm())
+                                    self.__s3_resource(), self._context.colors_enabled, self.__rbac_config_view())
 
         elif self._context.command in iam_commands and self._context.resource == iam:
             self.__init_sessions()

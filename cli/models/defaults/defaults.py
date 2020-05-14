@@ -17,8 +17,11 @@ class CLIDefaults:
     role: Optional[Role]
     colors_enabled: bool
     run_env: RunEnv
-    user: Optional[str]
+    region: str
+    mfa_enabled: bool
     provider: Provider
+    mfa_serial: Optional[str]
+    user: Optional[str]
     profile: Optional[str]
     valid_envs: Optional[List[RunEnv]] = field(default_factory=list)
     valid_roles: Optional[List[Role]] = field(default_factory=list)
@@ -35,19 +38,23 @@ class CLIDefaults:
                            user=None,
                            run_env=RunEnv("unconfigured"),
                            provider=Provider.UNSELECTED,
-                           profile="unconfigured")
+                           profile="unconfigured",
+                           region="unconfigured",
+                           mfa_enabled=False,
+                           mfa_serial=None)
 
     @staticmethod
     def from_dict(config: Dict):
         role: Role = Role(config.get(DEFAULTS_ROLE_KEY))
         colors_enabled = config.get(DEFAULTS_COLORS_ENABLED_KEY)
         user_name = config.get(DEFAULTS_USER_KEY)
+        region = config.get(DEFAULTS_REGION_KEY)
         env = RunEnv(config.get(DEFAULTS_ENV_KEY, "unconfigured"))  # Default to dev if missing.
         provider = Provider(config.get(DEFAULTS_PROVIDER_KEY), Provider.UNSELECTED)
         profile = config.get(DEFAULTS_PROFILE_KEY)
 
         return CLIDefaults(role=role, colors_enabled=colors_enabled, user=user_name,
-                           run_env=env, provider=provider, profile=profile)
+                           run_env=env, provider=provider, profile=profile, region=region)
 
     def __str__(self) -> str:
         return jsonpickle.encode(self)

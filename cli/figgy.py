@@ -252,14 +252,12 @@ class Figgy:
 
     def find_assumable_roles(self, env: RunEnv, role: Role, skip: bool = False) -> Tuple[AssumableRole, AssumableRole]:
         matching_role, next_role = None, None
-        defaults = self.get_defaults(skip=skip)
         assumable_roles: List[AssumableRole] = self.get_defaults(skip=skip).assumable_roles
         matching_role = [ar for ar in assumable_roles if ar.role == role and ar.run_env == env]
         if matching_role:
             matching_role = matching_role.pop()
             next_idx = assumable_roles.index(matching_role) + 1
             next_role = assumable_roles[next_idx] if next_idx < len(assumable_roles) else None
-
         return matching_role, next_role
 
     def check_version(self):
@@ -327,6 +325,7 @@ class Figgy:
 
         # self._utils.validate(args.command is not None, "No command found. Proper format is "
         #                                                f"`{CLI_NAME} <resource> <command> --option(s)`")
+
         command_val = Utils.attr_if_exists(command, args)
         resource_val = Utils.attr_if_exists(resource, args)
         found_command: frozenset = frozenset({Utils.attr_if_exists(command, args)}) if command_val else None
@@ -336,7 +335,6 @@ class Figgy:
 
         self._context = FiggyContext(self.get_colors_enabled(), found_resource, found_command,
                                      self._run_env, self._assumable_role, self._next_assumable_role, args)
-
         # Todo: Solve for auto-upgrade in future & Solve for mgmt sessions
         # if not self._context.skip_upgrade:
         #     self.check_version()

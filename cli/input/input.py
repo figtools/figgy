@@ -51,6 +51,18 @@ class Input:
         return Role(input_role)
 
     @staticmethod
+    def select_region() -> str:
+        region = None
+        while region not in AWS_REGIONS:
+            region = prompt('Please input the AWS region to associate figgy with: ',
+                            completer=WordCompleter(AWS_REGIONS))
+
+            if region not in AWS_REGIONS:
+                print(f"{region} is not a valid AWS Region, please choose from: {AWS_REGIONS}")
+
+        return region
+
+    @staticmethod
     def select_default_account(valid_envs: List[str]) -> RunEnv:
         environment = None
         while environment not in valid_envs:
@@ -72,15 +84,23 @@ class Input:
         return selection == 'y'
 
     @staticmethod
+    def select_mfa_enabled() -> bool:
+        selection = ''
+        while selection.lower() != 'y' and selection.lower() != 'n':
+            selection = input(f'Use Multi-factor authentication Y/n?: ')
+            selection = selection.lower() if selection != '' else 'y'
+        return selection == 'y'
+
+    @staticmethod
     def select_provider() -> Provider:
         selection = Provider.UNSELECTED
         completer = WordCompleter(words=Provider.names())
         while selection is Provider.UNSELECTED:
             selection = prompt(f'Please select an authentication provider. Options are: {Provider.names()}: ',
                                completer=completer)
+            selection = Provider.new(selection)
 
-        return Provider[selection]
-
+        return selection
     @staticmethod
     def get_mfa() -> str:
         mfa = input('Please input the MFA associated with your user: ')

@@ -21,11 +21,15 @@ class AssumableRole:
     def print(self):
         print(self.__dict__)
 
+    @property
+    def role_arn(self) -> str:
+        return f"arn:aws:iam::{self.account_id}:role/{self.role.full_name}"
+
     def __str__(self):
         return tabulate(
-                [self.tabulate_data()],
-                headers=self.tabulate_header(),
-                tablefmt="grid",
-                numalign="center",
-                stralign="left",
-            )
+            [self.tabulate_data()],
+            headers=self.tabulate_header(),
+            tablefmt="grid",
+            numalign="center",
+            stralign="left",
+        )

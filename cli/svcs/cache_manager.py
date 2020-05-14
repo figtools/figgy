@@ -125,6 +125,9 @@ class CacheManager:
 
         return result
 
+    def get_val(self, cache_key: str) -> Any:
+        return self.get(cache_key)[1]
+
     @prime_cache
     @wipe_bad_cache
     def append(self, cache_key: str, objects: Union[Dict, Set[Any]]):
@@ -220,3 +223,7 @@ class CacheManager:
                 cache.write(jsonpickle.dumps(contents))
         else:
             log.info('No cached items found to add to cache.')
+
+    def wipe_cache(self):
+        with open(self._cache_file, "w") as cache:
+            cache.write(jsonpickle.dumps({}))

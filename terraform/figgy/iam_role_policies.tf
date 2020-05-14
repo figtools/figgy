@@ -2,37 +2,6 @@ locals {
   global_read_namespaces = ["/shared", "/figgy"]
 }
 
-# Be careful if you change this name, it is used by SSO integrations. When we retrieve the SAML assertion from our SSO provider,
-# the role ARNs provide us the accountId -> run_env -> role mapping that is necessary for Figgy to operate properly.
-# The name format MUST be something-${var.run_env}-${role_type} - you MAY replace 'figgy' with anything else you like.
-resource "aws_iam_role" "sso_user_role" {
-  count = length(local.role_types)
-  name                 = "figgy-${var.run_env}-${local.role_types[count.index]}"
-  assume_role_policy   = local.enable_sso == true && local.sso_type == "okta" ? data.aws_iam_policy_document.sso_role_policy.json : ""
-  max_session_duration = var.max_session_duration
-}
-
-# SSO SAML sts policy
-data "aws_iam_policy_document" "sso_role_policy" {
-  statement {
-    effect = "Allow"
-
-    principals {
-      identifiers = [ aws_iam_saml_provider.okta[0].arn ]
-      type        = "Federated"
-    }
-
-    actions = [
-      "sts:AssumeRoleWithSAML",
-    ]
-
-    condition {
-      test     = "StringEquals"
-      variable = "SAML:aud"
-      values   = ["https://signin.aws.amazon.com/saml"]
-    }
-  }
-}
 
 # Policy created by
 resource "aws_iam_policy" "figgy_access_policy" {
@@ -42,11 +11,6 @@ resource "aws_iam_policy" "figgy_access_policy" {
   policy      = data.aws_iam_policy_document.dynamic_policy[count.index].json
 }
 
-resource "aws_iam_role_policy_attachment" "figgy_access_policy_attachment" {
-  count = length(local.role_types)
-  role = aws_iam_role.sso_user_role[count.index].name
-  policy_arn = aws_iam_policy.figgy_access_policy[count.index].arn
-}
 
 
 # Dynamically assembled policy based on configure_figgy.tf locals configurations

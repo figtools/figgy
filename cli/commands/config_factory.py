@@ -27,8 +27,7 @@ class ConfigFactory(Factory):
     """
 
     def __init__(self, command: frozenset, context: ConfigContext, ssm: SsmDao, cfg: ConfigDao, kms: KmsSvc,
-                 s3_resource: ServiceResource, colors_enabled: bool, config_view: RBACLimitedConfigView,
-                 dest_ssm: SsmDao = None):
+                 s3_resource: ServiceResource, colors_enabled: bool, config_view: RBACLimitedConfigView):
 
         self._command: frozenset = command
         self._config_context: ConfigContext = context
@@ -40,7 +39,6 @@ class ConfigFactory(Factory):
         self._s3_resource: ServiceResource = s3_resource
         self._utils = Utils(colors_enabled)
         self._args = context.args
-        self._dest_ssm: SsmDao = dest_ssm
         self._config_completer = self._config_view.get_config_completer()
 
     def instance(self):
@@ -80,7 +78,7 @@ class ConfigFactory(Factory):
             return Restore(self._ssm, self._kms, self._config, self._colors_enabled, self._config_context,
                            self._config_completer, self.get(delete))
         elif command == promote:
-            return Promote(self._ssm, self._dest_ssm, self._config_completer, self._colors_enabled,
+            return Promote(self._ssm, self._config_completer, self._colors_enabled,
                            self._config_context)
         elif command == edit:
             return Edit(self._ssm, self._colors_enabled, self._config_context, self._config_completer)

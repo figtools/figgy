@@ -3,6 +3,11 @@ from config.aws import *
 
 VERSION = '0.0.1'
 CLI_NAME = 'figgy'
+
+# Role names are assumed to be prefixed with `figgy-` - Users may override by setting the below ENV variable.
+FIGGY_ROLE_NAME_PREFIX = 'figgy-'
+FIGGY_ROLE_PREFIX_OVERRIDE_ENV = 'FIGGY_ROLE_PREFIX_OVERRIDE'
+
 CLI_LATEST_VERSION_PS_PATH = '/devops/devops-ci/figgy/latest-version'
 WSS_TAIL_URL_PS_PATH = '/shared/devops/websockets/logtail/url'
 WWS_AUTH_LAMBDA_ARN_PS_PATH = '/shared/devops/websockets/logtail/auth-lambda/arn'
@@ -93,6 +98,8 @@ PARAMETERS_KEY = 'parameters'
 SERVICE_KEY = 'service'
 PLUGIN_KEY = 'plugins'
 
+# Config paths
+PS_FIGGY_ACCOUNTS_PREFIX = '/figgy/accounts/'
 
 # Replication Types:
 repl_types = [REPL_TYPE_APP, REPL_TYPE_MERGE]
@@ -118,10 +125,12 @@ DEFAULTS_COLORS_ENABLED_KEY = 'colors'
 DEFAULTS_USER_KEY = 'user'
 DEFAULTS_PROVIDER_KEY = 'provider'
 DEFAULTS_PROFILE_KEY = 'profile'
+DEFAULTS_REGION_KEY = 'region'
 
 # Cache File keys
 OKTA_SESSION_TOKEN_CACHE_KEY = 'session_token'
 OKTA_SESSION_ID_CACHE_KEY = 'session_id'
+STS_SESSION_CACHE_PATH = f"{HOME}/.figgy/devops/cache/sts/sessions"
 
 # Plaform Constants
 LINUX = "Linux"
