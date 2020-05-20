@@ -3,6 +3,7 @@ from config import *
 from input import Input
 from models.defaults.defaults import CLIDefaults
 from models.defaults.provider import Provider
+from models.defaults.provider_config import ProviderConfigFactory
 from svcs.cache_manager import CacheManager
 from utils.secrets_manager import SecretsManager
 from utils.utils import Utils
@@ -35,14 +36,15 @@ class FiggySetup:
         updated_defaults = current_defaults
         provider: Provider = Input.select_provider()
         updated_defaults.provider = provider
+
         if provider in Provider.sso_providers():
             user: str = Input.get_user()
             password: str = Input.get_password()
             SecretsManager.set_password(user, password)
             updated_defaults.user = user
-        else:
-            profile: str = Input.get_bastion_profile()
-            updated_defaults.profile = profile
+
+        provider_config = ProviderConfigFactory().instance(provider, mfa_enabled=current_defaults.mfa_enabled)
+        updated_defaults.provider_config = provider_config
 
         return updated_defaults
 

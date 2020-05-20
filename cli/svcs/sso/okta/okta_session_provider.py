@@ -11,7 +11,6 @@ from models.assumable_role import AssumableRole
 from models.defaults.defaults import CLIDefaults
 from models.role import Role
 from models.run_env import RunEnv
-from models.sso.okta.okta_config import OktaConfig
 from models.sso.okta.okta_primary_auth import OktaPrimaryAuth, OktaSession
 from models.sso.okta.okta_session_auth import OktaSessionAuth
 from svcs.cache_manager import CacheManager
@@ -57,15 +56,16 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
                 if not cached_session:
                     raise InvalidSessionError
 
-                okta = Okta(OktaConfig(OktaSessionAuth(cached_session)))
+                okta = Okta(OktaSessionAuth(cached_session))
                 return okta
 
             except (FileNotFoundError, InvalidSessionError, JSONDecodeError, AttributeError) as e:
                 try:
                     password = SecretsManager.get_password(self._defaults.user)
-                    primary_auth = OktaPrimaryAuth(self._defaults.user, password, Input.get_mfa())
+                    mfa = Input.get_mfa() if self._defaults.mfa_enabled else None
+                    primary_auth = OktaPrimaryAuth(self._defaults, password, mfa)
                     self._write_okta_session_to_cache(primary_auth.get_session())
-                    return Okta(OktaConfig(primary_auth))
+                    return Okta(primary_auth)
                 except InvalidSessionError as e:
                     log.error(f"Caught error when authing with OKTA & caching session: {e}")
                     print("Authentication failed with OKTA, please reauthenticate. Likely invalid MFA or Password?\r\n")
@@ -95,9 +95,9 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
 
                 log.info(f"GOT INVALID SESSION: {e}")
                 user = self._get_user(prompt)
-                primary_auth = OktaPrimaryAuth(user,
-                                               self._get_password(user, prompt=prompt, save=True),
-                                               Input.get_mfa())
+                password = self._get_password(user, prompt=prompt, save=True)
+                mfa = Input.get_mfa() if self._defaults.mfa_enabled else None
+                primary_auth = OktaPrimaryAuth(self._defaults, password, mfa)
 
                 try:
                     log.info("Trying to write session to cache...")
@@ -108,7 +108,7 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
                 else:
                     return self.get_saml_assertion(prompt=True)
             else:
-                return assertion
+                return base64.b64decode(assertion)
 
     def get_assumable_roles(self) -> List[AssumableRole]:
         assertion = self.get_saml_assertion(prompt=True)
@@ -119,8 +119,8 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
                                    prefix_map)
 
         # SAML arns should look something like this:
-        # arn:aws:iam::106481321259:saml-provider/OKTA,arn:aws:iam::106481321259:role/figgy-dev-data
-        pattern = r'^arn:aws:iam::([0-9]+):saml-provider/\w+,arn:aws:iam::.*role/(\w+-(\w+)-(\w+))'
+        # arn:aws:iam::106481321259:saml-provider/okta,arn:aws:iam::106481321259:role/figgy-dev-data
+        pattern = r'^arn:aws:iam::([0-9]+):saml-provider/(\w+),arn:aws:iam::.*role/(\w+-(\w+)-(\w+))'
         assumable_roles: List[AssumableRole] = []
         for value in role_attribute.findall('.//saml2:AttributeValue', prefix_map):
             result = re.search(pattern, value.text)
@@ -130,14 +130,16 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
                 Utils.stc_error_exit(unparsable_msg)
 
             result.groups()
-            account_id, role_name, run_env, role = result.groups()
+            account_id, provider_name, role_name, run_env, role = result.groups()
 
+            print(f"GOt provider: {provider_name}")
             if not account_id or not run_env or not role_name or not role:
                 Utils.stc_error_exit(unparsable_msg)
             else:
                 assumable_roles.append(AssumableRole(account_id=account_id,
                                                      role=Role(role, full_name=role_name),
-                                                     run_env=RunEnv(run_env)))
+                                                     run_env=RunEnv(run_env),
+                                                     provider_name=provider_name))
         return assumable_roles
 
     def cleanup_session_cache(self):

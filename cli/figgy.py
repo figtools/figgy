@@ -18,6 +18,7 @@ from extras.completer import Completer
 from models.assumable_role import AssumableRole
 from models.defaults.defaults import CLIDefaults
 from svcs.cache_manager import CacheManager
+from svcs.sso.provider.provider_factory import SessionProviderFactory
 from svcs.sso.session_manager import SessionManager
 
 root_logger = logging.getLogger()
@@ -313,18 +314,17 @@ class Figgy:
         self._role: Role = self.get_role(args.prompt, role_override=role_override)
 
         self._assumable_role, self._next_assumable_role = self.find_assumable_roles(self._run_env, self._role,
-                                                                       skip=self._configure_set)
+                                                                                    skip=self._configure_set)
+
         if not hasattr(args, 'env') or args.env is None:
             print(f"{EMPTY_ENV_HELP_TEXT}{self._run_env.env}")
         else:
-            print(self._defaults.valid_envs)
-            print(args.env)
-            Utils.stc_validate(RunEnv(args.env) in self._defaults.valid_envs,
+            Utils.stc_validate(args.env in self._defaults.valid_envs,
                                f'{ENV_HELP_TEXT} {self._defaults.valid_envs}. Provided: {args.env}')
             self._run_env = RunEnv(args.env)
 
-        # self._utils.validate(args.command is not None, "No command found. Proper format is "
-        #                                                f"`{CLI_NAME} <resource> <command> --option(s)`")
+        self._utils.validate(Utils.attr_exists(configure, args) or Utils.attr_exists(command, args),
+                                f"No command found. Proper format is `{CLI_NAME} <resource> <command> --option(s)`")
 
         command_val = Utils.attr_if_exists(command, args)
         resource_val = Utils.attr_if_exists(resource, args)
@@ -343,39 +343,18 @@ class Figgy:
         """
         Lazy load a hydrated session manager. This supports error reporting, auto-upgrade functionality, etc.
         """
-        #Todo - fix this session mgr needing mgmt, etc.
         if not self._session_manager:
             self._session_manager = SessionManager(self.get_colors_enabled(),
                                                    self.get_defaults(skip=self._configure_set),
-                                                   None)
+                                                   self._get_session_provider())
 
         return self._session_manager
 
-    def get_mgmt_session(self) -> boto3.session.Session:
-        """
-        Returns a hydrated mgmt session object. This is needed for auto-upgrade functionality
-        :return: boto3.Session session for mgmt account.
-        """
-        # if not self._mgmt_session:
-        #     self._mgmt_session = self._get_session_manager().get_session(RunEnv(mgmt),
-        #                                                                  self._context.selected_role,
-        #                                                                  prompt=False, exit_on_fail=True)
+    def _get_session_provider(self):
+        if not self._session_provider:
+            self._session_provider = SessionProviderFactory(self.get_defaults(skip=self._configure_set)).instance()
 
-        return self._mgmt_session
-
-    def get_s3_resource(self) -> boto3.session.Session:
-        """ :return: A mgmt account s3 resource """
-        if not self._s3_resource:
-            self._s3_resource = self.get_mgmt_session().resource('s3')
-
-        return self._s3_resource
-
-    def get_mgmt_ssm(self) -> SsmDao:
-        """:return: hydrated mgmt account SsmDao """
-        if not self._mgmt_ssm:
-            self._mgmt_ssm = SsmDao(self.get_mgmt_session().client('ssm'))
-
-        return self._mgmt_ssm
+        return self._session_provider
 
     def get_command_factory(self) -> CommandFactory:
         if not self._command_factory:
@@ -418,7 +397,7 @@ def main(arguments):
         printable_exception = ''.join(traceback.format_exception(etype=type(e), value=e, tb=e.__traceback__))
         print(printable_exception)
         if cli is not None:
-            mgmt_session = cli.get_mgmt_session()
+            mgmt_session = cli._get_session_manager().get_session()
             user = Figgy.get_defaults().user or getpass.getuser()
             sns = mgmt_session.client('sns')
             sns_msg = f"The following exception has been caught by user {user}: \n\n{printable_exception}"

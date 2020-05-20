@@ -2,10 +2,11 @@ import jsonpickle
 
 from models.assumable_role import AssumableRole
 from models.defaults.provider import Provider
+from models.defaults.provider_config import ProviderConfig, ProviderConfigFactory
 from models.role import Role
 from models.run_env import RunEnv
 from config import *
-from typing import Dict, Optional, List
+from typing import Dict, Optional, List, Any
 from dataclasses import dataclass, field
 
 
@@ -20,9 +21,9 @@ class CLIDefaults:
     region: str
     mfa_enabled: bool
     provider: Provider
+    provider_config: Optional[Any]
     mfa_serial: Optional[str]
     user: Optional[str]
-    profile: Optional[str]
     valid_envs: Optional[List[RunEnv]] = field(default_factory=list)
     valid_roles: Optional[List[Role]] = field(default_factory=list)
     assumable_roles: Optional[List[AssumableRole]] = field(default_factory=list)
@@ -38,10 +39,10 @@ class CLIDefaults:
                            user=None,
                            run_env=RunEnv("unconfigured"),
                            provider=Provider.UNSELECTED,
-                           profile="unconfigured",
                            region="unconfigured",
                            mfa_enabled=False,
-                           mfa_serial=None)
+                           mfa_serial=None,
+                           provider_config=None)
 
     @staticmethod
     def from_dict(config: Dict):
@@ -51,10 +52,11 @@ class CLIDefaults:
         region = config.get(DEFAULTS_REGION_KEY)
         env = RunEnv(config.get(DEFAULTS_ENV_KEY, "unconfigured"))  # Default to dev if missing.
         provider = Provider(config.get(DEFAULTS_PROVIDER_KEY), Provider.UNSELECTED)
-        profile = config.get(DEFAULTS_PROFILE_KEY)
+        provider_config = ProviderConfigFactory.instance(provider)
+        mfa_serial = config.get(MFA_SERIAL_KEY, None)
 
-        return CLIDefaults(role=role, colors_enabled=colors_enabled, user=user_name,
-                           run_env=env, provider=provider, profile=profile, region=region)
+        return CLIDefaults(role=role, colors_enabled=colors_enabled, user=user_name, run_env=env, provider=provider,
+                           region=region, provider_config=provider_config, mfa_serial=mfa_serial)
 
     def __str__(self) -> str:
         return jsonpickle.encode(self)

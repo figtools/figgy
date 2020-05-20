@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 from models.role import Role
 from models.run_env import RunEnv
@@ -11,6 +11,7 @@ class AssumableRole:
     account_id: int
     role: Role
     run_env: RunEnv
+    provider_name: Optional[str]
 
     def tabulate_data(self) -> List[str]:
         return [self.account_id, self.run_env.env, self.role.role]

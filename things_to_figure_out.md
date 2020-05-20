@@ -1,7 +1,6 @@
 These are problems I intend to solve, once I figure out the best way to do it.
 
-- Add support for role assumption through bastion account **with aws access keys?
-
+- FIX ISSUE WHERE EVERYTHING ALWAYS GOES TO DEV EVEN WITH --env prod
 - Refactor figgy to not require a mgmt session anywhere to support existing functionality
 - Fix promote command
 - Fix or remove migrate command
@@ -19,3 +18,4 @@ These are problems I intend to solve, once I figure out the best way to do it.
 
 - Tracking global figgy usage stats
 
+- Add support for "ExternalId" verification for cross-account role assumption from Bastion.

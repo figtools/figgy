@@ -107,6 +107,11 @@ class Utils:
         return args.__dict__.get(attr_name, default)
 
     @staticmethod
+    def attr_exists(attr: frozenset, args) -> bool:
+        attr_name = Utils.clean_attr_name(attr)
+        return args.__dict__.get(attr_name, None) is not None
+
+    @staticmethod
     def clean_attr_name(attr: frozenset):
         return Utils.get_first(attr).replace('-', '_')
 
@@ -331,6 +336,15 @@ class Utils:
             msg = f"ERROR: Your input of >> {input} << is not valid for {field_name}. " \
                   f"You cannot input an empty string or None"
             print(f"{self.c.fg_rd}{msg}{self.c.rs}")
+        return result
+
+    @staticmethod
+    def stc_is_valid_input(input: str, field_name: str, notify: bool):
+        result = input is not None and input != ""
+        if notify and not result:
+            msg = f"ERROR: Your input of >> {input} << is not valid for {field_name}. " \
+                  f"You cannot input an empty string or None"
+            print(f"{msg}")
         return result
 
     @staticmethod

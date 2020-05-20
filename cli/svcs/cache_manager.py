@@ -54,12 +54,19 @@ class CacheManager:
         cache_name = Utils.get_first(cache_name) if isinstance(cache_name, frozenset) else cache_name
         self._cache_file: str = f'{CACHE_OTHER_DIR}/{cache_name}-cache.json' if not file_override else file_override
         os.makedirs(CACHE_OTHER_DIR, exist_ok=True)
+        if file_override:
+            os.makedirs("/".join(file_override.split('/')[:-1]), exist_ok=True)
+
+    def get_val_or_refresh(self, cache_key: str, refresher: Callable, *args, max_age=DEFAULT_REFRESH_INTERVAL) -> Any:
+        last_write, val = self.get_or_refresh(cache_key, refresher, *args, max_age=max_age)
+        return val
 
     @prime_cache
     @wipe_bad_cache
-    def get_or_refresh(self, cache_key: str, refresher: Callable, *args) -> Tuple[int, Any]:
+    def get_or_refresh(self, cache_key: str, refresher: Callable, *args, max_age=DEFAULT_REFRESH_INTERVAL) \
+            -> Tuple[int, Any]:
         last_write, val = self.get(cache_key)
-        if Utils.millis_since_epoch() - last_write > CacheManager.DEFAULT_REFRESH_INTERVAL or not val:
+        if Utils.millis_since_epoch() - last_write > max_age or not val:
             new_val = refresher(*args)
             self.write(cache_key, new_val)
             return Utils.millis_since_epoch(), new_val

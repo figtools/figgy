@@ -2,7 +2,7 @@
 ## across multiple different apps and multiple environments. For roles / policies specific to a single application,
 ## include it in the app configuration itself.
 
-# TODO: You  must confiure this to point the appropriate backend of your choosing.
+# TODO: You  must configure this to point the appropriate backend of your choosing.
 # TODO: You may use S3 / Terraform Cloud (recommended) / Local / etc.
 # TODO: Docs: https://www.terraform.io/docs/backends/index.html
 terraform {

@@ -1,6 +1,7 @@
 import time
 from dataclasses import dataclass
 
+from models.defaults.defaults import CLIDefaults
 from models.sso.okta.okta_session import OktaSession
 from utils.utils import *
 import logging
@@ -10,13 +11,16 @@ from models.sso.okta.okta_auth import OktaAuth
 log = logging.getLogger(__name__)
 
 
+# Pulled from / tweaked -> https://github.com/jmhale/okta-awscli/blob/master/oktaawscli/aws_auth.py
+
 class OktaPrimaryAuth(OktaAuth):
-    def __init__(self, user, password, mfa):
-        self._user = user
+    def __init__(self, defaults: CLIDefaults, password: str, mfa: str):
+        super().__init__(defaults)
+        self._user = defaults.user
         self._password = password
-        self.https_base_url = f"https://{OKTA_BASE_URL}"
+        self.https_base_url = f"https://{defaults.provider_config.base_url}"
         self.totp_token = mfa
-        self.factor = OKTA_FACTOR
+        self.factor = self.factor_type
         self._session: OktaSession = None
 
     def get_session(self):

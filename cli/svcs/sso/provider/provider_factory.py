@@ -1,6 +1,7 @@
 from commands.factory import Factory
 from models.defaults.defaults import CLIDefaults
 from models.defaults.provider import Provider
+from svcs.sso.google.google_session_provider import GoogleSessionProvider
 from svcs.sso.bastion.bastion_session_provider import BastionSessionProvider
 from svcs.sso.okta.okta_session_provider import OktaSessionProvider
 from svcs.sso.provider.session_provider import SessionProvider
@@ -12,6 +13,7 @@ class SessionProviderFactory(Factory):
         self._defaults = defaults
         self.__bastion_session_provider = None
         self.__okta_session_provider = None
+        self.__google_session_provider = None
 
     def instance(self) -> SessionProvider:
         if self._defaults.provider is Provider.OKTA:
@@ -24,5 +26,10 @@ class SessionProviderFactory(Factory):
                 self.__bastion_session_provider = BastionSessionProvider(self._defaults)
 
             return self.__bastion_session_provider
+        elif self._defaults.provider is Provider.GOOGLE:
+            if not self.__google_session_provider:
+                self.__google_session_provider = GoogleSessionProvider(self._defaults)
+
+            return self.__google_session_provider
         else:
             raise NotImplementedError(f"Provider: {self._defaults.provider} is not currently supported.")

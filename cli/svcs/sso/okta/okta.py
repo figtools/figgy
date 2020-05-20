@@ -9,7 +9,7 @@ from collections import namedtuple
 import requests
 from bs4 import BeautifulSoup as bs
 
-from models.sso.okta.okta_config import OktaConfig
+from models.sso.okta.okta_auth import OktaAuth
 from utils.utils import *
 
 log = logging.getLogger(__name__)
@@ -18,10 +18,10 @@ log = logging.getLogger(__name__)
 class Okta:
     """ Handles auth to Okta and returns SAML assertion """
 
-    def __init__(self, okta_config: OktaConfig):
-        self.app_link = okta_config.app_link
-        self.auth = okta_config.okta_auth
-        self.https_base_url = f"https://{OKTA_BASE_URL}"
+    def __init__(self, okta_auth: OktaAuth):
+        self.app_link = okta_auth.app_link
+        self.auth = okta_auth
+        self.https_base_url = f"https://{okta_auth.base_url}"
 
     def get_apps(self, session_id):
         """ Gets apps for the user """

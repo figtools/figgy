@@ -126,6 +126,7 @@ DEFAULTS_USER_KEY = 'user'
 DEFAULTS_PROVIDER_KEY = 'provider'
 DEFAULTS_PROFILE_KEY = 'profile'
 DEFAULTS_REGION_KEY = 'region'
+MFA_SERIAL_KEY = 'mfa_serial'
 
 # Cache File keys
 OKTA_SESSION_TOKEN_CACHE_KEY = 'session_token'

@@ -19,20 +19,17 @@ from svcs.cache_manager import CacheManager
 from svcs.setup import FiggySetup
 from svcs.sso.provider.session_provider import SessionProvider
 from utils.utils import Utils, InvalidSessionError
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
 
 log = logging.getLogger(__name__)
 
 
 # Todo: Implement support for ExternalId for added security.
-# Todo: cache serial # so we don't have to look up every time... Add threading for these IAM calls.
 class BastionSessionProvider(SessionProvider):
     _MAX_ATTEMPTS = 5
 
     def __init__(self, defaults: CLIDefaults):
         super().__init__(defaults)
-        start = int(time.time() * 1000)
         self.__id = uuid.uuid4()
         self._utils = Utils(defaults.colors_enabled)
         self._setup: FiggySetup = FiggySetup()
@@ -71,7 +68,7 @@ class BastionSessionProvider(SessionProvider):
         return self._sts
 
     def get_mfa_serial(self) -> Optional[str]:
-        response = self._iam_client.list_mfa_devices(UserName=self._defaults.user)
+        response = self.__get_iam_client().list_mfa_devices(UserName=self._defaults.user)
         devices = response.get('MFADevices', [])
         log.info(f'Found MFA devices: {devices}.')
         return devices[0].get('SerialNumber') if devices else None

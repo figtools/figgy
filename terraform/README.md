@@ -12,7 +12,8 @@ make sure you saml/metadata-${RUN_ENV}.xml files match your new environment name
 
 Files you may need to update to configure Figgy deployment to your AWS account(s):
 
-figgy/A_configure_figgy.tf
+figgy/00_configure_figgy.tf
+figgy/01_configure_bastion.tf
 figgy/main.tf
 figgy/vars/dev.tfvars
 figgy/vars/qa.tfvars
@@ -37,3 +38,9 @@ To perform a plan:
 To perform an apply:
 
 `terraform apply -var-file=vars/dev.tfvars`
+
+
+Helpful Docs:
+
+Google SAML Setup:
+https://medium.com/faun/single-sign-on-with-g-suite-on-the-amazon-web-services-console-18b88c838cae

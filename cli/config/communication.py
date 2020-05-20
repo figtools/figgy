@@ -113,6 +113,7 @@ HELP_TEXT_MAP = {
 # Other
 SNS_EMAIL_SUBJECT = "Figgy error detected."
 DESC_MISSING_TEXT = "None specified"
+
 # Prompts:
 is_secret = [
     ('class:', 'Is this value a secret? (y/N): ')

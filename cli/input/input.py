@@ -20,21 +20,14 @@ class Input:
 
     @staticmethod
     def get_user() -> str:
-        okta_username = input('Please input OKTA username: ')
+        okta_username = input('Please input username: ')
         Utils.stc_validate(okta_username != '', "You must input a valid OKTA username")
 
         return okta_username
 
     @staticmethod
-    def get_bastion_profile() -> str:
-        profile = input('Please input your aws profile linked to your credentials in your `bastion` account: ')
-        Utils.stc_validate(profile != '', "You must input a valid profile name.")
-
-        return profile
-
-    @staticmethod
     def get_password() -> str:
-        okta_password = getpass.getpass('Please input OKTA password: ')
+        okta_password = getpass.getpass('Please input password: ')
         Utils.stc_validate(okta_password != '', "You must input a valid OKTA password")
 
         return okta_password
@@ -101,6 +94,7 @@ class Input:
             selection = Provider.new(selection)
 
         return selection
+
     @staticmethod
     def get_mfa() -> str:
         mfa = input('Please input the MFA associated with your user: ')

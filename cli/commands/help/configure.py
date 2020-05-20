@@ -40,8 +40,9 @@ class Configure(HelpCommand, ABC):
                          the user with the appropriate AWS accounts based on their returned SAML assertion.
         """
         defaults: CLIDefaults = CLIDefaults.unconfigured()
-        defaults = self._setup.configure_auth(defaults)
         defaults.mfa_enabled = Input.select_mfa_enabled()
+        defaults = self._setup.configure_auth(defaults)
+
         defaults.region = Input.select_region()
 
         colors: bool = Input.select_enable_colors()
@@ -60,7 +61,7 @@ class Configure(HelpCommand, ABC):
         if assumable_roles:
             print(tabulate(
                 [x.tabulate_data() for x in assumable_roles],
-                headers=assumable_roles.pop().tabulate_header(),
+                headers=assumable_roles[0].tabulate_header(),
                 tablefmt="grid",
                 numalign="center",
                 stralign="left",
