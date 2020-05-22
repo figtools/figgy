@@ -7,7 +7,7 @@ from svcs.cache_manager import CacheManager
 from utils.utils import Utils
 from concurrent.futures import ThreadPoolExecutor
 from config import *
-
+from threading import Thread
 log = logging.getLogger(__name__)
 
 
@@ -39,9 +39,8 @@ class UsageTracker:
         for key, val in metrics.metrics.items():
             metrics_json[UsageTracker._METRICS_KEY][key] = val.get(FiggyMetrics.COUNT_KEY, 0)
 
-        # Ship it async, if it don't worky, oh well
-        with ThreadPoolExecutor(max_workers=1) as pool:
-            pool.submit(requests.post, url=FIGGY_LOG_METRICS_URL, json=metrics_json)
+        requests.post(url=FIGGY_LOG_METRICS_URL, json=metrics_json)
+
 
     @staticmethod
     def track_command_usage(function):
@@ -57,8 +56,11 @@ class UsageTracker:
                 last_write, metrics = cache.get(UsageTracker._METRICS_KEY, default=FiggyMetrics())
                 metrics.increment_count(command)
                 if Utils.millis_since_epoch() - metrics.last_report > UsageTracker.REPORT_FREQUENCY:
-                    UsageTracker.report_usage(metrics)
-                    cache.write(UsageTracker._METRICS_KEY, FiggyMetrics())
+                    # Ship it async. If it don't worky, oh well :shruggie:
+                    with ThreadPoolExecutor(max_workers=1) as pool:
+                        pool.submit(UsageTracker.report_usage, metrics)
+                        cache.write(UsageTracker._METRICS_KEY, FiggyMetrics())
+                        return function(self, *args, **kwargs)
                 else:
                     cache.write(UsageTracker._METRICS_KEY, metrics)
 
