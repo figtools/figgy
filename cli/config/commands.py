@@ -7,6 +7,7 @@ version = frozenset({'version'})
 command = frozenset({'command'})
 resource = frozenset({'resource'})
 configure = frozenset({'configure'})
+login = frozenset({'login'})
 
 # Resource types
 config = frozenset({'config'})
@@ -195,6 +196,13 @@ arg_options = {
             role: {action: None, required: False},
             debug: {action: store_true, required: False}
         },
+    },
+    login: {
+        login: {
+            info: {action: store_true, required: False},
+            skip_upgrade: {action: store_true, required: False},
+            debug: {action: store_true, required: False}
+        }
     }
 }
 
@@ -207,12 +215,13 @@ merge_suffixes = [merge_uri_suffix, empty_uri_suffix]
 config_commands = [sync, put, edit, delete, cleanup, get, share, generate,
                    list_com, migrate, browse, audit, dump, restore, promote]
 iam_commands = [export]
-help_commands = [configure, version]
+help_commands = [configure, version, login]
 
 # Used to build out parser, map of resource to sub-commands
 resource_map = {
     config: config_commands,
     iam: iam_commands,
+    login: [login]
 }
 
 options = ci_path | info

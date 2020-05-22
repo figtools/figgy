@@ -5,6 +5,7 @@ from botocore.exceptions import ClientError
 from commands.config_context import ConfigContext
 from commands.types.config import ConfigCommand
 from data.dao.ssm import SsmDao
+from input import Input
 from utils.utils import *
 
 
@@ -41,7 +42,7 @@ class Get(ConfigCommand):
         get_another = True
 
         while get_another:
-            key = prompt(f"Please input a PS Name : ",
+            key = prompt(f"PS Name: -> ",
                          completer=self._config_completer)
             if key:
                 value, desc = self.get_val_and_desc(key)
@@ -51,9 +52,7 @@ class Get(ConfigCommand):
                     print(f"{self.c.fg_gr}Description: {self.c.rs}{desc}")
                 else:
                     print(f"{self.c.fg_rd}Invalid PS Name specified.{self.c.rs}")
-                to_continue = input(f"\r\nGet another? (Y/n): ")
-                to_continue = to_continue if to_continue != '' else 'y'
-                get_another = to_continue.lower() == "y"
+                get_another = Input.y_n_input(f"Get another?", default_yes=False, invalid_no=True)
                 print()
 
     def execute(self):

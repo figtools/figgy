@@ -23,6 +23,11 @@ class FiggyContext:
         self.colors_enabled = colors_enabled
         self.command: frozenset = command
         self.resource: frozenset = resource
+
+        # This enables us to have "commands" without resources. Like `figgy login` instead of `figgy login login`.
+        # Makes things a bit more flexible.
+        self.command = self.command if command else resource
+
         self.args = args
         self.run_env: RunEnv = run_env
         self.selected_role: AssumableRole = role

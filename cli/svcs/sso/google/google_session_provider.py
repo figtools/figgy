@@ -33,7 +33,7 @@ class GoogleSessionProvider(SSOSessionProvider):
 
     def __init__(self, defaults: CLIDefaults):
         super().__init__(defaults)
-        self._cache_manager: CacheManager = CacheManager(file_override=GOOGLE_SESSION_CACHE_PATH)
+        self._cache_manager: CacheManager = CacheManager(file_override=SAML_SESSION_CACHE_PATH)
         config = GoogleConfig(
             username=defaults.user,
             password=SecretsManager.get_password(defaults.user),
@@ -83,8 +83,8 @@ class GoogleSessionProvider(SSOSessionProvider):
         return self._google.parse_saml().decode('utf-8')
 
     def get_saml_assertion(self, prompt: bool = False) -> str:
-        return self._cache_manager.get_val_or_refresh(self._SAML_CACHE_KEY, self._get_decoded_saml,
-                                                      max_age=self._SAML_MAX_AGE)
+        return self._cache_manager.get_val_or_refresh(SAML_ASSERTION_CACHE_KEY, self._get_decoded_saml,
+                                                      max_age=SAML_ASSERTION_CACHE_KEY)
 
     def cleanup_session_cache(self):
         self._write_google_session_to_cache(None)

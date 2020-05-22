@@ -6,3 +6,4 @@ from config.style import Color
 from config.constants import *
 from config.communication import *
 from config.sso import *
+from config.figgy import *

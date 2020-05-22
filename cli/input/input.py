@@ -19,15 +19,15 @@ class Input:
         return profile
 
     @staticmethod
-    def get_user() -> str:
-        okta_username = input('Please input username: ')
+    def get_user(provider: str = 'Please input') -> str:
+        okta_username = input(f'{provider} username: ')
         Utils.stc_validate(okta_username != '', "You must input a valid OKTA username")
 
         return okta_username
 
     @staticmethod
-    def get_password() -> str:
-        okta_password = getpass.getpass('Please input password: ')
+    def get_password(provider: str = 'Please input') -> str:
+        okta_password = getpass.getpass(f'{provider} password: ')
         Utils.stc_validate(okta_password != '', "You must input a valid OKTA password")
 
         return okta_password
@@ -36,7 +36,7 @@ class Input:
     def select_role(valid_roles: List[str]) -> Role:
         input_role = None
         while input_role not in valid_roles:
-            input_role = prompt(f'What type of user are you? Options are: {valid_roles}: ',
+            input_role = prompt(f'What type of user are you? Options are: {valid_roles}: \n -> ',
                                 completer=WordCompleter(valid_roles))
             if input_role not in valid_roles:
                 print(f"{input_role} is not a valid user type. Please select from: {valid_roles}")
@@ -59,7 +59,8 @@ class Input:
     def select_default_account(valid_envs: List[str]) -> RunEnv:
         environment = None
         while environment not in valid_envs:
-            environment = prompt(f'Please select a default account. Options are: {valid_envs}: ',
+            environment = prompt(f'Please select a default account. All commands without the specified `--env` '
+                                 f'parameter will run against this account. \n Options are: {valid_envs}: \n -> ',
                                  completer=WordCompleter(valid_envs))
 
             if environment not in valid_envs:
@@ -81,6 +82,14 @@ class Input:
         selection = ''
         while selection.lower() != 'y' and selection.lower() != 'n':
             selection = input(f'Use Multi-factor authentication Y/n?: ')
+            selection = selection.lower() if selection != '' else 'y'
+        return selection == 'y'
+
+    @staticmethod
+    def select_report_errors() -> bool:
+        selection = ''
+        while selection.lower() != 'y' and selection.lower() != 'n':
+            selection = input(f'Would you like to turn on anonymous & automatic error reporting?  Y/n?: ')
             selection = selection.lower() if selection != '' else 'y'
         return selection == 'y'
 
@@ -110,3 +119,26 @@ class Input:
                            f"{input_env} is not a valid Run Environment. Please select from: {valid_envs}")
 
         return RunEnv(input_env)
+
+    @staticmethod
+    def y_n_input(message: str, default_yes: bool = True, invalid_no=False) -> bool:
+        """
+        Returns True if user selects 'y', or False if user select 'N'
+        :param message: Message to prompt the user with.
+        :param default_yes: Make the user's default option 'Y'?
+        :param invalid_no: If the user enters invalid input, assume a selection of 'N'
+        :return: True/False based on user input
+        """
+
+        selection = ''
+        default_compare = 'y' if default_yes else 'n'
+        default_prompt = '(Y/n)' if default_yes else '(y/N)'
+
+        while selection.lower() != 'y' and selection.lower() != 'n':
+            selection = input(f'{message} \n {default_prompt}: -> ')
+            selection = selection.lower() if selection != '' else default_compare
+
+            if selection != 'y' and selection != 'n' and invalid_no:
+                return False
+
+        return True if selection == 'y' else False

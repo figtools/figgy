@@ -176,6 +176,7 @@ class CommandFactory(Factory):
         """
         factory: Factory = None
         start = time.time()
+
         if self._context.command in config_commands and self._context.resource == config:
             self.__init_sessions()
             context = ConfigContext(self._context.run_env, self._context.role, self._context.args, config)
@@ -199,7 +200,7 @@ class CommandFactory(Factory):
             context = IAMContext(self._context.run_env, self._context.role, self._context.colors_enabled, iam)
             factory = IAMFactory(self._context.command, context, self.__env_session(),
                                  all_sessions=self.__all_sessions())
-        elif self._context.find_matching_optional_arguments(help_commands) or self._context.command in help_commands:
+        elif self._context.find_matching_optional_arguments(help_commands) or self._context.resource in help_commands:
             optional_args = self._context.find_matching_optional_arguments(help_commands)
             context = HelpContext(self._context.resource, self._context.command, optional_args, self._context.run_env)
             factory = HelpFactory(self._context.command, context)

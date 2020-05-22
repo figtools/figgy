@@ -1,4 +1,5 @@
 from commands.factory import Factory
+from commands.help.login import Login
 from commands.help.version import Version
 from commands.help_context import HelpContext
 from commands.help.configure import Configure
@@ -22,8 +23,10 @@ class HelpFactory(Factory):
     def get(self, command: frozenset):
         if configure in self._options:
             return Configure(self._context, self._setup)
-        if version in self._options:
+        elif version in self._options:
             return Version(self._context)
+        elif command == login:
+            return Login(self._context, self._setup)
         else:
-            self._utils.error_exit(f"{command} is not a valid IAM command. You must select from: "
-                                   f"[{CollectionUtils.printable_set(iam_commands)}]. Try using --help for more info.")
+            self._utils.error_exit(f"{command} is not a valid command. You must select from: "
+                                   f"[{CollectionUtils.printable_set(help_commands)}]. Try using --help for more info.")

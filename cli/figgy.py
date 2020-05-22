@@ -18,6 +18,7 @@ from extras.completer import Completer
 from models.assumable_role import AssumableRole
 from models.defaults.defaults import CLIDefaults
 from svcs.cache_manager import CacheManager
+from svcs.observability.error_reporter import FiggyErrorReporter
 from svcs.sso.provider.provider_factory import SessionProviderFactory
 from svcs.sso.session_manager import SessionManager
 
@@ -313,9 +314,6 @@ class Figgy:
         role_override = Utils.attr_if_exists(role, args)
         self._role: Role = self.get_role(args.prompt, role_override=role_override)
 
-        self._assumable_role, self._next_assumable_role = self.find_assumable_roles(self._run_env, self._role,
-                                                                                    skip=self._configure_set)
-
         if not hasattr(args, 'env') or args.env is None:
             print(f"{EMPTY_ENV_HELP_TEXT}{self._run_env.env}")
         else:
@@ -325,6 +323,9 @@ class Figgy:
 
         self._utils.validate(Utils.attr_exists(configure, args) or Utils.attr_exists(command, args),
                                 f"No command found. Proper format is `{CLI_NAME} <resource> <command> --option(s)`")
+
+        self._assumable_role, self._next_assumable_role = self.find_assumable_roles(self._run_env, self._role,
+                                                                                    skip=self._configure_set)
 
         command_val = Utils.attr_if_exists(command, args)
         resource_val = Utils.attr_if_exists(resource, args)
@@ -373,6 +374,7 @@ def main(arguments):
     user = getpass.getuser()
     Utils.stc_validate(user != ROOT_USER, f"Hey! Stop trying to run {CLI_NAME} as {ROOT_USER}. That's bad!")
 
+    original_command = ' '.join(arguments)
     sys.argv = arguments
     cli: Optional[Figgy] = None
     try:
@@ -393,20 +395,8 @@ def main(arguments):
     except AssertionError as e:
         Utils.stc_error_exit(e.args[0])
     except Exception as e:
-        print(f"CAUGHT EXCEPTION: {e}")
-        printable_exception = ''.join(traceback.format_exception(etype=type(e), value=e, tb=e.__traceback__))
-        print(printable_exception)
-        if cli is not None:
-            mgmt_session = cli._get_session_manager().get_session()
-            user = Figgy.get_defaults().user or getpass.getuser()
-            sns = mgmt_session.client('sns')
-            sns_msg = f"The following exception has been caught by user {user}: \n\n{printable_exception}"
-            sns.publish(TopicArn=MGMT_SNS_ERROR_TOPIC_ARN, Message=sns_msg, Subject=SNS_EMAIL_SUBJECT)
-            print(f"Something went wrong. Exception caught:\n\n{printable_exception}\n\n"
-                  f"This exception has been reported to DevOps")
-        else:
-            print(f"Something went wrong. Exception caught:\n\n{printable_exception}\n\n This exception "
-                  f"could not be reported to DevOps automatically. Please inform us of this!")
+        error_reporter = FiggyErrorReporter(Figgy.get_defaults())
+        error_reporter.log_error(original_command, e)
     except KeyboardInterrupt:
         exit(1)
 

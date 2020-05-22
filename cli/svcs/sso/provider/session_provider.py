@@ -1,5 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
+from typing import List
 
 import boto3
 from botocore.exceptions import ClientError
@@ -44,7 +45,7 @@ class SessionProvider(ABC):
 
     #Todo later decide whether to move this to SSOSessionProvider
     @abstractmethod
-    def get_assumable_roles(self):
+    def get_assumable_roles(self) -> List[AssumableRole]:
         pass
 
     @abstractmethod
@@ -62,7 +63,7 @@ class SessionProvider(ABC):
         if defaults is not None and not prompt:
             return defaults.user
         else:
-            return Input.get_user()
+            return Input.get_user(provider=self._defaults.provider.name)
 
     def _get_password(self, user_name, prompt: bool, save: bool = False) -> str:
         """
@@ -75,7 +76,7 @@ class SessionProvider(ABC):
         reset_password = not password
 
         if reset_password or prompt:
-            password = Input.get_password()
+            password = Input.get_password(provider=self._defaults.provider.name)
             if reset_password or save:
                 SecretsManager.set_password(user_name, password)
 

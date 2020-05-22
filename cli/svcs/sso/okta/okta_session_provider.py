@@ -29,6 +29,7 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
     def __init__(self, defaults: CLIDefaults):
         super().__init__(defaults)
         self._cache_manager: CacheManager = CacheManager(file_override=OKTA_SESSION_CACHE_PATH)
+        self._saml_cache: CacheManager = CacheManager(file_override=SAML_SESSION_CACHE_PATH)
         self._setup: FiggySetup = FiggySetup()
 
     def _write_okta_session_to_cache(self, session: OktaSession) -> None:
@@ -69,7 +70,7 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
                 except InvalidSessionError as e:
                     log.error(f"Caught error when authing with OKTA & caching session: {e}")
                     print("Authentication failed with OKTA, please reauthenticate. Likely invalid MFA or Password?\r\n")
-                    self._defaults = self._setup.basic_configure()
+                    self._defaults = self._setup.basic_configure(configure_provider=False)
                     prompt = True
 
     @Utils.trace
@@ -108,12 +109,13 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
                 else:
                     return self.get_saml_assertion(prompt=True)
             else:
-                return base64.b64decode(assertion)
+                assertion = base64.b64decode(assertion).decode('utf-8')
+                self._saml_cache.write(SAML_ASSERTION_CACHE_KEY, assertion)
+                return assertion
 
     def get_assumable_roles(self) -> List[AssumableRole]:
         assertion = self.get_saml_assertion(prompt=True)
-        decoded_assertion = base64.b64decode(assertion).decode('utf-8')
-        root = ET.fromstring(decoded_assertion)
+        root = ET.fromstring(assertion)
         prefix_map = {"saml2": "urn:oasis:names:tc:SAML:2.0:assertion"}
         role_attribute = root.find(".//saml2:Attribute[@Name='https://aws.amazon.com/SAML/Attributes/Role']",
                                    prefix_map)
@@ -132,7 +134,6 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
             result.groups()
             account_id, provider_name, role_name, run_env, role = result.groups()
 
-            print(f"GOt provider: {provider_name}")
             if not account_id or not run_env or not role_name or not role:
                 Utils.stc_error_exit(unparsable_msg)
             else:

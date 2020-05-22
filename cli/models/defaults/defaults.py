@@ -21,6 +21,7 @@ class CLIDefaults:
     region: str
     mfa_enabled: bool
     provider: Provider
+    report_errors: Optional[bool]
     provider_config: Optional[Any]
     mfa_serial: Optional[str]
     user: Optional[str]
@@ -42,7 +43,8 @@ class CLIDefaults:
                            region="unconfigured",
                            mfa_enabled=False,
                            mfa_serial=None,
-                           provider_config=None)
+                           provider_config=None,
+                           report_errors=False)
 
     @staticmethod
     def from_dict(config: Dict):

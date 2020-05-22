@@ -65,6 +65,9 @@ GENERATE_HELP_TEXT = "Generate a new ci-config.json file from an existing ci-con
                      "configurations."
 FROM_HELP_TEXT = "/path/to/ci-config.json file to use as the source template file to generate from. Your generated file" \
                  " will automatically have all of the configurations from the source-file configured to replicate to it."
+LOGIN_HELP_TEXT = "Logs you in to all viable AWS accounts and caches session locally. This will prevent you from having" \
+                  "to input your MFA every time you swap into a new account or role."
+
 # Point in time (--point-in-time)
 POINT_IN_TIME = "Restore all parameters to a point in time."
 
@@ -107,7 +110,8 @@ HELP_TEXT_MAP = {
     edit: EDIT_HELP_TEXT,
     copy_from: COPY_FROM_HELP_TEXT,
     generate: GENERATE_HELP_TEXT,
-    from_path: FROM_HELP_TEXT
+    from_path: FROM_HELP_TEXT,
+    login: LOGIN_HELP_TEXT
 }
 
 # Other

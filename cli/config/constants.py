@@ -117,6 +117,7 @@ DECRYPTER_WIN_FILE_PATH = f'{HOME}/.figgy/devops/decrypt.exe'
 CACHE_DIR = f'{HOME}/.figgy/devops/cache/sts'
 CACHE_OTHER_DIR = f'{HOME}/.figgy/devops/cache/other'
 DEFAULT_INSTALL_PATH = '/usr/local/bin/figgy'
+ERROR_LOG_DIR = f'{HOME}/.figgy/errors'
 
 # Defaults file keys
 DEFAULTS_ROLE_KEY = 'role'

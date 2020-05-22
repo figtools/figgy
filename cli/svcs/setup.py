@@ -21,30 +21,45 @@ class FiggySetup:
     def __init__(self):
         self._cache_mgr = CacheManager(DEFAULTS_FILE_CACHE_KEY)
 
-    def basic_configure(self) -> CLIDefaults:
+    def configure_preferences(self, current_defaults: CLIDefaults):
+        updated_defaults = current_defaults
+        updated_defaults.region = Input.select_region()
+        updated_defaults.colors_enabled = Input.select_enable_colors()
+        updated_defaults.report_errors = Input.select_report_errors()
+        self.save_defaults(updated_defaults)
+        return updated_defaults
+
+    def basic_configure(self, configure_provider=True) -> CLIDefaults:
         defaults: CLIDefaults = self.get_defaults()
         if not defaults:
             Utils.stc_error_exit(f"Please run {CLI_NAME} --{Utils.get_first(configure)} to set up Figgy, "
                                  f"you've got problems friend!")
         else:
-            defaults = self.configure_auth(defaults)
+            defaults = self.configure_auth(defaults, configure_provider=configure_provider)
 
         self.save_defaults(defaults)
         return defaults
 
-    def configure_auth(self, current_defaults: CLIDefaults) -> CLIDefaults:
+    def configure_auth(self, current_defaults: CLIDefaults, configure_provider=True) -> CLIDefaults:
         updated_defaults = current_defaults
-        provider: Provider = Input.select_provider()
-        updated_defaults.provider = provider
+
+        if configure_provider or current_defaults.provider is Provider.UNSELECTED:
+            provider: Provider = Input.select_provider()
+            updated_defaults.provider = provider
+        else:
+            provider: Provider = current_defaults.provider
 
         if provider in Provider.sso_providers():
-            user: str = Input.get_user()
-            password: str = Input.get_password()
+            user: str = Input.get_user(provider=provider.name)
+            password: str = Input.get_password(provider=provider.name)
             SecretsManager.set_password(user, password)
             updated_defaults.user = user
 
-        provider_config = ProviderConfigFactory().instance(provider, mfa_enabled=current_defaults.mfa_enabled)
-        updated_defaults.provider_config = provider_config
+        if configure_provider:
+            provider_config = ProviderConfigFactory().instance(provider, mfa_enabled=current_defaults.mfa_enabled)
+            updated_defaults.provider_config = provider_config
+
+        updated_defaults.mfa_enabled = Input.select_mfa_enabled()
 
         return updated_defaults
 

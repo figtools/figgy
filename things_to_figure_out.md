@@ -1,6 +1,5 @@
 These are problems I intend to solve, once I figure out the best way to do it.
 
-- FIX ISSUE WHERE EVERYTHING ALWAYS GOES TO DEV EVEN WITH --env prod
 - Refactor figgy to not require a mgmt session anywhere to support existing functionality
 - Fix promote command
 - Fix or remove migrate command
@@ -19,3 +18,13 @@ These are problems I intend to solve, once I figure out the best way to do it.
 - Tracking global figgy usage stats
 
 - Add support for "ExternalId" verification for cross-account role assumption from Bastion.
+
+- Slack integration for shares / etc.
+
+- Param finder
+
+- Figgy Vault
+
+- Unused parameter recommender
+
+- 1 time password generator

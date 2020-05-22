@@ -9,4 +9,6 @@ FIGGY_KEYRING_ASSERTION_NAME = "okta_assertion"
 OKTA_SESSION_CACHE_PATH = f"{HOME}/.figgy/devops/cache/okta/session"
 GOOGLE_SESSION_CACHE_PATH = f"{HOME}/.figgy/devops/cache/google/session"
 
-
+SAML_ASSERTION_CACHE_KEY = 'assertion'
+SAML_ASSERTION_MAX_AGE = 60 * 5 * 1000  # Assertions don't last long, 5 mins max reuse
+SAML_SESSION_CACHE_PATH = f"{HOME}/.figgy/devops/cache/other/saml.json"
