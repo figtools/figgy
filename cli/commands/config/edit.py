@@ -10,6 +10,7 @@ from prompt_toolkit.completion import WordCompleter
 from commands.config_context import ConfigContext
 from commands.types.config import ConfigCommand
 from data.dao.ssm import SsmDao
+from svcs.observability.usage_tracker import UsageTracker
 
 log = logging.getLogger(__name__)
 
@@ -91,5 +92,6 @@ class Edit(ConfigCommand):
                 print(
                     f"{self.c.fg_rd}Exception caught attempting to add config: {e}{self.c.rs}")
 
+    @UsageTracker.track_command_usage
     def execute(self):
         self.edit()

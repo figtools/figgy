@@ -7,6 +7,7 @@ from input.input import Input, Utils
 from models.assumable_role import AssumableRole
 from models.defaults.defaults import CLIDefaults
 from models.defaults.provider import Provider
+from svcs.observability.usage_tracker import UsageTracker
 from svcs.setup import FiggySetup
 from svcs.sso.provider.provider_factory import SessionProviderFactory
 
@@ -36,5 +37,6 @@ class Login(HelpCommand, ABC):
 
         print(f"{self.c.gr}Login successful. All sessions are cached.{self.c.rs}")
 
+    @UsageTracker.track_command_usage
     def execute(self):
         self.login()

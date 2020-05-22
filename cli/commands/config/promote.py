@@ -3,6 +3,7 @@ from botocore.exceptions import ClientError
 from commands.config_context import ConfigContext
 from commands.types.config import ConfigCommand
 from data.dao.ssm import SsmDao
+from svcs.observability.usage_tracker import UsageTracker
 from utils.utils import *
 
 
@@ -62,6 +63,7 @@ class Promote(ConfigCommand):
         self._utils.validate(self.run_env.env != prod, "You may not promote from within the prod environment. There"
                                                        " is no environment higher than prod.")
 
+    @UsageTracker.track_command_usage
     def execute(self):
         self._validate()
         self._promote()

@@ -90,7 +90,6 @@ HELP_TEXT_MAP = {
     put: PUT_HELP_TEXT,
     share: SHARE_HELP_TEXT,
     cleanup: CLEANUP_HELP_TEXT,
-    migrate: MIGRATE_HELP_TEXT,
     sync: SYNC_HELP_TEXT,
     get: GET_HELP_TEXT,
     browse: BROWSE_HELP_TEXT,

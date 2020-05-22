@@ -17,6 +17,7 @@ from data.dao.ssm import SsmDao
 from models.parameter_store_history import PSHistory
 from models.restore_config import RestoreConfig
 from svcs.kms import KmsSvc
+from svcs.observability.usage_tracker import UsageTracker
 
 
 class Restore(ConfigCommand):
@@ -248,6 +249,7 @@ class Restore(ConfigCommand):
             if selection.lower() == 'y':
                 self._delete.delete_param(name)
 
+    @UsageTracker.track_command_usage
     def execute(self):
         if self._point_in_time:
             self._restore_params_to_point_in_time()

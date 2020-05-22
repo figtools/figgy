@@ -1,4 +1,3 @@
-from config.consul import *
 from config.commands import *
 from config.aws import *
 from config.style import *

@@ -1,26 +1,37 @@
+import argparse
+import os
+import stat
 import sys
 import traceback
 import getpass
+from json import JSONDecodeError
+
 import jsonpickle
-from typing import Optional, Tuple
+import platform
+import logging
+from config import *
+from typing import Optional, Tuple, List
 from zipfile import ZipFile
 
 import boto3
 from botocore.errorfactory import ClientError
 
-from input.input import Input
+from extras.s3_download_progress import S3Progress
+from input.input import Input, readline
 from commands.command_factory import CommandFactory
-from commands.config.migrate import *
 from commands.figgy_context import FiggyContext
 from commands.types.command import Command
 from data.dao.ssm import SsmDao
 from extras.completer import Completer
 from models.assumable_role import AssumableRole
 from models.defaults.defaults import CLIDefaults
+from models.role import Role
+from models.run_env import RunEnv
 from svcs.cache_manager import CacheManager
 from svcs.observability.error_reporter import FiggyErrorReporter
 from svcs.sso.provider.provider_factory import SessionProviderFactory
 from svcs.sso.session_manager import SessionManager
+from utils.utils import Utils
 
 root_logger = logging.getLogger()
 root_logger.setLevel(logging.CRITICAL)
@@ -121,16 +132,11 @@ class Figgy:
             print(f'Role override selected: {role_override}\n')
             return Role(role_override)
 
-        if DEFAULT_USER_NAME in os.environ \
-                and os.environ[DEFAULT_USER_NAME] in user_types \
-                and not prompt:
-            return Role(os.environ.get(DEFAULT_USER_NAME))
+        defaults = self.get_defaults(self._configure_set)
+        if defaults is not None and not prompt:
+            return defaults.role
         else:
-            defaults = self.get_defaults(self._configure_set)
-            if defaults is not None and not prompt:
-                return defaults.role
-            else:
-                return Input.select_role()
+            return Input.select_role()
 
     def get_colors_enabled(self) -> bool:
         """

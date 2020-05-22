@@ -11,6 +11,7 @@ from commands.config_context import ConfigContext
 from commands.types.config import ConfigCommand
 from data.dao.config import ConfigDao
 from data.dao.ssm import SsmDao
+from svcs.observability.usage_tracker import UsageTracker
 from utils.utils import *
 from utils.utils import Utils
 from views.rbac_limited_config import RBACLimitedConfigView
@@ -85,6 +86,7 @@ class Browse(ConfigCommand, npyscreen.NPSApp):
                 self.add_children(child_dir, dir_node, all_children=grand_children,
                                   first_children=calculated_first_children)
 
+    @UsageTracker.track_command_usage
     def _browse(self):
         browse_app = BrowseApp(self, self._config_view)
         browse_app.run()

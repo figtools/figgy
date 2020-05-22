@@ -3,6 +3,7 @@ from typing import Tuple
 
 from commands.config_context import ConfigContext
 from commands.types.config import ConfigCommand
+from svcs.observability.usage_tracker import UsageTracker
 from utils.utils import *
 
 log = logging.getLogger(__name__)
@@ -71,5 +72,6 @@ class Generate(ConfigCommand):
 
         print(f'{self.c.fg_gr}New config successfully generated at location: {output_file}{self.c.rs}')
 
+    @UsageTracker.track_command_usage
     def execute(self):
         self._generate()

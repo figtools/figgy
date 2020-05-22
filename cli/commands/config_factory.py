@@ -8,7 +8,6 @@ from commands.config.delete import Delete
 from commands.config.dump import Dump
 from commands.config.edit import Edit
 from commands.config.generate import Generate
-from commands.config.migrate import Migrate
 from commands.config.promote import Promote
 from commands.config.restore import Restore
 from commands.config.share import *
@@ -64,9 +63,6 @@ class ConfigFactory(Factory):
             return commands.config.list.List(self._ssm, self._config_completer,
                                              self._colors_enabled, self._config_context,
                                              self.get(get))
-        elif command == migrate:
-            return Migrate(self._ssm, self._kms, self._s3_resource, self._colors_enabled, self._config_context,
-                           self._config_completer)
         elif command == browse:
             return Browse(self._ssm, self._config, self._colors_enabled, self._config_context, self.get(get),
                           self.get(delete), self._config_view)

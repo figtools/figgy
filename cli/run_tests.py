@@ -1,33 +1,28 @@
+import os
+
+from config import *
+from test.cli.config import *
+from test.cli.data.configure import DataConfigure
+from test.cli.dev.audit import DevAudit
+from test.cli.dev.auth import DevAuth
+from test.cli.dev.browse import DevBrowse
+from test.cli.dev.cleanup import DevCleanup
 from test.cli.dev.configure import DevConfigure
-from test.cli.dev.get import DevGet
-from test.cli.dev.put import DevPut
 from test.cli.dev.delete import DevDelete
 from test.cli.dev.dump import DevDump
-from test.cli.dev.list import DevList
-from test.cli.data.configure import DataConfigure
-from test.cli.data.share import DataShare
-from test.cli.dev.audit import DevAudit
-from test.cli.dev.sync import DevSync
-from test.cli.dev.cleanup import DevCleanup
-from test.cli.dev.auth import DevAuth
 from test.cli.dev.export import DevExport
 from test.cli.dev.find import DevFind
-from test.cli.dev.browse import DevBrowse
+from test.cli.dev.get import DevGet
+from test.cli.dev.list import DevList
+from test.cli.dev.put import DevPut
 from test.cli.dev.restore import DevRestore
-from test.cli.dev.edit import DevEdit
-from test.cli.dev.migrate import DevMigrate
-from test.cli.dev.zip import DevZip
 from test.cli.dev.run_tests import DevRunTests
+from test.cli.dev.sync import DevSync
+from test.cli.dev.zip import DevZip
 from test.cli.init import CLIInit
-from test.cli.base.test_cases.restore import run as run_restore_suite
-import os
-from test.cli.config import *
-from config import *
-import os, shutil
 
 
 def main():
-    run_migrate = False
 
     # This is used when running in CircleCi
     if MFA_SECRET_ENV_KEY in os.environ \
@@ -35,10 +30,7 @@ def main():
         print(f"{MFA_SECRET_ENV_KEY} FOUND, configuring with MFA for data/devops/dev roles..")
         print("Deleting any existing cached credentials...")
         delete_cache()
-        CLIInit.init(usr_dev)
-    else:
-        # We cannot test migrate from circleci since consul will not be available.
-        run_migrate = True
+        CLIInit.init('dev')
 
     # Order matters. Put must come before delete, etc.
 
@@ -60,11 +52,6 @@ def main():
     DevZip().run()
     DevRunTests().run()
     # DevEdit().run() -- Currently busted...
-
-    # # If running locally, test migrate.
-    if run_migrate:
-        DevMigrate().run()
-
     # # Then Test DATA Role
     DataConfigure().run()
     # DataShare().run()

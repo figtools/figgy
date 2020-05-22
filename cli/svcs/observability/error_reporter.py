@@ -73,7 +73,7 @@ class FiggyErrorReporter:
             'stacktrace': printable_exception
         }
 
-        result = requests.post(f'{FIGGY_OBS_API_BASE_URL}{FIGGY_ERROR_REPORTING_PATH}', json=payload)
+        result = requests.post(FIGGY_ERROR_REPORTING_URL, json=payload)
 
         Utils.stc_validate(result.status_code == 200, "Unable to report this error to Figgy. Please consider "
                                                       f"opening a ticket on the figgy github repo: {FIGGY_GITHUB}")

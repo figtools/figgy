@@ -150,16 +150,6 @@ class Utils:
 
         return a
 
-    def get_consul_type(self):
-        selection = None
-        accepted_values = [saj, pm]
-        completer = WordCompleter(accepted_values, sentence=True)
-        print(
-            "Remember, you must be on the appropriate VPN to successfully migrate from either of these consul clusters!")
-        while selection not in accepted_values:
-            selection = prompt(f"Do you want to import from the SAJ or PM consul? (saj/pm): ", completer=completer)
-
-        return selection
 
     def get_repl_config(self, repl_config_path: str):
         with open(repl_config_path, "r") as file:

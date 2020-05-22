@@ -6,6 +6,7 @@ from commands.config_context import ConfigContext
 from commands.types.config import ConfigCommand
 from data.dao.ssm import SsmDao
 from input import Input
+from svcs.observability.usage_tracker import UsageTracker
 from utils.utils import *
 
 
@@ -55,5 +56,6 @@ class Get(ConfigCommand):
                 get_another = Input.y_n_input(f"Get another?", default_yes=False, invalid_no=True)
                 print()
 
+    @UsageTracker.track_command_usage
     def execute(self):
         self._get_param()

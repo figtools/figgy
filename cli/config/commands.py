@@ -29,7 +29,6 @@ share = frozenset({'share'})
 promote = frozenset({'promote'})
 ci_path = frozenset({'config'})
 info = frozenset({'info'})
-migrate = frozenset({'migrate'})
 browse = frozenset({'browse'})
 prompt_com = frozenset({'prompt'})
 audit = frozenset({'audit'})
@@ -135,16 +134,6 @@ arg_options = {
             debug: {action: store_true, required: False},
             copy_from: {action: None, required: False}
         },
-        migrate: {
-            info: {action: store_true, required: False},
-            prompt_com: {action: store_true, required: False},
-            env: {action: None, required: False},
-            role: {action: None, required: False},
-            config: {action: None, required: False},
-            manual: {action: store_true, required: False},
-            skip_upgrade: {action: store_true, required: False},
-            debug: {action: store_true, required: False}
-        },
         browse: {
             info: {action: store_true, required: False},
             prompt_com: {action: store_true, required: False},
@@ -213,7 +202,7 @@ merge_suffixes = [merge_uri_suffix, empty_uri_suffix]
 
 # Supported commands by resource
 config_commands = [sync, put, edit, delete, cleanup, get, share, generate,
-                   list_com, migrate, browse, audit, dump, restore, promote]
+                   list_com, browse, audit, dump, restore, promote]
 iam_commands = [export]
 help_commands = [configure, version, login]
 
@@ -243,7 +232,6 @@ REQ_OPTION_MAP = {
     delete: [],
     get: [],
     list_com: [],
-    migrate: [ci_path],
     put: [],
     restore: [],
     share: [],

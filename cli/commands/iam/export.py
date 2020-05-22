@@ -5,6 +5,7 @@ from boto3.session import Session
 
 from commands.iam_context import IAMContext
 from commands.types.iam import IAMCommand
+from svcs.observability.usage_tracker import UsageTracker
 from utils.utils import *
 
 
@@ -101,6 +102,7 @@ class Export(IAMCommand):
                 Utils.stc_validate(credentials is not None, f"Unable to generate credentials for environment: {env}")
                 self._write_credentials(credentials.access_key, credentials.secret_key, credentials.token, f"figgy-{env}")
 
+    @UsageTracker.track_command_usage
     def execute(self):
         self._export()
 

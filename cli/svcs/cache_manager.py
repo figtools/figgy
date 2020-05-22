@@ -116,10 +116,11 @@ class CacheManager:
 
     @prime_cache
     @wipe_bad_cache
-    def get(self, cache_key: str) -> Tuple[int, Any]:
+    def get(self, cache_key: str, default=None) -> Tuple[int, Any]:
         """
         Retrieve an item from the cache.
         :param cache_key: Key to return from the cache.
+        :param default: Default value to return if the key doesn't exist in cache.
         :return: Tuple with last_write time, and the stored object.
         """
 
@@ -127,13 +128,13 @@ class CacheManager:
             cache_contents = cache.read()
             contents: Dict = jsonpickle.decode(cache_contents)
             cache = contents.get(cache_key, {})
-            result = cache.get(self._LAST_WRITE_KEY, 0), cache.get(self._STORE_KEY, None)
+            result = cache.get(self._LAST_WRITE_KEY, 0), cache.get(self._STORE_KEY, default)
             log.info(f'Returning items from cache for cache key: {cache_key}')
 
         return result
 
-    def get_val(self, cache_key: str) -> Any:
-        return self.get(cache_key)[1]
+    def get_val(self, cache_key: str, default=None) -> Any:
+        return self.get(cache_key, default)[1]
 
     @prime_cache
     @wipe_bad_cache

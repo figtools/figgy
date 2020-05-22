@@ -6,6 +6,7 @@ from commands.types.config import ConfigCommand
 from data.dao.config import ConfigDao
 from data.dao.ssm import SsmDao
 from extras.key_utils import KeyUtils
+from svcs.observability.usage_tracker import UsageTracker
 from utils.utils import *
 
 
@@ -111,6 +112,7 @@ class Cleanup(ConfigCommand):
                 f"{self.c.fg_bl}No remote replication configs found available for cleanup under namespace: {self.c.rs}"
                 f"{self.c.fg_gr}{self._namespace}{self.c.rs}")
 
+    @UsageTracker.track_command_usage
     def execute(self):
         # cleanup service configs
         print()

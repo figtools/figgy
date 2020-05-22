@@ -6,6 +6,7 @@ from prompt_toolkit.completion import WordCompleter
 from commands.types.config import ConfigCommand
 from commands.config_context import ConfigContext
 from config import *
+from svcs.observability.usage_tracker import UsageTracker
 from utils.utils import *
 
 
@@ -45,5 +46,7 @@ class Dump(ConfigCommand):
         else:
             print(json.dumps(json_output, indent=4, sort_keys=True))
 
+
+    @UsageTracker.track_command_usage
     def execute(self):
         self._dump()
