@@ -133,9 +133,10 @@ class Input:
         selection = ''
         default_compare = 'y' if default_yes else 'n'
         default_prompt = '(Y/n)' if default_yes else '(y/N)'
+        prompt = f'{message} {default_prompt}: -> ' if len(message) < 40 else f'{message} \n {default_prompt}: ->'
 
         while selection.lower() != 'y' and selection.lower() != 'n':
-            selection = input(f'{message} \n {default_prompt}: -> ')
+            selection = input(prompt)
             selection = selection.lower() if selection != '' else default_compare
 
             if selection != 'y' and selection != 'n' and invalid_no:

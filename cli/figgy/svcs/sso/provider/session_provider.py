@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Tuple
 
 import boto3
 from botocore.exceptions import ClientError
@@ -42,6 +42,10 @@ class SessionProvider(ABC):
     @abstractmethod
     def get_session(self, assumable_role: AssumableRole, prompt: bool, exit_on_fail=True) -> boto3.Session:
         pass
+
+    def get_session_and_role(self, assumable_role: AssumableRole, prompt: bool, exit_on_fail=True) \
+            -> Tuple[boto3.Session, AssumableRole]:
+        return self.get_session(assumable_role, prompt, exit_on_fail), assumable_role
 
     #Todo later decide whether to move this to SSOSessionProvider
     @abstractmethod

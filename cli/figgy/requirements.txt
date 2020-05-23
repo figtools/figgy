@@ -2,7 +2,6 @@ boto3==1.12.47
 prompt_toolkit==3.0.5
 sty==1.0.0b8
 click==7.1.2
-pyreadline==2.1
 pyhcl==0.4.4
 tqdm==4.46.0
 npyscreen==4.10.5

@@ -23,7 +23,6 @@ from test.cli.init import CLIInit
 
 
 def main():
-
     # This is used when running in CircleCi
     if MFA_SECRET_ENV_KEY in os.environ \
             and MFA_USER_ENV_KEY in os.environ:
@@ -74,6 +73,7 @@ def delete_cache():
             os.unlink(OKTA_SESSION_CACHE_PATH)
     except Exception as e:
         print(e)
+
 
 if __name__ == '__main__':
     main()

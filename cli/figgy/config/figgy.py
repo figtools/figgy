@@ -1,3 +1,7 @@
+VERSION = '0.0.1'
+CLI_NAME = 'figgy'
+
+# Figgy Github
 FIGGY_GITHUB = "https://github.com/mancej/figgy"
 
 # Todo: Update to prod before release.

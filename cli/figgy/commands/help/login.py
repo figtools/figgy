@@ -10,6 +10,7 @@ from models.defaults.provider import Provider
 from svcs.observability.usage_tracker import UsageTracker
 from svcs.setup import FiggySetup
 from svcs.sso.provider.provider_factory import SessionProviderFactory
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 class Login(HelpCommand, ABC):
@@ -32,8 +33,8 @@ class Login(HelpCommand, ABC):
         print(f"{self.c.bl}Found {len(assumable_roles)} possible logins. Logging in...{self.c.rs}")
 
         for role in assumable_roles:
-            print(f"Logging in as role: {role.role} in environment: {role.run_env}")
-            provider.get_session(role, False)
+            print(f"Login successful for {role.role} in environment: {role.run_env}")
+            provider.get_session_and_role(role, False)
 
         print(f"{self.c.gr}Login successful. All sessions are cached.{self.c.rs}")
 

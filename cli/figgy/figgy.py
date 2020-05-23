@@ -370,19 +370,18 @@ class Figgy:
         return self._command_factory
 
 
-def main(arguments):
+def main():
     """
         Entrypoint to figgy.
 
         Performs generic validation, then routes user down appropriate execution path based on command line parameters
     """
-
+    arguments = sys.argv
     user = getpass.getuser()
     Utils.stc_validate(user != ROOT_USER, f"Hey! Stop trying to run {CLI_NAME} as {ROOT_USER}. That's bad!")
 
     original_command = ' '.join(arguments)
     sys.argv = arguments
-    cli: Optional[Figgy] = None
     try:
         # Parse / Validate Args
         args = Figgy.parse_args()
@@ -407,8 +406,10 @@ def main(arguments):
         exit(1)
 
 
+
+
 if __name__ == '__main__':
     try:
-        main(sys.argv)
+        main()
     except Warning:
         pass

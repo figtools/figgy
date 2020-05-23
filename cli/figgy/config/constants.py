@@ -1,8 +1,7 @@
 from pathlib import Path
 from config.aws import *
 
-VERSION = '0.0.1'
-CLI_NAME = 'figgy'
+
 
 # Role names are assumed to be prefixed with `figgy-` - Users may override by setting the below ENV variable.
 FIGGY_ROLE_NAME_PREFIX = 'figgy-'

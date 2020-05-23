@@ -1,5 +1,6 @@
 from config.commands import *
 from config.constants import *
+from config.figgy import *
 from utils.collection_utils import CollectionUtils
 
 # User communication text
