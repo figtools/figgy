@@ -1,13 +1,34 @@
-VERSION = '0.0.1'
-CLI_NAME = 'figgy'
+from enum import Enum
 
-# Figgy Github
-FIGGY_GITHUB = "https://github.com/mancej/figgy"
+"""
+The below classes represent a figgy config file found under ~/.figgy/config that provides defaults and override values
+so users don't have to go through the full configuration workflow when running `figgy --configure`
+"""
 
-# Todo: Update to prod before release.
-FIGGY_OBS_API_BASE_URL = "https://96zdpxzc37.execute-api.us-east-1.amazonaws.com/dev/v1"
 
-# Paths
-FIGGY_ERROR_REPORTING_URL = f"{FIGGY_OBS_API_BASE_URL}/log-error"
-FIGGY_GET_VERSION_URL = f"{FIGGY_OBS_API_BASE_URL}/version"
-FIGGY_LOG_METRICS_URL = f"{FIGGY_OBS_API_BASE_URL}/log-metrics"
+class ConfigSection:
+    NAME = None
+
+
+class Config:
+    class Section:
+        class Okta(ConfigSection, Enum):
+            NAME = 'OKTA'
+            APP_LINK = 'app_link'
+            FACTOR_TYPE = 'factor_type'
+
+        class Google(ConfigSection, Enum):
+            NAME = 'GOOGLE'
+            IDP_ID = 'identity_provider_id'
+            SP_ID = 'service_provider_id'
+
+        class Bastion(ConfigSection):
+            NAME = 'BASTION'
+            PROFILE = 'profile'
+
+        class Figgy(ConfigSection, Enum):
+            NAME = 'FIGGY'
+            MFA_ENABLED = 'mfa_enabled'
+            COLORS_ENABLED = 'colors_enabled'
+            REPORT_ERRORS = 'report_errors'
+            AWS_REGION = 'aws_region'

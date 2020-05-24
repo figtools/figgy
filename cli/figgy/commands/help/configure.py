@@ -42,12 +42,12 @@ class Configure(HelpCommand, ABC):
         """
         defaults: CLIDefaults = CLIDefaults.unconfigured()
         defaults = self._setup.configure_auth(defaults)
+        self._setup.save_defaults(defaults)
         self.c = Color(colors_enabled=Utils.is_mac())
 
         provider_factory: SessionProviderFactory = SessionProviderFactory(defaults)
         session_provider: SessionProvider = provider_factory.instance()
         session_provider.cleanup_session_cache()
-
         # Get assertion and parse out account -> role -> run_env mappings.
         assumable_roles: List[AssumableRole] = session_provider.get_assumable_roles()
         print(f"\n{self.c.fg_bl}The following roles were detected for user: {defaults.user} - if something is missing, "
@@ -72,7 +72,8 @@ class Configure(HelpCommand, ABC):
         print(f"\n{self.c.fg_gr}Setup successful! Enjoy figgy!{self.c.rs}")
         return defaults
 
-    def print_role_table(self, roles: List[AssumableRole]):
+    @staticmethod
+    def print_role_table(roles: List[AssumableRole]):
         printable_roles: Dict[int: Dict] = {}
         for role in roles:
             item = printable_roles.get(role.account_id, {})

@@ -1,10 +1,13 @@
 import logging
+from typing import Callable
+
 from config import *
 from input import Input
 from models.defaults.defaults import CLIDefaults
 from models.defaults.provider import Provider
 from models.defaults.provider_config import ProviderConfigFactory
 from svcs.cache_manager import CacheManager
+from svcs.config_manager import ConfigManager
 from utils.secrets_manager import SecretsManager
 from utils.utils import Utils
 
@@ -20,12 +23,15 @@ class FiggySetup:
     # refactoring here.
     def __init__(self):
         self._cache_mgr = CacheManager(DEFAULTS_FILE_CACHE_KEY)
+        self._config_mgr, self.c = ConfigManager.figgy(), Color(Utils.is_mac())
 
     def configure_preferences(self, current_defaults: CLIDefaults):
         updated_defaults = current_defaults
-        updated_defaults.region = Input.select_region()
-        updated_defaults.colors_enabled = Input.select_enable_colors()
-        updated_defaults.report_errors = Input.select_report_errors()
+        updated_defaults.region = self._config_mgr.get_or_prompt(Config.Section.Figgy.AWS_REGION, Input.select_region)
+        updated_defaults.colors_enabled = self._config_mgr.get_or_prompt(Config.Section.Figgy.COLORS_ENABLED,
+                                                                         Input.select_enable_colors)
+        updated_defaults.report_errors = self._config_mgr.get_or_prompt(Config.Section.Figgy.REPORT_ERRORS,
+                                                                        Input.select_report_errors)
         self.save_defaults(updated_defaults)
         return updated_defaults
 
@@ -42,7 +48,6 @@ class FiggySetup:
 
     def configure_auth(self, current_defaults: CLIDefaults, configure_provider=True) -> CLIDefaults:
         updated_defaults = current_defaults
-
         if configure_provider or current_defaults.provider is Provider.UNSELECTED:
             provider: Provider = Input.select_provider()
             updated_defaults.provider = provider
@@ -55,11 +60,18 @@ class FiggySetup:
             SecretsManager.set_password(user, password)
             updated_defaults.user = user
 
-        if configure_provider:
-            provider_config = ProviderConfigFactory().instance(provider, mfa_enabled=current_defaults.mfa_enabled)
-            updated_defaults.provider_config = provider_config
+        try:
+            mfa_enabled = Utils.parse_bool(self._config_mgr.get_or_prompt(Config.Section.Figgy.MFA_ENABLED,
+                                                                          Input.select_mfa_enabled))
+        except ValueError as e:
+            Utils.stc_error_exit(f"Invalid value found in figgy defaults file under "
+                                 f"{Config.Section.Figgy.MFA_ENABLED}. It must be either 'true' or 'false'")
+        else:
+            updated_defaults.mfa_enabled = mfa_enabled
 
-        updated_defaults.mfa_enabled = Input.select_mfa_enabled()
+        if configure_provider:
+            provider_config = ProviderConfigFactory().instance(provider, mfa_enabled=updated_defaults.mfa_enabled)
+            updated_defaults.provider_config = provider_config
 
         return updated_defaults
 

@@ -41,7 +41,7 @@ stdout_handler = logging.StreamHandler(sys.stdout)
 log = logging.getLogger(__name__)
 
 
-class Figgy:
+class FiggyCLI:
     @staticmethod
     def add_arg(com_parser, com_arg, cmd, rsc):
         com_parser.add_argument(f'--{Utils.get_first(com_arg)}', help=HELP_TEXT_MAP[com_arg],
@@ -69,7 +69,7 @@ class Figgy:
             for cmd in resource_map[rsc]:
                 com_parser = subparser.add_parser(Utils.get_first(cmd), help=HELP_TEXT_MAP[cmd])
                 for com_arg, val in arg_options[rsc][cmd].items():
-                    Figgy.add_arg(com_parser, com_arg, cmd, rsc)
+                    FiggyCLI.add_arg(com_parser, com_arg, cmd, rsc)
 
         return parser.parse_args()
 
@@ -79,11 +79,12 @@ class Figgy:
         :param skip - Boolean, if this is true, exit and return none.
         :return: hydrated CLIDefaults object of default values stored in cache file or None if no cache found
         """
+        os.makedirs(os.path.dirname(DEFAULTS_FILE_PATH), exist_ok=True)
+
         if skip:
             return CLIDefaults.unconfigured()
 
         cache_mgr = CacheManager(DEFAULTS_FILE_CACHE_KEY)
-        os.makedirs(os.path.dirname(DEFAULTS_FILE_PATH), exist_ok=True)
         try:
             last_write, defaults = cache_mgr.get(DEFAULTS_FILE_CACHE_KEY)
 
@@ -315,7 +316,7 @@ class Figgy:
         self.c = Color(self.get_colors_enabled())
         self._utils = Utils(self.get_colors_enabled())
         self._sts = boto3.client('sts')
-        self._defaults: CLIDefaults = Figgy.get_defaults(skip=self._configure_set)
+        self._defaults: CLIDefaults = FiggyCLI.get_defaults(skip=self._configure_set)
         self._run_env = self._defaults.run_env
         role_override = Utils.attr_if_exists(role, args)
         self._role: Role = self.get_role(args.prompt, role_override=role_override)
@@ -384,12 +385,12 @@ def main():
     sys.argv = arguments
     try:
         # Parse / Validate Args
-        args = Figgy.parse_args()
+        args = FiggyCLI.parse_args()
         if hasattr(args, 'debug') and args.debug:
             root_logger.setLevel(logging.INFO)
             root_logger.addHandler(stdout_handler)
 
-        cli: Figgy = Figgy(args)
+        cli: FiggyCLI = FiggyCLI(args)
         command: Command = cli.get_command()
 
         if hasattr(args, 'info') and args.info:
@@ -400,8 +401,12 @@ def main():
     except AssertionError as e:
         Utils.stc_error_exit(e.args[0])
     except Exception as e:
-        error_reporter = FiggyErrorReporter(Figgy.get_defaults())
-        error_reporter.log_error(original_command, e)
+        try:
+            error_reporter = FiggyErrorReporter(FiggyCLI.get_defaults())
+            error_reporter.log_error(original_command, e)
+        except Exception:
+            print(e)
+            print(f"Unable to log or report this exception. Please submit a Github issue to: {FIGGY_GITHUB}")
     except KeyboardInterrupt:
         exit(1)
 

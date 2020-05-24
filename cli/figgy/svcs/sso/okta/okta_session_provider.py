@@ -69,8 +69,7 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
                     return Okta(primary_auth)
                 except InvalidSessionError as e:
                     log.error(f"Caught error when authing with OKTA & caching session: {e}")
-                    print("Authentication failed with OKTA, please reauthenticate. Likely invalid MFA or Password?\r\n")
-                    self._defaults = self._setup.basic_configure(configure_provider=False)
+                    self._defaults = self._setup.basic_configure(configure_provider=self._defaults.provider_config is None)
                     prompt = True
 
     @Utils.trace

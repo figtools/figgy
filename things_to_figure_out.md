@@ -1,5 +1,9 @@
 These are problems I intend to solve, once I figure out the best way to do it.
 
+- Figgy Vault
+- Version & Update prompts
+
+__
 - Refactor figgy to not require a mgmt session anywhere to support existing functionality
 - Fix promote command
 - Fix or remove migrate command
@@ -21,7 +25,7 @@ These are problems I intend to solve, once I figure out the best way to do it.
 
 - Param finder
 
-- Figgy Vault
+- Figgy Experimental
 
 - Unused parameter recommender
 

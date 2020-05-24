@@ -4,14 +4,17 @@ from dataclasses import dataclass
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 
-from config import SUPPORTED_OKTA_FACTOR_TYPES
+from config import Config, CONFIG_OVERRIDE_FILE_PATH, SUPPORTED_OKTA_FACTOR_TYPES
 from input.input import Input, List
-from utils.utils import Utils
+from svcs.config_manager import ConfigManager
+from utils.utils import Utils, Color
 
 from models.defaults.provider import Provider
+import re
 
 
 class ProviderConfig(ABC):
+
     @staticmethod
     @abstractmethod
     def configure(mfa_enabled: bool = False) -> "ProviderConfig":
@@ -35,8 +38,15 @@ class BastionProviderConfig(ProviderConfig):
 
     @staticmethod
     def configure(mfa_enabled: bool = False) -> "BastionProviderConfig":
-        profile = input('Please input your aws profile linked to your credentials in your `bastion` account: ')
-        Utils.stc_validate(profile != '', "You must input a valid profile name.")
+        config, c = ConfigManager(CONFIG_OVERRIDE_FILE_PATH), Color(Utils.is_mac())
+
+        profile = config.get_property(Config.Section.Bastion.PROFILE)
+        if profile:
+            print(f"\n\n{c.fg_bl}Default AWS Provider found in: {CONFIG_OVERRIDE_FILE_PATH}.{c.rs}")
+            print(f"Value found: {profile}\n")
+        else:
+            profile = input('Please input your aws profile linked to your credentials in your `bastion` account: ')
+            Utils.stc_validate(profile != '', "You must input a valid profile name.")
 
         return BastionProviderConfig(profile_name=profile)
 
@@ -53,11 +63,24 @@ class GoogleProviderConfig(ProviderConfig):
 
     @staticmethod
     def configure(mfa_enabled: bool = False) -> "GoogleProviderConfig":
-        idp_id = input('Please input the Identity Provider ID associated with your Google Account: ')
-        Utils.stc_is_valid_input(idp_id, "Identity Provider Id", True)
-        sp_id = input('Please input the Service Provider ID associated with your Google SAML configuration (this is a '
-                      'number lke 123456789) : ')
-        Utils.stc_is_valid_input(idp_id, "Service Provider Id", True)
+        config, c = ConfigManager(CONFIG_OVERRIDE_FILE_PATH), Color(Utils.is_mac())
+        idp_id = config.get_property(Config.Section.Google.IDP_ID)
+        if idp_id:
+            print(f"\n\n{c.fg_bl}Identity Provider Id found in: {CONFIG_OVERRIDE_FILE_PATH}.{c.rs}")
+            print(f"Value found: {idp_id}\n")
+        else:
+            idp_id = input('Please input the Identity Provider ID associated with your Google Account: ')
+            Utils.stc_is_valid_input(idp_id, "Identity Provider Id", True)
+
+        sp_id = config.get_property(Config.Section.Google.SP_ID)
+        if sp_id:
+            print(f"\n\n{c.fg_bl}Service Provider Id found in: {CONFIG_OVERRIDE_FILE_PATH}.{c.rs}")
+            print(f"Value found: {sp_id}\n")
+        else:
+            sp_id = input(
+                'Please input the Service Provider ID associated with your Google SAML configuration (this is a '
+                'number lke 123456789) : ')
+            Utils.stc_is_valid_input(idp_id, "Service Provider Id", True)
 
         return GoogleProviderConfig(idp_id=idp_id, sp_id=sp_id)
 
@@ -65,25 +88,45 @@ class GoogleProviderConfig(ProviderConfig):
 @dataclass
 class OktaProviderConfig(ProviderConfig):
     """
-
+        app_link: str Application embed link for the company's AWS application in OKTA
+                  Looks something like this: https://your-company.okta.com/home/amazon_aws/ASDF12351fg1/234'
     """
     app_link: str
-    base_url: str
     factor_type: str
 
+    @property
+    def base_url(self) -> str:
+        result = re.match(r'^.*https://(.*\.com)/.*', self.app_link)
+        if result:
+            return result.group(1)
+        else:
+            Utils.stc_error_exit(f"Unable to parse base url from OKTA application link: {self.app_link}, are you "
+                                 f"sure this link is valid?")
+
     @staticmethod
-    def configure(mfa_enabled: bool = False) -> "ProviderConfig":
-        base_url = input("Please input the your OKTA domain. It's usually something like 'your-company.okta.com': ")
-        Utils.stc_is_valid_input(base_url, "OKTA Domain", True)
+    def get_embed_link() -> str:
         app_link = input("Please input your OKTA AWS Application Embed Link. It's usually something like "
                          "'https://your-company.okta.com/home/amazon_aws/ASDF12351fg1/234': ")
         Utils.stc_is_valid_input(app_link, "OKTA AWS Application URL", True)
+        return app_link
 
-        factor_type = None
+    @staticmethod
+    def get_factor_type() -> str:
+        factor_type = prompt(f"Please select your OKTA MFA Factor type. Supported Types are "
+                             f"{SUPPORTED_OKTA_FACTOR_TYPES}: ",
+                             completer=WordCompleter(SUPPORTED_OKTA_FACTOR_TYPES))
+        Utils.stc_validate(OktaProviderConfig.factor_type in SUPPORTED_OKTA_FACTOR_TYPES,
+                           f"You must select a factor type from: {SUPPORTED_OKTA_FACTOR_TYPES}")
+        return factor_type
+
+    @staticmethod
+    def configure(mfa_enabled: bool = False) -> "OktaProviderConfig":
+        config, c = ConfigManager(CONFIG_OVERRIDE_FILE_PATH), Color(Utils.is_mac())
+        app_link = config.get_or_prompt(Config.Section.Okta.APP_LINK, OktaProviderConfig.get_embed_link)
+
         if mfa_enabled:
-            factor_type = prompt(f"Please select your OKTA MFA Factor type. Supported Types are "
-                                 f"{SUPPORTED_OKTA_FACTOR_TYPES}: ", completer=WordCompleter(SUPPORTED_OKTA_FACTOR_TYPES))
-            Utils.stc_validate(factor_type in SUPPORTED_OKTA_FACTOR_TYPES,
-                               f"You must select a factor type from: {SUPPORTED_OKTA_FACTOR_TYPES}")
+            factor_type = config.get_or_prompt(Config.Section.Okta.FACTOR_TYPE, OktaProviderConfig.get_factor_type)
+        else:
+            factor_type = None
 
-        return OktaProviderConfig(app_link=app_link, base_url=base_url, factor_type=factor_type)
+        return OktaProviderConfig(app_link=app_link, factor_type=factor_type)

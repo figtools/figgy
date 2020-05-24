@@ -1,13 +1,40 @@
  
-## How to deploy:
-To deploy the figgy you'll want to make sure ALL of your changes are checked in, and that the config.py VERSION has been incremented.
+ 
+ 
+ 
+# Setting Figgy defaults to reduce user configuration requirements.
+Fill this file in and place it under ~/.figgy/config
 
-So suppose the current deployed version is '1.0.0'
+THIS FILE IS ENTIRELY OPTIONAL. If you do not provide this file, Figgy will just prompt you for 
+what it needs. This is for convenience when distributing figgy across large groups who may not
+know what the OKTA "app_link" is or the Google Identity Provider ID, etc.
+ ```ini
+[FIGGY]
+mfa_enabled = false
+colors_enabled = true
+report_errors = true
+aws_region = us-east-1
 
-To deploy a new version you would update config.py VERSION to '1.0.1'
+# You may remove this is you do not use OKTA
+[OKTA]
+# Find this on your OKTA AWS applicatoin page on the General tab. It's labeled as EMBED LINK:
+app_link = https://your-domain.okta.com/home/amazon_aws/0oasdfasdfasfssP4x6/123
+factor_type = GOOGLE
 
-You would then COMMIT that change to master, and wait for all 3 builds to finish for linux / darwin / windows.
+# You may remove this if you don't use GOOGLE
+[GOOGLE]
+# admin.google.com -> ||| (top left) ->  Security -> Settings -> Set up single sign-on (SSO) for SAML
+# applications (expand) -> SSO URL -> idp?idpid=B13asdfe3
+identity_provider_id = B13asdfe3
 
-Next export credentials to mgmt `figgy iam export --env  mgmt`
+# admin.google.com -> ||| (top left) ->  Apps -> SAML Apps -> Your AWS App 
+# -> LOOK AT URL -> ...:service=12345678910
+service_provider_id = 12345678910
 
-Finally you will need to run ./deploy.sh which will deploy your new version of 1.0.1 and will trigger auto-upgrades for user.
+# You may remove this if you don't use Bastion based authentication
+[BASTION]
+# AWS CLI required https://aws.amazon.com/cli/
+# Name of profile in your ~/.aws/credentials file that has AWS Access Key associated with your 
+# Figgy bastion user. You can create this profile by running `aws configure --profile figgy-bastion`
+profile = 'figgy-bastion'
+```

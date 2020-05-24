@@ -453,6 +453,16 @@ class Utils:
         for i in range(0, len(lst), chunk_size):
             yield lst[i:i + chunk_size]
 
+    @staticmethod
+    def parse_bool(value: str) -> bool:
+        value = value.replace("'", '').replace('"', '').strip()
+        if value.lower() == "true":
+            return True
+        elif value.lower() == "false":
+            return False
+        else:
+            raise ValueError(f"Provided bool value of {value} is not a valid bool type.")
+
     def get_config_key_safe(self, key: str, config: Dict, default=None):
         if key in config:
             return config[key]
