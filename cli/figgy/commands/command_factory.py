@@ -179,7 +179,8 @@ class CommandFactory(Factory):
 
         if self._context.command in config_commands and self._context.resource == config:
             self.__init_sessions()
-            context = ConfigContext(self._context.run_env, self._context.role, self._context.args, config)
+            context = ConfigContext(self._context.run_env, self._context.role, self._context.args, config,
+                                    defaults=self._cli_defaults)
 
 
             futures = set()
@@ -197,12 +198,14 @@ class CommandFactory(Factory):
 
         elif self._context.command in iam_commands and self._context.resource == iam:
             self.__init_sessions()
-            context = IAMContext(self._context.run_env, self._context.role, self._context.colors_enabled, iam)
+            context = IAMContext(self._context.run_env, self._context.role, self._context.colors_enabled, iam,
+                                 defaults=self._cli_defaults)
             factory = IAMFactory(self._context.command, context, self.__env_session(),
                                  all_sessions=self.__all_sessions())
         elif self._context.find_matching_optional_arguments(help_commands) or self._context.resource in help_commands:
             optional_args = self._context.find_matching_optional_arguments(help_commands)
-            context = HelpContext(self._context.resource, self._context.command, optional_args, self._context.run_env)
+            context = HelpContext(self._context.resource, self._context.command, optional_args, self._context.run_env,
+                                  defaults=self._cli_defaults)
             factory = HelpFactory(self._context.command, context)
         else:
             if self._context.command is None or self._context.resource:

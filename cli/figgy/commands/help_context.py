@@ -1,6 +1,7 @@
 from typing import Optional, List, Set
 
 from commands.command_context import CommandContext
+from models.defaults.defaults import CLIDefaults
 from models.run_env import RunEnv
 
 
@@ -10,8 +11,8 @@ class HelpContext(CommandContext):
     often don't have standard "resource" or "command" blocks, instead they may ONLY have --optional parameters
     """
     def __init__(self, resource: Optional[frozenset], command: Optional[frozenset],
-                 options: Optional[Set[frozenset]], run_env: Optional[RunEnv]):
-        super().__init__(run_env, resource)
+                 options: Optional[Set[frozenset]], run_env: Optional[RunEnv], defaults: Optional[CLIDefaults]):
+        super().__init__(run_env, resource, defaults=defaults)
 
         self.resource = resource
         self.command = command

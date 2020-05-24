@@ -6,6 +6,9 @@ import re
 import os
 import time
 import re
+
+from config.style.color import Color
+from config.style.terminal_factory import TerminalFactory
 from models.role import Role
 from models.run_env import RunEnv
 from sys import exit
@@ -33,7 +36,7 @@ MAX_RETRIES = 10
 class Utils:
 
     def __init__(self, colors_enabled=False):
-        self.c = Color(colors_enabled)
+        self.c = TerminalFactory(colors_enabled).instance().get_colors()
 
     @staticmethod
     def retry(function):
@@ -454,7 +457,10 @@ class Utils:
             yield lst[i:i + chunk_size]
 
     @staticmethod
-    def parse_bool(value: str) -> bool:
+    def parse_bool(value: Union[str, bool]) -> bool:
+        if isinstance(value, bool):
+            return bool
+
         value = value.replace("'", '').replace('"', '').strip()
         if value.lower() == "true":
             return True
@@ -462,6 +468,10 @@ class Utils:
             return False
         else:
             raise ValueError(f"Provided bool value of {value} is not a valid bool type.")
+
+    @staticmethod
+    def default_colors() -> Color:
+        return TerminalFactory(Utils.is_mac()).instance().get_colors()
 
     def get_config_key_safe(self, key: str, config: Dict, default=None):
         if key in config:

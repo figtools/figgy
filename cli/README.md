@@ -12,8 +12,12 @@ know what the OKTA "app_link" is or the Google Identity Provider ID, etc.
 [FIGGY]
 mfa_enabled = false
 colors_enabled = true
-report_errors = true
 aws_region = us-east-1
+
+# User will ALWAYS be prompted to report errors to prevent accidental reporting.
+# If set to false, the user will never be prompted. 
+report_errors = true
+
 
 # You may remove this is you do not use OKTA
 [OKTA]

@@ -6,6 +6,7 @@ import traceback
 import datetime
 import re
 from config import *
+from config.style.terminal_factory import TerminalFactory
 from input import Input
 from utils.utils import Utils
 
@@ -31,11 +32,12 @@ def obey_reporting_preference(function):
 class FiggyErrorReporter:
     _SECRET_MATCHERS = [
         r'.*AKIA.*',  # Match for AWS access keys
+        r'.*[pP][aA][sS][sS].*'  # Anything with pass(word), skip it.
     ]
 
     def __init__(self, cli_defaults: CLIDefaults):
         self._cli_defaults = cli_defaults
-        self.c = Color(self._cli_defaults.colors_enabled)
+        self.c = TerminalFactory(self._cli_defaults.colors_enabled).instance().get_colors()
         self.reporting_enabled = cli_defaults.report_errors
 
     @staticmethod
@@ -85,7 +87,8 @@ class FiggyErrorReporter:
 
     def log_error(self, command: str, e: Exception):
         os.makedirs(ERROR_LOG_DIR, exist_ok=True)
-        # Do not sanitize here since this is only written to ther user's local log folder.
+
+        # Do not sanitize here since this is only written to the user's local log folder.
         printable_exception = ''.join(traceback.format_exception(etype=type(e), value=e, tb=e.__traceback__))
         log_file_name = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S.log")
 
@@ -105,6 +108,6 @@ class FiggyErrorReporter:
             if ship_it:
                 self.report_error(command, e)
             else:
-                print(f"Error not automatically reported. Please consider reporting  this error on our Github: "
+                print(f"Error was not reported. Please consider reporting  this error on our Github: "
                       f"{FIGGY_GITHUB}. Error details have been logged to this file: "
                       f"{self.c.fg_bl}{log_file_name}{self.c.rs}. Farewell! \n")

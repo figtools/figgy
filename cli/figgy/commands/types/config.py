@@ -1,8 +1,11 @@
+from typing import Optional
+
 from config import *
 from abc import ABC, abstractmethod
 from commands.config_context import ConfigContext
 from commands.command_context import CommandContext
 from commands.types.command import Command
+from models.defaults.defaults import CLIDefaults
 
 
 class ConfigCommand(Command, ABC):
@@ -11,5 +14,5 @@ class ConfigCommand(Command, ABC):
     """
 
     def __init__(self, command_type: frozenset, colors_enabled: bool, context: ConfigContext):
-        super().__init__(command_type, colors_enabled, CommandContext(context.run_env, context.resource))
+        super().__init__(command_type, colors_enabled, context)
         self.role = context.role

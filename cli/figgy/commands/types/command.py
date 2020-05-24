@@ -1,4 +1,5 @@
 from config import *
+from config.style.terminal_factory import TerminalFactory
 from utils.utils import Utils
 from abc import ABC, abstractmethod
 from commands.command_context import CommandContext
@@ -12,7 +13,7 @@ class Command(ABC):
     def __init__(self, command_type: frozenset, colors_enabled: bool, context: CommandContext):
         self.type = command_type
         self.run_env = context.run_env
-        self.c = Color(colors_enabled)
+        self.c = TerminalFactory(colors_enabled).instance().get_colors()
         self.command_printable = list(self.type)[0]
         self.context = context
         self.example = f"{self.c.fg_bl}{CLI_NAME} {Utils.get_first(context.resource)} {self.command_printable} " \

@@ -38,7 +38,7 @@ class BastionProviderConfig(ProviderConfig):
 
     @staticmethod
     def configure(mfa_enabled: bool = False) -> "BastionProviderConfig":
-        config, c = ConfigManager(CONFIG_OVERRIDE_FILE_PATH), Color(Utils.is_mac())
+        config, c = ConfigManager(CONFIG_OVERRIDE_FILE_PATH), Utils.default_colors()
 
         profile = config.get_property(Config.Section.Bastion.PROFILE)
         if profile:
@@ -63,7 +63,7 @@ class GoogleProviderConfig(ProviderConfig):
 
     @staticmethod
     def configure(mfa_enabled: bool = False) -> "GoogleProviderConfig":
-        config, c = ConfigManager(CONFIG_OVERRIDE_FILE_PATH), Color(Utils.is_mac())
+        config, c = ConfigManager(CONFIG_OVERRIDE_FILE_PATH), Utils.default_colors()
         idp_id = config.get_property(Config.Section.Google.IDP_ID)
         if idp_id:
             print(f"\n\n{c.fg_bl}Identity Provider Id found in: {CONFIG_OVERRIDE_FILE_PATH}.{c.rs}")
@@ -121,7 +121,7 @@ class OktaProviderConfig(ProviderConfig):
 
     @staticmethod
     def configure(mfa_enabled: bool = False) -> "OktaProviderConfig":
-        config, c = ConfigManager(CONFIG_OVERRIDE_FILE_PATH), Color(Utils.is_mac())
+        config, c = ConfigManager(CONFIG_OVERRIDE_FILE_PATH), Utils.default_colors()
         app_link = config.get_or_prompt(Config.Section.Okta.APP_LINK, OktaProviderConfig.get_embed_link)
 
         if mfa_enabled:

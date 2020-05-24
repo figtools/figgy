@@ -23,7 +23,7 @@ class FiggySetup:
     # refactoring here.
     def __init__(self):
         self._cache_mgr = CacheManager(DEFAULTS_FILE_CACHE_KEY)
-        self._config_mgr, self.c = ConfigManager.figgy(), Color(Utils.is_mac())
+        self._config_mgr, self.c = ConfigManager.figgy(), Utils.default_colors()
 
     def configure_preferences(self, current_defaults: CLIDefaults):
         updated_defaults = current_defaults
@@ -65,7 +65,7 @@ class FiggySetup:
                                                                           Input.select_mfa_enabled))
         except ValueError as e:
             Utils.stc_error_exit(f"Invalid value found in figgy defaults file under "
-                                 f"{Config.Section.Figgy.MFA_ENABLED}. It must be either 'true' or 'false'")
+                                 f"{Config.Section.Figgy.MFA_ENABLED.value}. It must be either 'true' or 'false'")
         else:
             updated_defaults.mfa_enabled = mfa_enabled
 
@@ -79,5 +79,10 @@ class FiggySetup:
         self._cache_mgr.write(DEFAULTS_FILE_CACHE_KEY, defaults)
 
     def get_defaults(self) -> CLIDefaults:
-        last_write, defaults = self._cache_mgr.get(DEFAULTS_FILE_CACHE_KEY)
+        try:
+            last_write, defaults = self._cache_mgr.get(DEFAULTS_FILE_CACHE_KEY)
+        except Exception:
+            # If cache is corrupted or inaccessible, "fogetaboutit" (in italian accent)
+            return CLIDefaults.unconfigured()
+
         return defaults if defaults else CLIDefaults.unconfigured()

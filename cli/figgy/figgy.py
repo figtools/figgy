@@ -160,105 +160,6 @@ class FiggyCLI:
         """
         return self.get_command_factory().instance()
 
-    def _install_mac_onedir(self, install_path: str, latest_version: str):
-        s3_path = f'{CLI_NAME}/{latest_version}/{platform.system().lower()}/{CLI_NAME}.zip'
-
-        try:
-            total_bytes = self.get_s3_resource().Object(CLI_BUCKET, s3_path).content_length
-            progress = S3Progress(total=total_bytes, unit='B', unit_scale=True, miniters=1, desc='Downloading')
-            bucket = self.get_s3_resource().Bucket(CLI_BUCKET)
-            zip_path = f"{HOME}/.{CLI_NAME}/{CLI_NAME}.zip"
-            install_dir = f'{HOME}/.{CLI_NAME}/{CLI_NAME}/version/{latest_version}'
-
-            os.makedirs(os.path.dirname(install_dir), exist_ok=True)
-
-            with progress:
-                bucket.download_file(s3_path, zip_path, Callback=progress)
-
-            with ZipFile(zip_path, 'r') as zipObj:
-                zipObj.extractall(install_dir)
-
-            if self._utils.file_exists(install_path):
-                os.remove(install_path)
-
-            executable_path = f'{install_dir}/{CLI_NAME}'
-            st = os.stat(executable_path)
-            os.chmod(executable_path, st.st_mode | stat.S_IEXEC)
-            os.symlink(f'{install_dir}/{CLI_NAME}', install_path)
-            print(f'{CLI_NAME} has been installed at path `{install_path}`.')
-        except ClientError as e:
-            if e.response['Error']['Code'] == "404":
-                print("Unable to find the {CLI_NAME} in S3. Something went terribly wrong! :(")
-            else:
-                raise
-
-    def _perform_upgrade(self, latest_version: str) -> None:
-        """
-        Walks the user through the upgrade path. Supports Windows/Linux/& OSX for Windows we must rename the running
-        binary to a different name, as we cannot overwrite the existing running binary.
-        Args:
-            latest_version: str: The version ot upgrade to, i.e 1.0.6
-            mgmt_session: Session that may be leveraged for performing the upgrade by downloading the appropriate binary
-                          from S3.
-        """
-        readline.parse_and_bind("tab: complete")
-        comp = Completer()
-        readline.set_completer_delims(' \t\n')
-        readline.parse_and_bind("tab: complete")
-        readline.set_completer(comp.pathCompleter)
-        abs_path = os.path.dirname(sys.executable)
-        install_path = input(f'Input path to your existing installation. Default: {abs_path} : ') or abs_path
-        suffix = ".exe" if self._utils.is_windows() else ""
-
-        if os.path.isdir(install_path):
-            if install_path.endswith('/'):
-                install_path = install_path[:-1]
-
-            install_path = f"{install_path}/{CLI_NAME}{suffix}"
-
-        if not self._utils.file_exists(install_path):
-            self._utils.error_exit("Invalid install path specified, try providing the full path to the binary.")
-
-        print(f"Install path: {install_path}")
-        s3_path = f'{CLI_NAME}/{latest_version}/{platform.system().lower()}/{CLI_NAME}{suffix}'
-        print(f"Installing: {CLI_NAME}/{latest_version}/{platform.system().lower()}/{CLI_NAME}{suffix}")
-        print(f"{self.c.fg_bl}Downloading `{CLI_NAME}` version: {latest_version}{self.c.rs}")
-
-        old_path = f'{install_path}.OLD'
-        temp_path = install_path + "tmp"
-
-        if self._utils.file_exists(old_path):
-            os.remove(old_path)
-        if self._utils.file_exists(temp_path):
-            os.remove(temp_path)
-        if self._utils.file_exists(install_path):
-            os.rename(install_path, old_path)
-
-        if not Utils.is_mac():
-            try:
-                total_bytes = self.get_s3_resource().Object(CLI_BUCKET, s3_path).content_length
-                progress = S3Progress(total=total_bytes, unit='B', unit_scale=True, miniters=1, desc='Downloading')
-                bucket = self.get_s3_resource().Bucket(CLI_BUCKET)
-
-                with progress:
-                    bucket.download_file(s3_path, temp_path, Callback=progress)
-
-            except ClientError as e:
-                if e.response['Error']['Code'] == "404":
-                    print("Unable to find the {CLI_NAME} in S3. Something went terribly wrong! :(")
-                else:
-                    raise
-            else:
-                st = os.stat(temp_path)
-                os.chmod(temp_path, st.st_mode | stat.S_IEXEC)
-                os.rename(temp_path, install_path)
-        else:
-            self._install_mac_onedir(f'{install_path}', latest_version)
-
-            print(f"{self.c.fg_gr}Installation successful! Exiting. Rerun `{CLI_NAME}` "
-                  f"to use the latest version!{self.c.rs}")
-            exit()
-
     def find_assumable_roles(self, env: RunEnv, role: Role, skip: bool = False) -> Tuple[AssumableRole, AssumableRole]:
         matching_role, next_role = None, None
         assumable_roles: List[AssumableRole] = self.get_defaults(skip=skip).assumable_roles
@@ -269,37 +170,6 @@ class FiggyCLI:
             next_role = assumable_roles[next_idx] if next_idx < len(assumable_roles) else None
         return matching_role, next_role
 
-    def check_version(self):
-        """
-        Looks up the current latest version from P.S. Offers automated installation if possible, otherwise tells user
-        how to manually install themselves.
-        :return:
-        """
-        mgmt_session = self.get_mgmt_session()
-
-        if mgmt_session:
-            latest_version = self.get_mgmt_ssm().get_parameter(CLI_LATEST_VERSION_PS_PATH)
-
-            if VERSION != latest_version:
-                print(f"{self.c.fg_rd}Your version of the `{CLI_NAME}` is out of date. You are running "
-                      f"{self.c.rs}{self.c.fg_bl}{VERSION}{self.c.rs} instead of "
-                      f"{self.c.fg_bl}{latest_version}{self.c.rs}\n")
-                selection = input(f"W ould you like to try the auto-upgrade? This should work for "
-                                  f"Linux/OS-X/Windows installations. (Y/n): ")
-                selection = selection if selection != '' else 'y'
-                if selection.lower() == "y":
-                    self._perform_upgrade(latest_version)
-                else:
-                    suffix = ""
-                    command = CLI_UPDATE_COMMAND.replace('$$VERSION$$', latest_version) \
-                        .replace('$$OS$$', platform.system().lower())
-
-                    if self._utils.is_windows():
-                        suffix = ".exe"
-
-                    command = command.replace('$$SUFFIX$$', suffix)
-                    print("You can still manual upgrade. To download the latest version run this "
-                          f"command: {command}\nYou will need to add {CLI_NAME} to your path manually.")
 
     def __init__(self, args):
         """
@@ -313,7 +183,6 @@ class FiggyCLI:
         self._command_factory = None
         self._session_manager = None
         self._configure_set: bool = Utils.is_set_true(configure, args)
-        self.c = Color(self.get_colors_enabled())
         self._utils = Utils(self.get_colors_enabled())
         self._sts = boto3.client('sts')
         self._defaults: CLIDefaults = FiggyCLI.get_defaults(skip=self._configure_set)

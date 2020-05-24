@@ -1,8 +1,9 @@
 from configparser import ConfigParser
 from enum import Enum
-from typing import Type, Union, Optional, Callable
+from typing import Type, Union, Optional, Callable, Any
 
-from config import CONFIG_OVERRIDE_FILE_PATH, Config, Color
+from config import CONFIG_OVERRIDE_FILE_PATH, Config
+from config.style.terminal_factory import TerminalFactory
 from input import Input
 from utils.utils import Utils
 
@@ -22,19 +23,55 @@ class ConfigManager:
         with open(self.config_file, 'r') as file:
             self.config.read_file(file)
 
-    def get_or_prompt(self, config: Enum, get_it: Callable, colors_enabled=Utils.is_mac()):
-        c = Color(colors_enabled)
-        val = self.get_property(config)
+    def set(self, key: Enum, val: Any) -> None:
+        """
+        Set the value in self.config_file for key: KEY
+        Values are forced to strings if non-string values are passed
+        :param key: Key to set in the file.
+        :param val: Value to set.
+        """
+        if isinstance(val, bool):
+            val = str(val).lower()
+        else:
+            val = str(val)
+
+        self.config.set(key.__objclass__.NAME.value, key.value, val)
+
+        with open(self.config_file, "w") as file:
+            self.config.write(file)
+
+    def get_or_prompt(self, key: Enum, get_it: Callable, colors_enabled=Utils.is_mac()) -> str:
+        """
+        Retrieves a value from the config_file based on the provided ENUM's value.
+        If the value is unset, executes the get_it() method provided to retrieve the value, then returns it.
+
+        If the user selects something _other_ than the default, overwrite the original value in the config file
+        :param key: Enum representing the config value to fetch
+        :param get_it: Method to execute if `config` is not in the configured config_file
+        :param colors_enabled: Whether or not to enable colored output for the prompt if a config is found in config_file
+        :return: String value from the config file, or the result of get_it()
+        """
+        c = TerminalFactory(colors_enabled).instance().get_colors()
+        val = self.get_property(key)
 
         if val:
             print(f"\n\n{c.fg_bl}Default value found:{c.rs}")
-            print(f"Key: {c.fg_gr}{config.value}{c.rs}")
+            print(f"Key: {c.fg_gr}{key.value}{c.rs}")
             print(f"Value: {c.fg_gr}{val}{c.rs}")
-            print(f"Values found in file: {c.fg_bl}{CONFIG_OVERRIDE_FILE_PATH}{c.rs}\n\n")
+            print(f"Values found in file: {c.fg_bl}{self.config_file}{c.rs}\n\n")
 
             selection = Input.y_n_input("Continue with this value? ", default_yes=True)
             if not selection:
+                original_val = val
                 val = get_it()
+                if val != original_val:
+                    print(f"\n\nYou selected to overwrite the default. Updating default value:"
+                          f"\nKey: {c.fg_gr}{key.value}{c.rs}"
+                          f"\nFrom: {c.fg_yl}{original_val}{c.rs}"
+                          f"\nTo: {c.fg_gr}{val}{c.rs}"
+                          f"\nIn file {c.fg_bl}{self.config_file}{c.rs}")
+                    self.set(key, val)
+
         else:
             val = get_it()
 

@@ -6,6 +6,7 @@ from tabulate import tabulate
 from commands.help_context import HelpContext
 from commands.types.help import HelpCommand
 from config import *
+from config.style.terminal_factory import TerminalFactory
 from utils.utils import Utils
 from input.input import Input
 from models.assumable_role import AssumableRole
@@ -40,10 +41,10 @@ class Configure(HelpCommand, ABC):
         assumable_roles: Maintains a mapping of accountId -> environment name -> role name so the we can authenticate
                          the user with the appropriate AWS accounts based on their returned SAML assertion.
         """
-        defaults: CLIDefaults = CLIDefaults.unconfigured()
+        defaults: CLIDefaults = self._setup.get_defaults()
         defaults = self._setup.configure_auth(defaults)
         self._setup.save_defaults(defaults)
-        self.c = Color(colors_enabled=Utils.is_mac())
+        self.c = TerminalFactory(Utils.is_mac()).instance().get_colors()
 
         provider_factory: SessionProviderFactory = SessionProviderFactory(defaults)
         session_provider: SessionProvider = provider_factory.instance()
