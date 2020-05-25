@@ -97,10 +97,10 @@ class Export(IAMCommand):
             Utils.stc_validate(credentials is not None, f"Unable to generate credentials for environment: {self.run_env}")
             self._write_credentials(credentials.access_key, credentials.secret_key, credentials.token)
         else:
-            for (env, session) in self._all_sessions.items():
+            for (role_name, session) in self._all_sessions.items():
                 credentials: namedtuple = session.get_credentials().get_frozen_credentials()
-                Utils.stc_validate(credentials is not None, f"Unable to generate credentials for environment: {env}")
-                self._write_credentials(credentials.access_key, credentials.secret_key, credentials.token, f"figgy-{env}")
+                Utils.stc_validate(credentials is not None, f"Unable to generate credentials for role: {role_name}")
+                self._write_credentials(credentials.access_key, credentials.secret_key, credentials.token, role_name)
 
     @UsageTracker.track_command_usage
     def execute(self):

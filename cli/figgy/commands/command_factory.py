@@ -125,14 +125,16 @@ class CommandFactory(Factory):
         """
         Populates a DICT containing boto sessions for all 4 environments (dev -> prod).
         """
+        assumable_roles = self._cli_defaults.assumable_roles
+        matching_roles = list(set([x for x in assumable_roles if x.role == self._context.role]))
+
         if not self._all_sessions and self._context.all_profiles:
             self._all_sessions: Dict[str, boto3.session.Session] = {}
 
             with ThreadPoolExecutor(max_workers=10) as pool:
                 session_futures: Dict[str, thread] = {
-                    env: pool.submit(self.__session_manager().get_session, RunEnv(env),
-                                     self._context.selected_role, prompt=False)
-                    for env in envs
+                    role.role.full_name: pool.submit(self.__session_manager().get_session, role, prompt=False)
+                    for role in matching_roles
                 }
 
                 for env, future in session_futures.items():

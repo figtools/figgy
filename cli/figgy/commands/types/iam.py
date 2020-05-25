@@ -11,5 +11,6 @@ class IAMCommand(Command, ABC):
     """
 
     def __init__(self, command_type: frozenset, context: IAMContext):
-        super().__init__(command_type, context.colors_enabled, CommandContext(context.run_env, context.resource))
+        super().__init__(command_type, context.colors_enabled, CommandContext(context.run_env, context.resource,
+                                                                              context.defaults))
         self.role = context.role
