@@ -1,15 +1,9 @@
 These are problems I intend to solve, once I figure out the best way to do it.
 
-- Version & Update prompts
-
 - Figgy Vault
 - Slack integration for shares / etc.
 
 __
-
-- Refactor figgy to not require a mgmt session anywhere to support existing functionality
-- Fix promote command
-- Fix or remove migrate command
     
 - What do I do with auto-upgrade feature?
 

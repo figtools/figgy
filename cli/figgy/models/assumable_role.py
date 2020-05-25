@@ -34,3 +34,11 @@ class AssumableRole:
             numalign="center",
             stralign="left",
         )
+
+    def __eq__(self, other):
+        return self.account_id == other.account_id and \
+               self.role == other.role and \
+               self.run_env == other.run_env
+
+    def __hash__(self):
+        return hash(f'{self.account_id}-{self.role}-{self.run_env}')

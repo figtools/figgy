@@ -160,15 +160,15 @@ class FiggyCLI:
         """
         return self.get_command_factory().instance()
 
-    def find_assumable_roles(self, env: RunEnv, role: Role, skip: bool = False) -> Tuple[AssumableRole, AssumableRole]:
-        matching_role, next_role = None, None
+    def find_assumable_role(self, env: RunEnv, role: Role, skip: bool = False) -> AssumableRole:
         assumable_roles: List[AssumableRole] = self.get_defaults(skip=skip).assumable_roles
         matching_role = [ar for ar in assumable_roles if ar.role == role and ar.run_env == env]
         if matching_role:
             matching_role = matching_role.pop()
-            next_idx = assumable_roles.index(matching_role) + 1
-            next_role = assumable_roles[next_idx] if next_idx < len(assumable_roles) else None
-        return matching_role, next_role
+        else:
+            matching_role = None
+
+        return matching_role
 
     def __init__(self, args):
         """
@@ -200,8 +200,8 @@ class FiggyCLI:
         self._utils.validate(Utils.attr_exists(configure, args) or Utils.attr_exists(command, args),
                              f"No command found. Proper format is `{CLI_NAME} <resource> <command> --option(s)`")
 
-        self._assumable_role, self._next_assumable_role = self.find_assumable_roles(self._run_env, self._role,
-                                                                                    skip=self._configure_set)
+        self._assumable_role = self.find_assumable_role(self._run_env, self._role, skip=self._configure_set)
+        #Todo validate this role?
 
         command_val = Utils.attr_if_exists(command, args)
         resource_val = Utils.attr_if_exists(resource, args)
@@ -211,10 +211,7 @@ class FiggyCLI:
         log.info(f"Command {found_command}, resource: {found_resource}")
 
         self._context = FiggyContext(self.get_colors_enabled(), found_resource, found_command,
-                                     self._run_env, self._assumable_role, self._next_assumable_role, args)
-        # Todo: Solve for auto-upgrade in future & Solve for mgmt sessions
-        # if not self._context.skip_upgrade:
-        #     self.check_version()
+                                     self._run_env, self._assumable_role, args)
 
     def _get_session_manager(self):
         """
@@ -273,9 +270,9 @@ def main():
         try:
             error_reporter = FiggyErrorReporter(FiggyCLI.get_defaults())
             error_reporter.log_error(original_command, e)
-        except Exception:
+        except Exception as e:
             print(e)
-            print(f"Unable to log or report this exception. Please submit a Github issue to: {FIGGY_GITHUB}")
+            print(f"\n\nUnable to log or report this exception. Please submit a Github issue to: {FIGGY_GITHUB}")
     except KeyboardInterrupt:
         exit(1)
 

@@ -15,6 +15,7 @@ from commands.config.sync import *
 from commands.config_context import ConfigContext
 from commands.factory import Factory
 from svcs.kms import KmsSvc
+from svcs.sso.session_manager import SessionManager
 from views.rbac_limited_config import RBACLimitedConfigView
 from utils.utils import *
 
@@ -26,7 +27,8 @@ class ConfigFactory(Factory):
     """
 
     def __init__(self, command: frozenset, context: ConfigContext, ssm: SsmDao, cfg: ConfigDao, kms: KmsSvc,
-                 s3_resource: ServiceResource, colors_enabled: bool, config_view: RBACLimitedConfigView):
+                 s3_resource: ServiceResource, colors_enabled: bool, config_view: RBACLimitedConfigView,
+                 session_manager: SessionManager):
 
         self._command: frozenset = command
         self._config_context: ConfigContext = context
@@ -39,6 +41,7 @@ class ConfigFactory(Factory):
         self._utils = Utils(colors_enabled)
         self._args = context.args
         self._config_completer = self._config_view.get_config_completer()
+        self._session_manager = session_manager
 
     def instance(self):
         return self.get(self._command)
@@ -75,7 +78,7 @@ class ConfigFactory(Factory):
                            self._config_completer, self.get(delete))
         elif command == promote:
             return Promote(self._ssm, self._config_completer, self._colors_enabled,
-                           self._config_context)
+                           self._config_context, self._session_manager)
         elif command == edit:
             return Edit(self._ssm, self._colors_enabled, self._config_context, self._config_completer)
         elif command == generate:

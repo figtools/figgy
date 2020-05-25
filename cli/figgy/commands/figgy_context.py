@@ -1,4 +1,3 @@
-import boto3
 import argparse
 import logging
 from config import *
@@ -17,9 +16,7 @@ class FiggyContext:
     """
 
     def __init__(self, colors_enabled: bool, resource: frozenset, command: frozenset,
-                 run_env: RunEnv, role: AssumableRole, next_role: AssumableRole, args: argparse.Namespace):
-        # Utils.stc_validate(args.command is not None, "No command found. Proper format is "
-        #                                              "`figgy <resource> <command> --option(s)`")
+                 run_env: RunEnv, role: AssumableRole, args: argparse.Namespace):
         self.colors_enabled = colors_enabled
         self.command: frozenset = command
         self.resource: frozenset = resource
@@ -31,7 +28,6 @@ class FiggyContext:
         self.args = args
         self.run_env: RunEnv = run_env
         self.selected_role: AssumableRole = role
-        self.next_env_role: AssumableRole = next_role
         self.role: Role = self.selected_role.role if self.selected_role else None
         self.ci_config_path = Utils.attr_if_exists(config, args)
         self.from_path = Utils.attr_if_exists(from_path, args)

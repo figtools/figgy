@@ -13,3 +13,6 @@ class RunEnv:
             return obj.env == self.env
 
         return False
+
+    def __hash__(self):
+        return hash(self.env)

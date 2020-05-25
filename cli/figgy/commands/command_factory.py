@@ -194,7 +194,8 @@ class CommandFactory(Factory):
                 pass  # Force lazy init for all futures.
 
             factory = ConfigFactory(self._context.command, context, self.__ssm(), self.__config(), self.__kms(),
-                                    self.__s3_resource(), self._context.colors_enabled, self.__rbac_config_view())
+                                    self.__s3_resource(), self._context.colors_enabled, self.__rbac_config_view(),
+                                    self.__session_manager())
 
         elif self._context.command in iam_commands and self._context.resource == iam:
             self.__init_sessions()

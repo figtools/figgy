@@ -138,7 +138,7 @@ class Input:
         selection = ''
         default_compare = 'y' if default_yes else 'n'
         default_prompt = '(Y/n)' if default_yes else '(y/N)'
-        prompt = f'{message} {default_prompt}: -> ' if len(message) < 40 else f'{message} \n {default_prompt}: -> '
+        prompt = f'{message} {default_prompt}: -> ' if len(message) < 70 else f'{message} \n {default_prompt}: -> '
 
         while selection.lower() != 'y' and selection.lower() != 'n':
             selection = input(prompt)
@@ -147,4 +147,28 @@ class Input:
             if selection != 'y' and selection != 'n' and invalid_no:
                 return False
 
+        print()
         return True if selection == 'y' else False
+
+    @staticmethod
+    def select(message: str, valid_options: List[str], default: str = None) -> str:
+        """
+        Returns True if user selects 'y', or False if user select 'N'
+        :param message: Message to prompt the user with.
+        :param valid_options: List of valid options to accept.
+        :param default: Set the prompt's default to this
+        :return: Selected option
+        """
+        selection = ''
+        msg = f'{message}\nOptions: {valid_options}\n -> ' if len(valid_options) < 5 else f'{message} -> '
+        while not selection:
+            if default:
+                selection = prompt(msg, completer=WordCompleter(words=valid_options), default=default)
+            else:
+                selection = prompt(msg, completer=WordCompleter(words=valid_options))
+
+            if selection not in valid_options:
+                selection = ''
+
+        print()
+        return selection

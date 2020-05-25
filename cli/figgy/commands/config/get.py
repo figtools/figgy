@@ -54,7 +54,7 @@ class Get(ConfigCommand):
                     print(f"{self.c.fg_gr}Description: {self.c.rs}{desc}")
                 else:
                     print(f"{self.c.fg_rd}Invalid PS Name specified.{self.c.rs}")
-                get_another = Input.y_n_input(f"Get another?", default_yes=False, invalid_no=True)
+                get_another = Input.y_n_input(f"\nGet another?", default_yes=False, invalid_no=True)
                 print()
 
     @VersionTracker.notify_user
