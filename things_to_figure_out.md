@@ -10,9 +10,7 @@ __
 - Add figgy to pypi? `pip install figgy`?
     - If someone does `pip install figgy` - how do they import their company's unique SSO configurations elegantly?
 
-
-Ò- Add support for "ExternalId" verification for cross-account role assumption from Bastion.
-
+- Add support for "ExternalId" verification for cross-account role assumption from Bastion.
 
 - Param finder
 

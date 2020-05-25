@@ -29,6 +29,8 @@ class Config:
         class Figgy(ConfigSection, Enum):
             NAME = 'FIGGY'
             MFA_ENABLED = 'mfa_enabled'
+            AUTO_MFA = 'auto_mfa'
             COLORS_ENABLED = 'colors_enabled'
             REPORT_ERRORS = 'report_errors'
             AWS_REGION = 'aws_region'
+

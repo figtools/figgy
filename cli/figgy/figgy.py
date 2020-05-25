@@ -79,7 +79,6 @@ class FiggyCLI:
         :param skip - Boolean, if this is true, exit and return none.
         :return: hydrated CLIDefaults object of default values stored in cache file or None if no cache found
         """
-        os.makedirs(os.path.dirname(DEFAULTS_FILE_PATH), exist_ok=True)
 
         if skip:
             return CLIDefaults.unconfigured()
@@ -261,9 +260,9 @@ def main():
 
         if hasattr(args, 'info') and args.info:
             command.print_help_text()
-            exit(0)
+        else:
+            command.execute()
 
-        command.execute()
     except AssertionError as e:
         Utils.stc_error_exit(e.args[0])
     except Exception as e:

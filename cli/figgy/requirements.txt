@@ -18,3 +18,4 @@ jsonpickle==1.4.1
 aws-google-auth==0.0.35
 pillow==7.1.2
 urllib3==1.25.8
+pyotp==2.3.0

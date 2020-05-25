@@ -63,11 +63,21 @@ class FiggySetup:
         try:
             mfa_enabled = Utils.parse_bool(self._config_mgr.get_or_prompt(Config.Section.Figgy.MFA_ENABLED,
                                                                           Input.select_mfa_enabled))
+            if mfa_enabled:
+                auto_mfa = self._config_mgr.get_or_prompt(Config.Section.Figgy.AUTO_MFA, Input.select_auto_mfa)
+            else:
+                auto_mfa = False
+
         except ValueError as e:
             Utils.stc_error_exit(f"Invalid value found in figgy defaults file under "
                                  f"{Config.Section.Figgy.MFA_ENABLED.value}. It must be either 'true' or 'false'")
         else:
             updated_defaults.mfa_enabled = mfa_enabled
+            updated_defaults.auto_mfa = auto_mfa
+
+        if updated_defaults.auto_mfa:
+            mfa_secret = Input.get_mfa_secret()
+            SecretsManager.set_mfa_secret(updated_defaults.user, mfa_secret)
 
         if configure_provider:
             provider_config = ProviderConfigFactory().instance(provider, mfa_enabled=updated_defaults.mfa_enabled)

@@ -10,7 +10,6 @@ from typing import Dict, Optional, List, Any
 from dataclasses import dataclass, field
 
 
-
 @dataclass
 class CLIDefaults:
     """
@@ -24,6 +23,7 @@ class CLIDefaults:
     mfa_enabled: bool
     provider: Provider
     report_errors: Optional[bool]
+    auto_mfa: Optional[bool]
     provider_config: Optional[Any]
     mfa_serial: Optional[str]
     user: Optional[str]
@@ -47,6 +47,7 @@ class CLIDefaults:
                            mfa_serial=None,
                            provider_config=None,
                            report_errors=False,
+                           auto_mfa=False,
                            user_id=str(uuid.uuid4()))
 
     def __str__(self) -> str:

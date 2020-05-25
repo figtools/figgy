@@ -18,6 +18,9 @@ aws_region = us-east-1
 # If set to false, the user will never be prompted. 
 report_errors = true
 
+# Save your MFA secret to your keychain and have figgy automatically generate 
+# one time pass codes on your behalf to submit for SSO authentication.
+auto_mfa = true
 
 # You may remove this is you do not use OKTA
 [OKTA]

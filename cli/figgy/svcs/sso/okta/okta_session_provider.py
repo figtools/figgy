@@ -63,7 +63,10 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
             except (FileNotFoundError, InvalidSessionError, JSONDecodeError, AttributeError) as e:
                 try:
                     password = SecretsManager.get_password(self._defaults.user)
-                    mfa = Input.get_mfa() if self._defaults.mfa_enabled else None
+                    if self._defaults.mfa_enabled:
+                        mfa = SecretsManager.generate_mfa( self._defaults.user) if self._defaults.auto_mfa else Input.get_mfa()
+                    else:
+                        mfa = None
                     primary_auth = OktaPrimaryAuth(self._defaults, password, mfa)
                     self._write_okta_session_to_cache(primary_auth.get_session())
                     return Okta(primary_auth)
@@ -96,7 +99,12 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
                 log.info(f"GOT INVALID SESSION: {e}")
                 user = self._get_user(prompt)
                 password = self._get_password(user, prompt=prompt, save=True)
-                mfa = Input.get_mfa() if self._defaults.mfa_enabled else None
+
+                if self._defaults.mfa_enabled:
+                    mfa = SecretsManager.generate_mfa(user) if self._defaults.auto_mfa else Input.get_mfa()
+                else:
+                    mfa = None
+
                 primary_auth = OktaPrimaryAuth(self._defaults, password, mfa)
 
                 try:

@@ -91,6 +91,20 @@ class Input:
         return selection == 'y'
 
     @staticmethod
+    def select_auto_mfa() -> bool:
+        return Input.y_n_input('Would you like to save your MFA secret to your keychain and have Figgy generate '
+                               f'one time pass codes on your behalf? ', default_yes=False)
+
+    @staticmethod
+    def get_mfa_secret() -> str:
+        print(f"You have selected that you would like to have `{CLI_NAME}` auto-generate one-time pass codes for you. "
+              f"This is going to save you a lot of time, but we'll need to save your MFA secret to your OS keychain.\n"
+              f"\nYour keychain secret is a text string that looks something like this: `LYV5Z1SNBM4KKUZO`. This"
+              f"is the text representation of the QR Code you would would scan. \n\n")
+        secret = input('Please input your MFA secret: -> ')
+        return secret
+
+    @staticmethod
     def select_report_errors() -> bool:
         selection = ''
         while selection.lower() != 'y' and selection.lower() != 'n':

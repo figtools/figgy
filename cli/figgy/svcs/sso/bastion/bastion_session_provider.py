@@ -18,6 +18,7 @@ from models.run_env import RunEnv
 from svcs.cache_manager import CacheManager
 from svcs.setup import FiggySetup
 from svcs.sso.provider.session_provider import SessionProvider
+from utils.secrets_manager import SecretsManager
 from utils.utils import Utils, InvalidSessionError
 import time
 
@@ -108,11 +109,12 @@ class BastionSessionProvider(SessionProvider):
                 try:
                     if self._defaults.mfa_enabled:
                         self._defaults.mfa_serial = self.get_mfa_serial()
+                        mfa = SecretsManager.generate_mfa(self._defaults.user) if self._defaults.auto_mfa else Input.get_mfa()
                         response = self.__get_sts().assume_role(RoleArn=assumable_role.role_arn,
                                                                 RoleSessionName=self._defaults.user,
                                                                 DurationSeconds=ENV_SESSION_DURATION,
                                                                 SerialNumber=self._defaults.mfa_serial,
-                                                                TokenCode=Input.get_mfa())
+                                                                TokenCode=mfa)
                     else:
                         response = self.__get_sts().assume_role(RoleArn=assumable_role.role_arn,
                                                                 RoleSessionName=self._defaults.user,
