@@ -1,4 +1,13 @@
 Figgy Changelog:
 
-## 1.0.0
-- Everything!
+## 0.0.3
+- Third version!
+- Third version. This is a sentence. This is a sentence. This is a sentence. This is a sentence.
+This is a sentence. This is a sentence. This is a sentence. This is a sentence. This is a sentence.
+This is a sentence. This is a sentence. This is a sentence. This is a sentence. This is a sentence.
+
+## 0.0.2
+- Second version
+
+## 0.0.1
+- First version!
