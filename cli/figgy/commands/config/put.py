@@ -10,6 +10,7 @@ from commands.config_context import ConfigContext
 from commands.types.config import ConfigCommand
 from data.dao.ssm import SsmDao
 from svcs.observability.usage_tracker import UsageTracker
+from svcs.observability.version_tracker import VersionTracker
 from utils.utils import Utils
 
 
@@ -125,6 +126,7 @@ class Put(ConfigCommand):
             else:
                 put_another = False
 
+    @VersionTracker.notify_user
     @UsageTracker.track_command_usage
     def execute(self):
         self.put_param(loop=True)

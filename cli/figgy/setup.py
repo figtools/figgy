@@ -13,11 +13,14 @@ LONG_DESCRIPTION = "Figgy is a security focused cloud-native configuration and s
               "providing a simple workflow for securely and resiliently managing, version, and sharing application " \
               "configurations and secrets."
 
-with open('config/figgy.py') as file:
+with open('config/constants.py') as file:
     contents = file.read()
-    VERSION = re.search('^VERSION\s*=\s*"(.*)"', contents, re.MULTILINE)
-    GITHUB = re.search('^FIGGY_GITHUB\s*=\s*"(.*)"', contents, re.MULTILINE)
+    print(contents)
+    VERSION = re.search(r'^VERSION\s*=\s*["\'](.*)["\']', contents, re.MULTILINE)
+    GITHUB = re.search(r'^FIGGY_GITHUB\s*=\s*["\'](.*)["\']', contents, re.MULTILINE)
 
+VERSION = VERSION.group(1)
+GITHUB = GITHUB.group(1)
 
 with open('./requirements.txt', 'r') as file:
     requirements = file.readlines()

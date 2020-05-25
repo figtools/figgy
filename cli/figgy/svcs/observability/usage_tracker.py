@@ -28,14 +28,14 @@ class FiggyMetrics:
 
 class UsageTracker:
     """
-        We want to track the usage counts of various commands and the version of Figgy people are currently using.
-        This data will be valuable for informing future decisions & when considering upgrade paths or potentially
-        introducing breaking changes and their impacts.
+    We want to track the usage counts of various commands and the version of Figgy people are currently using.
+    This data will be valuable for informing future decisions & when considering upgrade paths or potentially
+    introducing breaking changes and their impacts.
     """
     _CACHE_NAME = 'usage-metrics'
     _METRICS_KEY = 'metrics'
     _USER_KEY = 'user_id'
-    # REPORT_FREQUENCY = 1000 * 60 * 60 * 24  # Report daily
+    # REPORT_FREQUENCY = 1000 * 60  # Report every minute
     REPORT_FREQUENCY = 1000 * 60 * 60 * 24  # Report daily
 
     @staticmethod

@@ -4,6 +4,7 @@ from commands.config_context import ConfigContext
 from commands.types.config import ConfigCommand
 from models.replication_config import ReplicationType, ReplicationConfig
 from svcs.observability.usage_tracker import UsageTracker
+from svcs.observability.version_tracker import VersionTracker
 from utils.utils import *
 
 
@@ -67,6 +68,7 @@ class Share(ConfigCommand):
             to_continue = to_continue if to_continue != '' else 'y'
             share_another = to_continue.lower() == "y"
 
+    @VersionTracker.notify_user
     @UsageTracker.track_command_usage
     def execute(self):
         self._share_param()

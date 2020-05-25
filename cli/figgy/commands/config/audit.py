@@ -3,6 +3,7 @@ from commands.types.config import ConfigCommand
 from data.dao.config import ConfigDao
 from data.dao.ssm import SsmDao
 from svcs.observability.usage_tracker import UsageTracker
+from svcs.observability.version_tracker import VersionTracker
 from utils.utils import *
 
 
@@ -38,6 +39,7 @@ class Audit(ConfigCommand):
                 audit_more = to_continue.lower() == "y"
                 print()
 
+    @VersionTracker.notify_user
     @UsageTracker.track_command_usage
     def execute(self):
         self._audit()

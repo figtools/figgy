@@ -17,7 +17,7 @@ import boto3
 from botocore.errorfactory import ClientError
 
 from extras.s3_download_progress import S3Progress
-from input.input import Input, readline
+from input.input import Input
 from commands.command_factory import CommandFactory
 from commands.figgy_context import FiggyContext
 from commands.types.command import Command
@@ -170,7 +170,6 @@ class FiggyCLI:
             next_role = assumable_roles[next_idx] if next_idx < len(assumable_roles) else None
         return matching_role, next_role
 
-
     def __init__(self, args):
         """
         Initializes global shared properties
@@ -190,15 +189,16 @@ class FiggyCLI:
         role_override = Utils.attr_if_exists(role, args)
         self._role: Role = self.get_role(args.prompt, role_override=role_override)
 
-        if not hasattr(args, 'env') or args.env is None:
-            print(f"{EMPTY_ENV_HELP_TEXT}{self._run_env.env}")
-        else:
-            Utils.stc_validate(args.env in self._defaults.valid_envs,
-                               f'{ENV_HELP_TEXT} {self._defaults.valid_envs}. Provided: {args.env}')
-            self._run_env = RunEnv(args.env)
+        if args.version is False and args.configure is False:
+            if not hasattr(args, 'env') or args.env is None:
+                print(f"{EMPTY_ENV_HELP_TEXT}{self._run_env.env}")
+            else:
+                Utils.stc_validate(args.env in self._defaults.valid_envs,
+                                   f'{ENV_HELP_TEXT} {self._defaults.valid_envs}. Provided: {args.env}')
+                self._run_env = RunEnv(args.env)
 
         self._utils.validate(Utils.attr_exists(configure, args) or Utils.attr_exists(command, args),
-                                f"No command found. Proper format is `{CLI_NAME} <resource> <command> --option(s)`")
+                             f"No command found. Proper format is `{CLI_NAME} <resource> <command> --option(s)`")
 
         self._assumable_role, self._next_assumable_role = self.find_assumable_roles(self._run_env, self._role,
                                                                                     skip=self._configure_set)
@@ -278,8 +278,6 @@ def main():
             print(f"Unable to log or report this exception. Please submit a Github issue to: {FIGGY_GITHUB}")
     except KeyboardInterrupt:
         exit(1)
-
-
 
 
 if __name__ == '__main__':

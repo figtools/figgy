@@ -13,7 +13,6 @@ from models.role import Role
 from models.run_env import RunEnv
 from sys import exit
 import glob
-import readline
 from typing import Dict, List, Type, Union
 from prompt_toolkit.shortcuts import prompt
 from prompt_toolkit.completion import WordCompleter
@@ -82,6 +81,14 @@ class Utils:
     @staticmethod
     def get_os():
         return platform.system().lower()
+
+    @staticmethod
+    def not_windows():
+        return platform != WINDOWS
+
+    @staticmethod
+    def is_linux():
+        return platform.system() == LINUX
 
     @staticmethod
     def is_mac():
@@ -378,26 +385,11 @@ class Utils:
         return ordered_config
 
     @staticmethod
-    def get_next_env(run_env: RunEnv) -> RunEnv:
-        if run_env.env == prod:
-            return RunEnv(prod)
-        else:
-            return RunEnv(envs[envs.index(run_env.env) + 1])
-
-    @staticmethod
     def get_first(some_set: Union[set, frozenset]):
         if some_set:
             return set(some_set).pop()
 
         return None
-
-    @staticmethod
-    def default_input(prompt: str, prefill=''):
-        readline.set_startup_hook(lambda: readline.insert_text(prefill))
-        try:
-            return input(prompt)
-        finally:
-            readline.set_startup_hook()
 
     @staticmethod
     def str_too_long(value: str) -> bool:

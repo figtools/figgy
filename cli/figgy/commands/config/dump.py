@@ -7,6 +7,7 @@ from commands.types.config import ConfigCommand
 from commands.config_context import ConfigContext
 from config import *
 from svcs.observability.usage_tracker import UsageTracker
+from svcs.observability.version_tracker import VersionTracker
 from utils.utils import *
 
 
@@ -47,6 +48,7 @@ class Dump(ConfigCommand):
             print(json.dumps(json_output, indent=4, sort_keys=True))
 
 
+    @VersionTracker.notify_user
     @UsageTracker.track_command_usage
     def execute(self):
         self._dump()

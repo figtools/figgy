@@ -7,6 +7,7 @@ from commands.types.config import ConfigCommand
 from data.dao.ssm import SsmDao
 from input import Input
 from svcs.observability.usage_tracker import UsageTracker
+from svcs.observability.version_tracker import VersionTracker
 from utils.utils import *
 
 
@@ -56,6 +57,7 @@ class Get(ConfigCommand):
                 get_another = Input.y_n_input(f"Get another?", default_yes=False, invalid_no=True)
                 print()
 
+    @VersionTracker.notify_user
     @UsageTracker.track_command_usage
     def execute(self):
         self._get_param()

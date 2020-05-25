@@ -1,6 +1,7 @@
 from botocore.exceptions import ClientError
 
 from svcs.observability.usage_tracker import UsageTracker
+from svcs.observability.version_tracker import VersionTracker
 from utils.utils import *
 from commands.types.config import ConfigCommand
 from commands.config_context import ConfigContext
@@ -126,6 +127,7 @@ class Delete(ConfigCommand):
             delete_another = to_continue.lower() == "y"
 
 
+    @VersionTracker.notify_user
     @UsageTracker.track_command_usage
     def execute(self):
         self._delete_param()

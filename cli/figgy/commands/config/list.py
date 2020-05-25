@@ -6,6 +6,7 @@ from commands.config_context import ConfigContext
 from commands.types.config import ConfigCommand
 from data.dao.ssm import SsmDao
 from svcs.observability.usage_tracker import UsageTracker
+from svcs.observability.version_tracker import VersionTracker
 from utils.utils import *
 
 
@@ -45,7 +46,7 @@ class List(ConfigCommand):
             try:
                 parameters = self._ssm.get_all_parameters([namespace])
             except ClientError as e:
-                print(f"{Color.fg_rd}ERROR: >> {e.response['Error']['Message']}{self.c.rs}")
+                print(f"{self.c.fg_rd}ERROR: >> {e.response['Error']['Message']}{self.c.rs}")
                 continue
 
             names = [['Selector', 'Name']]
@@ -86,6 +87,7 @@ class List(ConfigCommand):
                     list_another = selection.lower() == "continue"
                     keep_getting = False
 
+    @VersionTracker.notify_user
     @UsageTracker.track_command_usage
     def execute(self):
         self._list_params()

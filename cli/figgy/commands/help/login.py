@@ -8,6 +8,7 @@ from models.assumable_role import AssumableRole
 from models.defaults.defaults import CLIDefaults
 from models.defaults.provider import Provider
 from svcs.observability.usage_tracker import UsageTracker
+from svcs.observability.version_tracker import VersionTracker
 from svcs.setup import FiggySetup
 from svcs.sso.provider.provider_factory import SessionProviderFactory
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -38,6 +39,7 @@ class Login(HelpCommand, ABC):
 
         print(f"{self.c.gr}Login successful. All sessions are cached.{self.c.rs}")
 
+    @VersionTracker.notify_user
     @UsageTracker.track_command_usage
     def execute(self):
         self.login()

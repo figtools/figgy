@@ -13,6 +13,7 @@ from extras.key_utils import KeyUtils
 from models.replication_config import ReplicationConfig, ReplicationType
 from config import *
 from svcs.observability.usage_tracker import UsageTracker
+from svcs.observability.version_tracker import VersionTracker
 from utils.utils import Utils
 
 
@@ -396,6 +397,8 @@ class Sync(ConfigCommand):
         self._sync_repl_configs(repl_conf)
         self._notify_of_data_repl_orphans(repl_conf)
 
+
+    @VersionTracker.notify_user
     @UsageTracker.track_command_usage
     def execute(self):
         if self._replication_only:
