@@ -17,6 +17,7 @@ from svcs.cache_manager import CacheManager
 from svcs.setup import FiggySetup
 from svcs.sso.okta.okta import Okta, InvalidSessionError
 from svcs.sso.provider.sso_session_provider import SSOSessionProvider
+from svcs.vault import FiggyVault
 from utils.secrets_manager import SecretsManager
 from utils.utils import Utils
 
@@ -28,8 +29,9 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
 
     def __init__(self, defaults: CLIDefaults):
         super().__init__(defaults)
-        self._cache_manager: CacheManager = CacheManager(file_override=OKTA_SESSION_CACHE_PATH)
-        self._saml_cache: CacheManager = CacheManager(file_override=SAML_SESSION_CACHE_PATH)
+        vault = FiggyVault(SecretsManager.get_password(defaults.user))
+        self._cache_manager: CacheManager = CacheManager(file_override=OKTA_SESSION_CACHE_PATH, vault=vault)
+        self._saml_cache: CacheManager = CacheManager(file_override=SAML_SESSION_CACHE_PATH, vault=vault)
         self._setup: FiggySetup = FiggySetup()
 
     def _write_okta_session_to_cache(self, session: OktaSession) -> None:
@@ -64,7 +66,7 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
                 try:
                     password = SecretsManager.get_password(self._defaults.user)
                     if self._defaults.mfa_enabled:
-                        mfa = SecretsManager.generate_mfa( self._defaults.user) if self._defaults.auto_mfa else Input.get_mfa()
+                        mfa = SecretsManager.generate_mfa(self._defaults.user) if self._defaults.auto_mfa else Input.get_mfa()
                     else:
                         mfa = None
                     primary_auth = OktaPrimaryAuth(self._defaults, password, mfa)
@@ -121,7 +123,7 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
                 return assertion
 
     def get_assumable_roles(self) -> List[AssumableRole]:
-        assertion = self.get_saml_assertion(prompt=True)
+        assertion = self.get_saml_assertion(prompt=False)
         root = ET.fromstring(assertion)
         prefix_map = {"saml2": "urn:oasis:names:tc:SAML:2.0:assertion"}
         role_attribute = root.find(".//saml2:Attribute[@Name='https://aws.amazon.com/SAML/Attributes/Role']",

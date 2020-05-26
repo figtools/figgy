@@ -15,6 +15,8 @@ from models.aws_session import FiggyAWSSession
 from models.defaults.defaults import CLIDefaults
 from svcs.cache_manager import CacheManager
 from svcs.sso.provider.session_provider import SessionProvider
+from svcs.vault import FiggyVault
+from utils.secrets_manager import SecretsManager
 from utils.utils import InvalidSessionError, Utils
 
 log = logging.getLogger(__name__)
@@ -27,8 +29,9 @@ class SSOSessionProvider(SessionProvider, ABC):
         super().__init__(defaults)
         self._utils = Utils(defaults.colors_enabled)
         self._sts = boto3.client('sts')
-        self._sts_cache: CacheManager = CacheManager(file_override=STS_SESSION_CACHE_PATH)
-        self._saml_cache: CacheManager = CacheManager(file_override=SAML_SESSION_CACHE_PATH)
+        vault = FiggyVault(SecretsManager.get_password(defaults.user))
+        self._sts_cache: CacheManager = CacheManager(file_override=STS_SESSION_CACHE_PATH, vault=vault)
+        self._saml_cache: CacheManager = CacheManager(file_override=SAML_SESSION_CACHE_PATH, vault=vault)
 
     @abstractmethod
     def cleanup_session_cache(self):

@@ -115,7 +115,7 @@ PS_FIGGY_ACCOUNTS_PREFIX = '/figgy/accounts/'
 # Replication Types:
 repl_types = [REPL_TYPE_APP, REPL_TYPE_MERGE]
 
-# Defaults file names
+# File names / paths
 HOME = str(Path.home())
 DEFAULTS_FILE_CACHE_KEY = 'defaults'
 DECRYPTER_S3_PATH_PREFIX = f'figgy/decrypt/'
@@ -125,6 +125,8 @@ CACHE_OTHER_DIR = f'{HOME}/.figgy/cache/other'
 DEFAULT_INSTALL_PATH = '/usr/local/bin/figgy'
 ERROR_LOG_DIR = f'{HOME}/.figgy/errors'
 CONFIG_OVERRIDE_FILE_PATH = f'{HOME}/.figgy/config'
+STS_SESSION_CACHE_PATH = f"{HOME}/.figgy/vault/sts/sessions"
+SAML_SESSION_CACHE_PATH = f"{HOME}/.figgy/vault/sso/saml"
 
 # Defaults file keys
 DEFAULTS_ROLE_KEY = 'role'
@@ -139,7 +141,6 @@ MFA_SERIAL_KEY = 'mfa_serial'
 # Cache File keys
 OKTA_SESSION_TOKEN_CACHE_KEY = 'session_token'
 OKTA_SESSION_ID_CACHE_KEY = 'session_id'
-STS_SESSION_CACHE_PATH = f"{HOME}/.figgy/devops/cache/sts/sessions"
 
 # Plaform Constants
 LINUX = "Linux"

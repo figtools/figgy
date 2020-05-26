@@ -13,6 +13,7 @@ from svcs.sso.google.google import Google
 from models.defaults.defaults import CLIDefaults
 from svcs.cache_manager import CacheManager
 from svcs.sso.provider.sso_session_provider import SSOSessionProvider
+from svcs.vault import FiggyVault
 from utils.secrets_manager import SecretsManager
 from utils.utils import Utils
 
@@ -33,7 +34,8 @@ class GoogleSessionProvider(SSOSessionProvider):
 
     def __init__(self, defaults: CLIDefaults):
         super().__init__(defaults)
-        self._cache_manager: CacheManager = CacheManager(file_override=SAML_SESSION_CACHE_PATH)
+        vault = FiggyVault(SecretsManager.get_password(defaults.user))
+        self._cache_manager: CacheManager = CacheManager(file_override=SAML_SESSION_CACHE_PATH, vault=vault)
         config = GoogleConfig(
             username=defaults.user,
             password=SecretsManager.get_password(defaults.user),

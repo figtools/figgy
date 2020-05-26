@@ -28,9 +28,11 @@ with open('./requirements.txt', 'r') as file:
 if platform.system() == WINDOWS:
     with open('./requirements-windows.txt', 'r') as file:
         requirements += file.readlines()
-
-if platform.system() == LINUX:
+elif platform.system() == LINUX:
     with open('./requirements-linux.txt', 'r') as file:
+        requirements += file.readlines()
+elif platform.system() == MAC:
+    with open('./requirements-darwin.txt', 'r') as file:
         requirements += file.readlines()
 
 setup(

@@ -1,4 +1,4 @@
-boto3==1.12.47
+boto3==1.13.16
 prompt_toolkit==3.0.5
 sty==1.0.0b8
 click==7.1.2
@@ -17,5 +17,5 @@ tabulate==0.8.7
 jsonpickle==1.4.1
 aws-google-auth==0.0.35
 pillow==7.1.2
-urllib3==1.25.8
+urllib3==1.25.9
 pyotp==2.3.0

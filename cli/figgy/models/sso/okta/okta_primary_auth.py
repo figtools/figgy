@@ -24,8 +24,8 @@ class OktaPrimaryAuth(OktaAuth):
         self._session: OktaSession = None
 
     def get_session(self):
-        return OktaSession(session_id=self.get_session().session_id,
-                           session_token=self.get_session().session_token)
+        return OktaSession(session_id=self._get_session().session_id,
+                           session_token=self._get_session().session_token)
 
     def to_json(self) -> str:
 
@@ -34,7 +34,7 @@ class OktaPrimaryAuth(OktaAuth):
             OKTA_SESSION_ID_CACHE_KEY: self.get_session().session_id
         })
 
-    def get_session(self) -> OktaSession:
+    def _get_session(self) -> OktaSession:
         """ Performs primary auth against Okta """
         if self._session:
             return self._session

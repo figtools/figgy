@@ -1,6 +1,5 @@
 These are problems I intend to solve, once I figure out the best way to do it.
 
-- Figgy Vault
 - Slack integration for shares / etc.
 
 __

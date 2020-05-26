@@ -99,7 +99,7 @@ class Input:
     def get_mfa_secret() -> str:
         print(f"You have selected that you would like to have `{CLI_NAME}` auto-generate one-time pass codes for you. "
               f"This is going to save you a lot of time, but we'll need to save your MFA secret to your OS keychain.\n"
-              f"\nYour keychain secret is a text string that looks something like this: `LYV5Z1SNBM4KKUZO`. This"
+              f"\nYour keychain secret is a text string that looks something like this: `LYV5Z1SNBM4KKUZO`. This "
               f"is the text representation of the QR Code you would would scan. \n\n")
         secret = input('Please input your MFA secret: -> ')
         return secret

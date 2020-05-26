@@ -18,6 +18,7 @@ from models.run_env import RunEnv
 from svcs.cache_manager import CacheManager
 from svcs.setup import FiggySetup
 from svcs.sso.provider.session_provider import SessionProvider
+from svcs.vault import FiggyVault
 from utils.secrets_manager import SecretsManager
 from utils.utils import Utils, InvalidSessionError
 import time
@@ -34,12 +35,13 @@ class BastionSessionProvider(SessionProvider):
         self.__id = uuid.uuid4()
         self._utils = Utils(defaults.colors_enabled)
         self._setup: FiggySetup = FiggySetup()
-        self.__bastion_session = boto3.session.Session(profile_name=self._defaults.profile)
+        self.__bastion_session = boto3.session.Session(profile_name=self._defaults.provider_config.profile_name)
         self._ssm = None
         self._sts = None
         self._iam_client = None
         self._iam = None
-        self._sts_cache: CacheManager = CacheManager(file_override=STS_SESSION_CACHE_PATH)
+        vault = FiggyVault(SecretsManager.get_password(defaults.user))
+        self._sts_cache: CacheManager = CacheManager(file_override=STS_SESSION_CACHE_PATH, vault=vault)
         self._role_name_prefix = os.getenv(FIGGY_ROLE_PREFIX_OVERRIDE_ENV, FIGGY_ROLE_NAME_PREFIX)
 
     def __get_iam_user(self):
