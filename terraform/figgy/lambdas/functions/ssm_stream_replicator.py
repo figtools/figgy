@@ -1,6 +1,7 @@
 import boto3
 import logging
-from typing import List
+import re
+from typing import List, Dict
 from config.constants import *
 from lib.models.replication_config import ReplicationType, ReplicationConfig
 from lib.data.dynamo.replication_dao import ReplicationDao
@@ -19,16 +20,30 @@ webhook_url = ssm.get_parameter_value(FIGGY_WEBHOOK_URL_PATH)
 slack: SlackService = SlackService(webhook_url=webhook_url)
 
 
-def notify_slack(config: ReplicationConfig):
+def notify_slack(config: ReplicationConfig, user: str):
     message = SlackMessage(
         color=SlackColor.GREEN,
         title="Figgy Event: A source of replication was updated.",
-        message=f"Value at `{config.source}` was updated. \n"
-                f"This triggered replication of `{config.source}` -> `{config.destination}`. "
+        message=f"{user} updated value at `{config.source}`. \n"
+                f"This triggered replication from `{config.source}` -> `{config.destination}`. "
                 f"Replication was successful."
     )
 
     slack.send_message(message)
+
+
+def parse_user(detail: Dict) -> str:
+    """
+    Returns the closest match we can find to the user's identity from the event detail.
+    :param detail: Event detail provided from SSM event.
+    :return: UserId
+    """
+    principal_id = detail.get('userIdentity', {}).get('principalId')
+
+    if ':' in principal_id:
+        return principal_id.split(':')[1]
+    else:
+        return detail.get('userIdentity', {}).get('arn', 'arn/UnknownUser').split('/')[-1]
 
 
 def handle(event, context):
@@ -42,13 +57,14 @@ def handle(event, context):
             return
 
         ps_name = detail.get('requestParameters', {}).get('name')
+        user = parse_user(detail)
 
         if ps_name and action == PUT_PARAM_ACTION:
             repl_configs: List[ReplicationConfig] = repl_dao.get_config_repl_by_source(ps_name)
             merge_configs: List[ReplicationConfig] = repl_dao.get_configs_by_type(ReplicationType(REPL_TYPE_MERGE))
             for config in repl_configs:
                 updated = repl_svc.sync_config(config)
-                updated and notify_slack(config)  # Notify on update
+                updated and notify_slack(config, user)  # Notify on update
 
             for config in merge_configs:
                 log.info(f"Evaluating config: {config}")
@@ -56,7 +72,7 @@ def handle(event, context):
                     for source in config.source:
                         if ps_name in source:
                             updated = repl_svc.sync_config(config)
-                            updated and notify_slack(config)
+                            updated and notify_slack(config, user)
                             continue
         elif action == DELETE_PARAM_ACTION or action == DELETE_PARAMS_ACTION:
             log.info("Delete found, skipping...")
