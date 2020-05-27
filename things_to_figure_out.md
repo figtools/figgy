@@ -1,9 +1,10 @@
 These are problems I intend to solve, once I figure out the best way to do it.
 
-- Slack integration for shares / etc.
+- Get CircleCi builds working with full test suite execution.
+
 
 __
-    
+   
 - What do I do with auto-upgrade feature?
 
 - Add figgy to pypi? `pip install figgy`?

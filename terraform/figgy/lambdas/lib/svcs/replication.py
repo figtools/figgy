@@ -12,7 +12,13 @@ class ReplicationService:
         self._replication_dao = replication_dao
         self._ssm = ssm
 
-    def sync_config(self, config: ReplicationConfig):
+    def sync_config(self, config: ReplicationConfig) -> bool:
+        """
+        Ensures a replication configuration is synchronized. Returns True if any action to sync the config takes place,
+        False otherwise.
+        :param config: Defined replication config to ensure is synchronized.
+        :return: True/False. True is returned if a change is maded in PS to sync this config.
+        """
         dest_param = self._ssm.get_parameter(config.destination)
         dest_val = dest_param['Parameter']['Value'] if dest_param else None
         dest_type = dest_param['Parameter']['Type'] if dest_param else None
@@ -29,8 +35,11 @@ class ReplicationService:
                 (dest_type != src_type and src_val is not None):
             self.replicate_config(config.source, config.destination,
                                   src_type, src_val, config.user)
+            return True
         else:
             print(f"{config.source} -> {config.destination} is valid")
+
+        return False
 
     def replicate_config(self, source, dest, src_type, src_val, user):
         desc = f"Replicated from: {source} by: {user}"

@@ -131,6 +131,10 @@ class Input:
         return mfa
 
     @staticmethod
+    def select_kms_key(valid_keys: List[str]) -> str:
+        return Input.select("Select an encryption key: ", valid_options=valid_keys)
+
+    @staticmethod
     def select_run_env(valid_envs: List[str]) -> RunEnv:
         input_env = prompt(f'Select a RunEnvironment: {valid_envs}: ',
                            completer=WordCompleter(valid_envs))
@@ -138,6 +142,10 @@ class Input:
                            f"{input_env} is not a valid Run Environment. Please select from: {valid_envs}")
 
         return RunEnv(input_env)
+
+    @staticmethod
+    def is_secret() -> bool:
+        return Input.y_n_input("Is this value a secret? ", default_yes=False)
 
     @staticmethod
     def y_n_input(message: str, default_yes: bool = True, invalid_no=False) -> bool:
@@ -152,10 +160,10 @@ class Input:
         selection = ''
         default_compare = 'y' if default_yes else 'n'
         default_prompt = '(Y/n)' if default_yes else '(y/N)'
-        prompt = f'{message} {default_prompt}: -> ' if len(message) < 70 else f'{message} \n {default_prompt}: -> '
+        prompt_msg = f'{message} {default_prompt}: -> ' if len(message) < 70 else f'{message} \n {default_prompt}: -> '
 
         while selection.lower() != 'y' and selection.lower() != 'n':
-            selection = input(prompt)
+            selection = prompt(prompt_msg, completer=WordCompleter(['y', 'n'])).strip().lower()
             selection = selection.lower() if selection != '' else default_compare
 
             if selection != 'y' and selection != 'n' and invalid_no:
@@ -167,7 +175,7 @@ class Input:
     @staticmethod
     def select(message: str, valid_options: List[str], default: str = None) -> str:
         """
-        Returns True if user selects 'y', or False if user select 'N'
+        Returns the user's selection based on the provided valid options.
         :param message: Message to prompt the user with.
         :param valid_options: List of valid options to accept.
         :param default: Set the prompt's default to this

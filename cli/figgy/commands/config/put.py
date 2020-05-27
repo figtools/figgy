@@ -9,19 +9,22 @@ from commands.config.get import Get
 from commands.config_context import ConfigContext
 from commands.types.config import ConfigCommand
 from data.dao.ssm import SsmDao
+from input import Input
 from svcs.observability.usage_tracker import UsageTracker
 from svcs.observability.version_tracker import VersionTracker
 from utils.utils import Utils
+from views.rbac_limited_config import RBACLimitedConfigView
 
 
 class Put(ConfigCommand):
 
     def __init__(self, ssm_init: SsmDao, colors_enabled: bool, config_context: ConfigContext,
-                 config_completer: WordCompleter, get: Get):
+                 config_completer: WordCompleter, config_view: RBACLimitedConfigView, get: Get):
         super().__init__(put, colors_enabled, config_context)
         self._ssm = ssm_init
         self._utils = Utils(colors_enabled)
         self._config_completer = config_completer
+        self._config_view = config_view
         self._get = get
         self._source_key = Utils.attr_if_exists(copy_from, config_context.args)
 
@@ -53,7 +56,7 @@ class Put(ConfigCommand):
                               looping and constantly calling put_param with a specified key.
         """
 
-        value, desc, selection, notify, put_another = "default", None, "y", False, True
+        value, desc, notify, put_another = "default", None, False, True
 
         if display_hints:
             print(f"{self.c.fg_bl}Hint:{self.c.rs} To upload a file's contents, pass in `file:///path/to/your/file` "
@@ -61,7 +64,6 @@ class Put(ConfigCommand):
 
         while not self._utils.is_valid_input(value, f'{value} parameter value', notify) \
                 or not self._utils.is_valid_input(key, f'{key} parameter name', notify) \
-                or not self._utils.is_valid_selection(selection, notify) \
                 or put_another:
 
             if key == "default" or not key:
@@ -87,25 +89,25 @@ class Put(ConfigCommand):
             desc = prompt(f"Please input an optional description: ",
                           default=existing_desc if existing_desc else orig_description if orig_description else '')
 
-            if re.match(f'^{shared_ns}/.*$', key) is None:
-                selection = prompt(is_secret, completer=WordCompleter(['Y', 'N'])).strip().lower()
-                selection = selection if selection != '' else 'n'
-            else:
-                selection = "n"
+            is_secret = Input.is_secret()
+            parameter_type, kms_id = SSM_SECURE_STRING if is_secret else SSM_STRING, None
+            if is_secret:
+                valid_keys = self._config_view.get_authorized_kms_keys()
+                if len(valid_keys) > 1:
+                    key_name = Input.select_kms_key(valid_keys)
+                else:
+                    key_name = valid_keys[0]
+
+                kms_id = self._config_view.get_authorized_key_id(key_name)
 
             notify = True
-            parameter_type = SSM_STRING if selection.lower() == "n" else SSM_SECURE_STRING
-            key_id = None if parameter_type == SSM_STRING else \
-                self._ssm.get_parameter(self._utils.get_kms_key(self.role))
-
             try:
                 if not self._utils.is_valid_input(key, f"Parameter name", False) \
-                        or not self._utils.is_valid_selection(selection, False)\
                         or not self._utils.is_valid_input(value, key, False):
                     continue
 
                 self._ssm.set_parameter(
-                    key, value, desc, parameter_type, key_id=key_id)
+                    key, value, desc, parameter_type, key_id=kms_id)
                 if key not in self._config_completer.words:
                     self._config_completer.words.append(key)
             except ClientError as e:

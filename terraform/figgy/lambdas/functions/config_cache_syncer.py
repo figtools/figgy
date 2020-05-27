@@ -6,6 +6,7 @@ import time
 from config.constants import *
 from lib.data.dynamo.config_cache_dao import ConfigCacheDao, ConfigItem
 from lib.data.ssm.ssm import SsmDao
+from lib.svcs.slack import SlackService
 from lib.utils.utils import Utils
 
 dynamo_resource = boto3.resource("dynamodb")
@@ -14,6 +15,9 @@ ssm_dao = SsmDao(ssm_client)
 cache_dao: ConfigCacheDao = ConfigCacheDao(dynamo_resource)
 log = Utils.get_logger(__name__, logging.INFO)
 MAX_DELETED_AGE = 60 * 60 * 24 * 14 * 1000  # 2 weeks in MS
+
+webhook_url = ssm_dao.get_parameter_value(FIGGY_WEBHOOK_URL_PATH)
+slack: SlackService = SlackService(webhook_url=webhook_url)
 
 
 def remove_old_deleted_items():
@@ -29,22 +33,31 @@ def remove_old_deleted_items():
 
 
 def handle(event, context):
-    param_names = ssm_dao.get_all_param_names(PS_ROOT_NAMESPACES)
-    cached_configs: Set[ConfigItem] = cache_dao.get_all_configs()
-    cached_names = set([config.name for config in cached_configs])
-    missing_params: Set[str] = param_names.difference(cached_names)
-    names_to_delete: Set[str] = cached_names.difference(param_names)
-    to_delete = [item for item in cached_configs if item.name in names_to_delete]
+    try:
+        param_names = ssm_dao.get_all_param_names(PS_ROOT_NAMESPACES)
+        cached_configs: Set[ConfigItem] = cache_dao.get_all_configs()
+        cached_names = set([config.name for config in cached_configs])
+        missing_params: Set[str] = param_names.difference(cached_names)
+        names_to_delete: Set[str] = cached_names.difference(param_names)
+        to_delete = [item for item in cached_configs if item.name in names_to_delete]
 
-    for param in missing_params:
-        log.info(f"Storing in cache: {param}")
-        cache_dao.put_in_cache(param)
+        for param in missing_params:
+            log.info(f"Storing in cache: {param}")
+            cache_dao.put_in_cache(param)
 
-    for param in to_delete:
-        log.info(f"Marking deleted from cache: {param}")
-        cache_dao.mark_deleted(param)
+        for param in to_delete:
+            log.info(f"Marking deleted from cache: {param}")
+            cache_dao.mark_deleted(param)
 
-    remove_old_deleted_items()
+        remove_old_deleted_items()
+
+    except Exception as e:
+        log.error(e)
+        slack.send_error(title="Figgy experienced an irrecoverable error!",
+                         message=f"The following error occurred in an the figgy-ssm-stream-replicator lambda. "
+                                 f"If this appears to be a bug with figgy, please tell us by submitting a GitHub issue!"
+                                 f" \n\n{Utils.printable_exception(e)}")
+        raise e
 
 
 if __name__ == "__main__":

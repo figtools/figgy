@@ -3,6 +3,7 @@ from typing import Dict, Set
 from commands.config.delete import Delete
 from commands.config_context import ConfigContext
 from commands.types.config import ConfigCommand
+from config.style.style import FIGGY_STYLE
 from data.dao.config import ConfigDao
 from data.dao.ssm import SsmDao
 from extras.key_utils import KeyUtils
@@ -69,7 +70,7 @@ class Cleanup(ConfigCommand):
                     ('class:', ' exists in ParameterStore but does not exist '
                                'in your config, do you want to delete it? (y/N): ')
                 ]
-                selection = prompt(exists_msg, completer=WordCompleter(['Y', 'N']))
+                selection = prompt(exists_msg, completer=WordCompleter(['Y', 'N']), style=FIGGY_STYLE)
                 selection = selection if selection != '' else 'n'
                 if selection.strip().lower() == "y":
                     self._delete_command.delete_param(key)

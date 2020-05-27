@@ -10,8 +10,11 @@ from prompt_toolkit.completion import WordCompleter
 from commands.config_context import ConfigContext
 from commands.types.config import ConfigCommand
 from data.dao.ssm import SsmDao
+from input import Input
 from svcs.observability.usage_tracker import UsageTracker
 from svcs.observability.version_tracker import VersionTracker
+from utils.utils import Utils
+from views.rbac_limited_config import RBACLimitedConfigView
 
 log = logging.getLogger(__name__)
 
@@ -41,9 +44,10 @@ class EditApp(NPSApp):
 class Edit(ConfigCommand):
 
     def __init__(self, ssm_init: SsmDao, colors_enabled: bool, config_context: ConfigContext,
-                 config_completer: WordCompleter):
+                 config_view: RBACLimitedConfigView, config_completer: WordCompleter):
         super().__init__(edit, colors_enabled, config_context)
         self._ssm = ssm_init
+        self._config_view = config_view
         self._utils = Utils(colors_enabled)
         self._config_completer = config_completer
         self._select_name = [
@@ -65,23 +69,23 @@ class Edit(ConfigCommand):
         value, desc = edit_app.value_box.value, edit_app.description_box.value
         log.info(f"Edited value: {value} - description: {desc}")
 
-        if re.match(f'^{shared_ns}/.*$', key) is None:
-            selection = prompt(is_secret, completer=WordCompleter(['Y', 'N'])).strip().lower()
-            selection = selection if selection != '' else 'n'
-        else:
-            selection = "n"
+        is_secret = Input.is_secret()
+        parameter_type, kms_id = SSM_SECURE_STRING if is_secret else SSM_STRING, None
+        if is_secret:
+            valid_keys = self._config_view.get_authorized_kms_keys()
+            if len(valid_keys) > 1:
+                key_name = Input.select_kms_key(valid_keys)
+            else:
+                key_name = valid_keys[0]
 
-        parameter_type = SSM_STRING if selection.lower() == "n" else SSM_SECURE_STRING
-        key_id = None if parameter_type == SSM_STRING else \
-            self._ssm.get_parameter(self._utils.get_kms_key(self.role))
+            kms_id = self._config_view.get_authorized_key_id(key_name)
 
         if not self._utils.is_valid_input(key, f"Parameter name", True) \
-                or not self._utils.is_valid_selection(selection, True) \
                 or not self._utils.is_valid_input(value, key, True):
             self._utils.error_exit("Invalid input detected, please resolve the issue and retry.")
 
         try:
-                self._ssm.set_parameter(key, value, desc, parameter_type, key_id=key_id)
+            self._ssm.set_parameter(key, value, desc, parameter_type, key_id=kms_id)
         except ClientError as e:
             if "AccessDeniedException" == e.response['Error']['Code']:
                 print(

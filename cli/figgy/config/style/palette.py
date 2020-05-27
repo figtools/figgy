@@ -4,14 +4,22 @@ from sty import fg, FgRegister, Rule
 
 @dataclass
 class Palette:
-    # Static colors
-    bl: str = 'blue'
-    gr: str = 'green'
-    rd: str = 'red'
-    yl:str = 'yellow'
+    # Default pallete colors
+    BLUE = (52, 213, 235)
+    GREEN = (51, 222, 136)
+    RED = (240, 70, 87)
+    YELLOW = (240, 240, 70)
 
-    fg_bl: FgRegister = fg(52, 213, 235)
-    fg_gr: FgRegister = fg(51, 222, 136)
-    fg_rd: FgRegister = fg(240, 70, 87)
-    fg_yl: FgRegister = fg(240, 240, 70)
-    rs: Rule = fg.rs
+    def __init__(self, blue=BLUE, green=GREEN, red=RED, yellow=YELLOW):
+        self.fg_bl: FgRegister = fg(*blue)
+        self.fg_gr: FgRegister = fg(*green)
+        self.fg_rd: FgRegister = fg(*red)
+        self.fg_yl: FgRegister = fg(*yellow)
+
+        # Prompt Toolkit HEX colors
+        self.bl: str = '#%02x%02x%02x' % blue
+        self.gr: str = '#%02x%02x%02x' % green
+        self.rd: str = '#%02x%02x%02x' % red
+        self.yl: str = '#%02x%02x%02x' % yellow
+
+        self.rs: Rule = fg.rs

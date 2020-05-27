@@ -30,3 +30,7 @@ variable "concurrent_executions" {
   description = "Max # of concurrent executions for this lambda"
   default = 1
 }
+
+variable "layers" {
+  description = "Layers to attach to this lambda."
+}

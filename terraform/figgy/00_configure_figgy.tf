@@ -58,4 +58,8 @@ locals {
   # MFA Enabled - "true/false" - Require MFA for authentication for bastion based auth? For SSO users MFA
   # is managed by your SSO provider. This is only for `bastion` MFA enforcement. The CLI supports MFA for SSO / Bastion auth types.
   mfa_enabled = true
+
+  # This is optional. If you'd like to receive notifications for configuration events, input a webhook url here.
+  # You may enter it here, or instead update
+  slack_webhook_url = var.webhook_url
 }

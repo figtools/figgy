@@ -1,6 +1,7 @@
 import re
 import logging
 import sys
+import traceback
 
 
 class Utils:
@@ -22,3 +23,8 @@ class Utils:
         root_logger.setLevel(log_level)
 
         return logging.getLogger(name)
+
+    @staticmethod
+    def printable_exception(e: Exception):
+        printable_exception = ''.join(traceback.format_exception(etype=type(e), value=e, tb=e.__traceback__))
+        return printable_exception

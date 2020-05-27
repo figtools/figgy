@@ -18,3 +18,8 @@ variable "max_session_duration" {
   description = "Max session duration in seconds for this assumed role. Default: 12 hours"
   default     = "43200"
 }
+
+variable "webhook_url" {
+  description = "Slack Webhook URL for figgy submit notifications such as parameter shares / critical figgy errors."
+  default = "unconfigured"  # don't change this unless you update the logic in the SSM parameter
+}

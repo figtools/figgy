@@ -1,5 +1,6 @@
 from botocore.exceptions import ClientError
 
+from config.style.style import FIGGY_STYLE
 from svcs.observability.usage_tracker import UsageTracker
 from svcs.observability.version_tracker import VersionTracker
 from utils.utils import *
@@ -61,7 +62,7 @@ class Delete(ConfigCommand):
                     (f'class:{self.c.rd}', f"Do you want to ALSO delete this replication config and "
                                            f"permanently delete {key}? "),
                     (f'class:', "(y/N): ")]
-                selection = prompt(repl_msg, completer=WordCompleter(['Y', 'N']))
+                selection = prompt(repl_msg, completer=WordCompleter(['Y', 'N']), style=FIGGY_STYLE)
                 selection = selection if selection != '' else 'n'
                 if selection.strip().lower() == "y":
                     self._config.delete_config(key, self.run_env)

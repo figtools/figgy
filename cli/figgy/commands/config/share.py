@@ -6,11 +6,13 @@ from models.replication_config import ReplicationType, ReplicationConfig
 from svcs.observability.usage_tracker import UsageTracker
 from svcs.observability.version_tracker import VersionTracker
 from utils.utils import *
+from config.style.style import FIGGY_STYLE
 
 
 class Share(ConfigCommand):
 
-    def __init__(self, ssm_init, config_init, config_completer_init, colors_enabled: bool, config_context: ConfigContext):
+    def __init__(self, ssm_init, config_init, config_completer_init, colors_enabled: bool,
+                 config_context: ConfigContext):
         super().__init__(share, colors_enabled, config_context)
 
         self._ssm = ssm_init
@@ -36,12 +38,13 @@ class Share(ConfigCommand):
         share_another = True
         while share_another:
             print()
-            key = prompt(source_name_msg, completer=self._config_completer)
+            key = prompt(source_name_msg, completer=self._config_completer, style=FIGGY_STYLE)
             if re.match(f"/app/.*", key):
-                print(f"{self.c.fg_rd}The SOURCE of replication may not be from within the /app/ namespace.{self.c.rs}\n")
+                print(
+                    f"{self.c.fg_rd}The SOURCE of replication may not be from within the /app/ namespace.{self.c.rs}\n")
                 continue
 
-            dest = prompt(dest_name_msg, completer=self._config_completer)
+            dest = prompt(dest_name_msg, completer=self._config_completer, style=FIGGY_STYLE)
             key_value = None
             try:
                 key_value = self._ssm.get_parameter(key)
@@ -55,8 +58,8 @@ class Share(ConfigCommand):
                     raise
 
                 self._utils.validate(key_value is not None,
-                     "Either the Name you provided to share does not exist or you do not have the "
-                     "proper permissions to share the provided Name.")
+                                     "Either the Name you provided to share does not exist or you do not have the "
+                                     "proper permissions to share the provided Name.")
 
             namespace = self._utils.parse_namespace(dest)
 

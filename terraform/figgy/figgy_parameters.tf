@@ -20,12 +20,24 @@ resource "aws_ssm_parameter" "encryption_key_id" {
 # These are used by figgy CLI to help the CLI only show the user parameters they have access to
 resource "aws_ssm_parameter" "role_to_ns_access" {
   count = length(local.role_types)
-  name  = "/figgy/rbac/${local.role_types[count.index]}"
+  name  = "/figgy/rbac/${local.role_types[count.index]}/namespaces"
   type  = "String"
   value = jsonencode(local.role_to_ns_access[local.role_types[count.index]])
   description =<<EOF
 This does nothing to actually ENFORCE access, this parameter is only to improve the UX when using the figgy CLI so
 users are not shown parameters they cannot administrate."
+EOF
+}
+
+# These are used by figgy CLI to help the CLI only show the user parameters they have access to
+resource "aws_ssm_parameter" "role_to_kms_access" {
+  count = length(local.role_types)
+  name  = "/figgy/rbac/${local.role_types[count.index]}/keys"
+  type  = "String"
+  value = jsonencode(local.role_to_kms_access[local.role_types[count.index]])
+  description =<<EOF
+This does nothing to actually ENFORCE access, this parameter is only to improve the UX when using the figgy CLI so
+users are not shown KMS keys do not have access to use"
 EOF
 }
 
@@ -45,4 +57,13 @@ resource "aws_ssm_parameter" "account_mappings" {
   name  = "/figgy/accounts/${keys(local.associated_acounts)[count.index]}"
   type  = "String"
   value = local.associated_acounts[keys(local.associated_acounts)[count.index]]
+}
+
+# These are used by the Figgy CLI to know what accounts exist and which ones a user can assume into
+# for permission management.
+resource "aws_ssm_parameter" "slack_webhook" {
+  count = local.slack_webhook_url != "unconfigured" ? 1 : 0
+  name  = "/figgy/integrations/slack/webhook_url"
+  type  = "String"
+  value = local.slack_webhook_url
 }

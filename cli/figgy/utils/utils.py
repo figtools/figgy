@@ -128,23 +128,13 @@ class Utils:
     def notify(self, message: str):
         print(f'{self.c.fg_bl}{message}{self.c.rs}')
 
-    def get_kms_key(self, role: Role):
-        if role == Role(usr_devops):
-            key_type = input(
-                f'What key are you using to encrypt this secret? Options are: {self.c.fg_bl}{kms_keys}{self.c.rs}: ')
-            self.validate(key_type in kms_keys,
-                          f"You must input a valid kms key, valid options are {self.c.fg_bl}{kms_keys}{self.c.rs}.")
-            return f'{shared_ns}/iam/{role.role}-key-id'
-        else:
-            return f'{shared_ns}/iam/{role.role}-key-id'
-
     def merge_config_contents(self, a: Dict, b: Dict, a_path: str, b_path: str):
         for key in b:
             if isinstance(b[key], dict):
                 if key in b and key in a:
                     dupes = b[key].keys() & a[key].keys()
                     self.validate(dupes == set(), f"Duplicate keys found between your configs. You may not have "
-                    f"two instances of {key} with overlapping keys. Culprits: {dupes}")
+                                                  f"two instances of {key} with overlapping keys. Culprits: {dupes}")
 
                 a_key = a[key] if key in a else {}
                 b_key = b[key] if key in b else {}
@@ -160,16 +150,15 @@ class Utils:
 
         return a
 
-
     def get_repl_config(self, repl_config_path: str):
         with open(repl_config_path, "r") as file:
             contents = file.read()
             self.validate(contents != '', f"File provided at: {repl_config_path} "
-            f"cannot be empty.")
+                                          f"cannot be empty.")
             self.validate(self.is_json(contents), "File provided contains invalid json. Please remediate.")
             conf = json.loads(contents)
             self.validate(REPLICATION_KEY in conf, f"{REPLICATION_KEY} is missing from replication config: "
-            f"{repl_config_path}. This file is invalid.")
+                                                   f"{repl_config_path}. This file is invalid.")
             return self.get_config_key_safe(REPLICATION_KEY, conf, default=[])
 
     def get_ci_config(self, ci_config_path: str) -> Dict:
@@ -211,13 +200,13 @@ class Utils:
 
                 dupes = self.find_dupes(list(self.get_config_key_safe(REPLICATION_KEY, ci_config, default={}).values()))
                 self.validate(not dupes, f"Your configuration has duplicate values in your replicated values "
-                f"config: {self.c.fg_rd}{dupes}{self.c.rs}")
+                                         f"config: {self.c.fg_rd}{dupes}{self.c.rs}")
 
                 self.validate(
                     len(self.get_config_key_safe(CONFIG_KEY, ci_config, default=[])) > 0
                     or OPTIONAL_NAMESPACE in ci_config, f"If you have no defined Names under: {CONFIG_KEY} you must "
-                    f"specify an {OPTIONAL_NAMESPACE} parameter instead with a "
-                    f"value of '/app/your-service-name/'")
+                                                        f"specify an {OPTIONAL_NAMESPACE} parameter instead with a "
+                                                        f"value of '/app/your-service-name/'")
 
                 return ci_config
 
@@ -248,11 +237,11 @@ class Utils:
             namespace = config[OPTIONAL_NAMESPACE]
         else:
             self.validate(CONFIG_KEY in config, f"You must specify an {CONFIG_KEY} or {OPTIONAL_NAMESPACE} block, "
-            f"or both, in your figgy.json file.")
+                                                f"or both, in your figgy.json file.")
             namespace = self.parse_namespace(self.get_first(set(config[CONFIG_KEY])))
 
         self.validate(namespace is not None, f"Invalid namespace provided, or unable to parse valid "
-        f"namespace from your {CONFIG_KEY} block.")
+                                             f"namespace from your {CONFIG_KEY} block.")
         if not namespace.endswith('/'):
             namespace = namespace + '/'
 
@@ -314,7 +303,7 @@ class Utils:
         if not boolean:
             self.error_exit(error_msg)
 
-    #Todo do dynamic validation based on current role mappings.
+    # Todo do dynamic validation based on current role mappings.
     def validate_ps_name(self, ps_name: str):
         return True
         # self.validate(ps_name.startswith(app_ns) or

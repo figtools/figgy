@@ -110,9 +110,9 @@ class FiggyCLI:
         if BASTION_PROFILE_ENV_NAME in os.environ and not prompt:
             return os.environ.get(BASTION_PROFILE_ENV_NAME)
         else:
-            defaults = self.get_defaults(self._configure_set)
+            defaults: CLIDefaults = self.get_defaults(self._configure_set)
             if defaults is not None and not prompt:
-                return defaults.profile
+                return defaults.provider_config.profile
             else:
                 return Input.select_aws_cli_profile()
 
@@ -136,6 +136,7 @@ class FiggyCLI:
         if defaults is not None and not prompt:
             return defaults.role
         else:
+            #Todo this BROKE
             return Input.select_role()
 
     def get_colors_enabled(self) -> bool:

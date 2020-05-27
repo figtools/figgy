@@ -170,3 +170,31 @@ data "aws_iam_policy_document" "config_replication_document" {
     resources = ["*"]
   }
 }
+
+
+# Read configs under /figgy namespace
+resource "aws_iam_policy" "lambda_read_configs" {
+  name = "figgy-lambda-read-configs"
+  path = "/"
+  description = "IAM policy to enable figgy lambdas to read figgy-specific configurations"
+  policy = data.aws_iam_policy_document.lambda_read_figgy_configs.json
+}
+
+data "aws_iam_policy_document" "lambda_read_figgy_configs" {
+  statement {
+    sid = "FiggySSMAccess"
+    actions = [
+      "ssm:GetParameter",
+      "ssm:GetParameters",
+      "ssm:GetParametersByPath"
+    ]
+    resources = [ "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter%s/figgy/*"]
+  }
+
+  statement {
+      sid = "SSMDescribe"
+      actions = [ "ssm:DescribeParameters" ]
+      resources = [ "*" ]
+    }
+
+}

@@ -4,6 +4,7 @@ from botocore.exceptions import ClientError
 from commands.config.get import Get
 from commands.config_context import ConfigContext
 from commands.types.config import ConfigCommand
+from config.style.style import FIGGY_STYLE
 from data.dao.ssm import SsmDao
 from svcs.observability.usage_tracker import UsageTracker
 from svcs.observability.version_tracker import VersionTracker
@@ -68,7 +69,7 @@ class List(ConfigCommand):
                     pagination_data = data
                     click.echo(pagination_data)
 
-                selection = prompt(select_message, style=style)
+                selection = prompt(select_message, style=FIGGY_STYLE)
                 if re.match('[0-9]+', selection) is not None:
                     if int(selection) > count - 1:
                         print(f"Invalid selection. try again")

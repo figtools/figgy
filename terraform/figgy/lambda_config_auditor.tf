@@ -5,8 +5,9 @@ module "config_auditor" {
   handler = "functions/config_auditor.handle"
   lambda_name = "figgy-config-auditor"
   lambda_timeout = 60
-  policies = [aws_iam_policy.config_auditor.arn, aws_iam_policy.lambda_default.arn]
+  policies = [aws_iam_policy.config_auditor.arn, aws_iam_policy.lambda_default.arn, aws_iam_policy.lambda_read_configs.arn]
   zip_path = data.archive_file.figgy.output_path
+  layers = [local.aws_sdk_layer_map[var.region]]
 }
 
 module "config_auditor_trigger" {

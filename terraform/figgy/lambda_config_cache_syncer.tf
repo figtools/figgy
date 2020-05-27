@@ -5,8 +5,9 @@ module "config_cache_syncer" {
   handler = "functions/config_cache_syncer.handle"
   lambda_name = "figgy-config-cache-syncer"
   lambda_timeout = 60
-  policies = [aws_iam_policy.config_cache_manager.arn, aws_iam_policy.lambda_default.arn]
+  policies = [aws_iam_policy.config_cache_manager.arn, aws_iam_policy.lambda_default.arn, aws_iam_policy.lambda_read_configs.arn]
   zip_path = data.archive_file.figgy.output_path
+  layers = [local.aws_sdk_layer_map[var.region]]
 }
 
 module "config_cache_syncer_trigger" {

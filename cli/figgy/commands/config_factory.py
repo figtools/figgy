@@ -54,7 +54,8 @@ class ConfigFactory(Factory):
             return Cleanup(self._ssm, self._config, self._config_context, self._config_completer,
                            self._colors_enabled, self.get(delete), args=self._args)
         elif command == put:
-            return Put(self._ssm, self._colors_enabled, self._config_context, self._config_completer, self.get(get))
+            return Put(self._ssm, self._colors_enabled, self._config_context, self._config_completer,
+                       self._config_view, self.get(get))
         elif command == delete:
             return Delete(self._ssm, self._config, self._config_context, self._colors_enabled,
                           self._config_completer)
@@ -80,7 +81,7 @@ class ConfigFactory(Factory):
             return Promote(self._ssm, self._config_completer, self._colors_enabled,
                            self._config_context, self._session_manager)
         elif command == edit:
-            return Edit(self._ssm, self._colors_enabled, self._config_context, self._config_completer)
+            return Edit(self._ssm, self._colors_enabled, self._config_context, self._config_view, self._config_completer)
         elif command == generate:
             return Generate(self._colors_enabled, self._config_context)
 

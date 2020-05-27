@@ -21,10 +21,11 @@ class RBACLimitedConfigView:
         self._cache_mgr = cache_mgr
         self._config_svc = config_svc
         self._ssm = ssm
-        self.rbac_role_path = f'{figgy_ns}/rbac/{self._role.role}'
+        self.rbac_role_ns_path = f'{figgy_ns}/rbac/{self._role.role}/namespaces'
+        self.rbac_role_kms_path = f'{figgy_ns}/rbac/{self._role.role}/keys'
         self._config_completer = None
 
-    def get_authed_namespaces(self) -> List[str]:
+    def get_authorized_namespaces(self) -> List[str]:
         """
         Looks up the user-defined namespaces that users of this type can access. This enables us to prevent the
         auto-complete from showing parameters the user doesn't actually have access to.
@@ -33,18 +34,50 @@ class RBACLimitedConfigView:
         """
         cache_key = f'{self._role.role}-authed-nses'
 
-        es, authed_nses = self._cache_mgr.get_or_refresh(cache_key, self._ssm.get_parameter, self.rbac_role_path)
+        es, authed_nses = self._cache_mgr.get_or_refresh(cache_key, self._ssm.get_parameter, self.rbac_role_ns_path)
 
         if authed_nses:
             authed_nses = json.loads(authed_nses)
 
         if not isinstance(authed_nses, list):
-            raise ValueError(f"Invalid value found at path: {self.rbac_role_path}. It must be a valid json List[str]")
+            raise ValueError(f"Invalid value found at path: {self.rbac_role_ns_path}. It must be a valid json List[str]")
 
         return authed_nses
 
-    def get_authorized_namespaces(self):
-        return self._ssm.get_parameter(self.rbac_role_path)
+    def get_authorized_kms_keys(self) -> List[str]:
+        """
+        Looks up the user-defined KMS keys that users of this type can access. This enables us to prevent the
+        auto-complete from showing keys the user doesn't actually have access to.
+
+        Leverages an expiring local cache to save ~200ms on each figgy bootstrap
+        """
+        cache_key = f'{self._role.role}-authed-keys'
+
+        es, authed_nses = self._cache_mgr.get_or_refresh(cache_key, self._ssm.get_parameter, self.rbac_role_kms_path)
+
+        if authed_nses:
+            authed_nses = json.loads(authed_nses)
+
+        if not isinstance(authed_nses, list):
+            raise ValueError(f"Invalid value found at path: {self.rbac_role_kms_path}. It must be a valid json List[str]")
+
+        return authed_nses
+
+    def get_authorized_key_id(self, authorized_key_name: str) -> str:
+        """
+        Returns the appropriate KMS Key ID for a provided authorized key name.
+        :param authorized_key_name: KMS Key the provider user has access to.
+        :return: KMS Key id of the associated key.
+        """
+        cache_key = f'kms-{authorized_key_name}'
+        key_path = f'/figgy/kms/{authorized_key_name}-key-id'
+
+        if authorized_key_name not in self.get_authorized_kms_keys():
+            raise ValueError(f"You do not have access to encrypt with the KMS key: {authorized_key_name}")
+
+        es, key_id = self._cache_mgr.get_or_refresh(cache_key, self._ssm.get_parameter, key_path)
+        return key_id
+
 
     @Utils.trace
     def get_config_completer(self):
@@ -58,7 +91,7 @@ class RBACLimitedConfigView:
         # Tested at 30k params and it takes ~25ms
         if not self._config_completer:
             all_names = sorted(self._config_svc.get_parameter_names())
-            authed_nses = self.get_authed_namespaces() + [shared_ns]
+            authed_nses = self.get_authorized_namespaces() + [shared_ns]
             new_names = []
             for ns in authed_nses:
                 filtered_names = [name for name in all_names if name.startswith(ns)]

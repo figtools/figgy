@@ -11,6 +11,7 @@ from commands.config_context import ConfigContext
 from commands.types.config import ConfigCommand
 from data.dao.config import ConfigDao
 from data.dao.ssm import SsmDao
+from input import Input
 from svcs.observability.usage_tracker import UsageTracker
 from svcs.observability.version_tracker import VersionTracker
 from utils.utils import *
@@ -112,29 +113,23 @@ class Browse(ConfigCommand, npyscreen.NPSApp):
         deleted = []  # type: List[str]
         for path in self.deleted_ps_paths:
             if path in self.dirs:
-                notify, selection = False, ''
                 all_children = set(list(map(lambda x: x['Name'],
                                             self._ssm.get_all_parameters([path], option='Recursive'))))
                 print(f"{self.c.fg_rd}You have selected a DIRECTORY to delete: {path}. "
                       f"Do you want to delete ALL children?{self.c.rs}")
                 for child in all_children:
                     print(f"Marked for deletion: {child}")
-
-                while not self._utils.is_valid_selection(selection, notify):
-                    selection = input(f"Would you like to delete all children of {path}? (y/N): ")
-                    selection = selection if selection != '' else 'n'
-                    if selection.lower() == 'y':
+                    delete_children = Input.y_n_input(f"Would you like to delete all children of {path}? ",
+                                                      default_yes=False)
+                    if delete_children:
                         for child in all_children:
                             if self._delete.delete_param(child):
                                 deleted.append(child)
             else:
                 if path not in deleted:
-                    notify, selection = False, ''
-                    while not self._utils.is_valid_selection(selection, notify):
-                        selection = input(f"Delete {path}? (Y/n): ")
-                        selection = selection if selection != '' else 'y'
+                    delete_it = Input.y_n_input(f"Delete {path}? ", default_yes=True)
 
-                    if selection.lower() == 'y':
+                    if delete_it:
                         if self._delete.delete_param(path):
                             deleted.append(path)
 
@@ -189,8 +184,9 @@ class BrowseApp(NPSApp):
     def main(self):
         global npy_form
         npy_form = Form(
-            name="Browse Parameters: - 'e' to expand, 'c' to collapse, <s> to select, <d> to delete, <Tab> & <Shift+Tab> moves "
-                 "cursor between `OK` and `Tree` views.", )
+
+            name="Browse Parameters: - 'e' to expand, 'c' to collapse, <s> to select, <d> to delete, "
+                 "<Tab> & <Shift+Tab> moves cursor between `OK` and `Tree` views.", )
 
         tree = npy_form.add(LogicalMLTree)
 
@@ -202,7 +198,7 @@ class BrowseApp(NPSApp):
             children = [prefix_child]
         else:
             log.info(f"--{Utils.get_first(prefix)} missing, defaulting to normal browse tree.")
-            for namespace in self._config_view.get_authed_namespaces():
+            for namespace in self._config_view.get_authorized_namespaces():
                 child = td.newChild(content=namespace, selectable=False, expanded=False)
                 children.append(child)
 
@@ -210,6 +206,7 @@ class BrowseApp(NPSApp):
             self._browse.dirs.add(child.getContent())
 
         futures = []
+
         with ThreadPoolExecutor(max_workers=10) as pool:
             for child in children:
                 futures.append(pool.submit(self._browse.add_children, child.getContent(), child))
@@ -308,6 +305,20 @@ class LogicalMLTree(MLTreeMultiSelect):
             ord('r'): self.h_refresh
         })
 
+    def h_select(self, ch):
+        vl = self.values[self.cursor_line]
+        vl_to_set = not vl.selected
+        if self.select_cascades:
+            for v in self._walk_tree(vl, only_expanded=False, ignore_root=False):
+                if v.selectable:
+                    v.selected = vl_to_set
+        else:
+            vl.selected = vl_to_set
+        if self.select_exit:
+            self.editing = False
+            self.how_exited = True
+        self.display()
+
     def h_refresh(self, ch):
         npyscreen.blank_terminal()
         npy_form.edit()
@@ -330,7 +341,6 @@ class LogicalMLTree(MLTreeMultiSelect):
     def get_objects_to_delete(self, return_node=True):
         for v in self._walk_tree(self._myFullValues, only_expanded=False, ignore_root=False):
             if v.deleted:
-                print(f"Deleted: {v}")
                 if return_node:
                     yield v
                 else:
