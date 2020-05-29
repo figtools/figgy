@@ -16,6 +16,9 @@ resource "aws_s3_bucket" "figgy_bucket" {
     created_by  = "figgy"
   }
 
+  provisioner "local-exec" {
+     command = "echo \"Sleeping for 15s to address potential race condition\" && sleep 15"
+  }
 }
 
 # You will need this if you do **_NOT_** already have cloud-trail logging events
