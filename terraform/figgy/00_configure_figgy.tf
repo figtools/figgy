@@ -28,11 +28,11 @@ locals {
   # don't have any typos here. These must match the above `role_types` and `root_namespaces` configurations
   # Format: Map[str:List[str]], or more specifically Map[role_type:List[namespace]]
   role_to_ns_access = {
-    "devops" = ["/app", "/devops", "/data", "/sre"],
-    "data" = ["/app", "/data"],
-    "sre" = ["/sre", "/app", "/data"],
-    "dev" = ["/app"],
-    "dba" = ["/dba", "/app"]
+    "devops" = ["/app", "/devops", "/data", "/sre", "/shared"],
+    "data" = ["/app", "/data", "/shared"],
+    "sre" = ["/sre", "/app", "/data", "/shared"],
+    "dev" = ["/app", "/shared"],
+    "dba" = ["/dba", "/app", "/shared"]
   }
 
   # Map role type access to various encryption keys provisioned by figgy.
