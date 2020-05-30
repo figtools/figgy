@@ -3,7 +3,7 @@
 locals {
   # Please provide a mapping from all AWS "environments" to their respective account Ids
   # Format: "env" -> "account_id"
-  associated_acounts = tomap({
+  associated_accounts = tomap({
     "dev" : "106481321259",
     "qa" :  "713117490776",
     "stage": "750075891372",

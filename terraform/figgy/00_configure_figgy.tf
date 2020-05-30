@@ -45,9 +45,6 @@ locals {
     "dev" = [ "app"]
   }
 
-  # Set to "false" for the "bastion" authentication type, or "true" for all other SSO auth types.
-  enable_sso = true
-
   # SSO Type: Options are okta/google
   sso_type = "okta"
 
