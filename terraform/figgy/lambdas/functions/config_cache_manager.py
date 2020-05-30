@@ -3,7 +3,6 @@ from typing import Set
 import boto3
 import logging
 
-from functions.config_cache_syncer import ssm_dao
 from lib.data.ssm import SsmDao
 from lib.svcs.slack import SlackService
 from lib.utils.utils import Utils
@@ -21,7 +20,6 @@ ACCOUNT_ID = ssm.get_parameter_value(ACCOUNT_ID_PS_PATH)
 
 
 def handle(event, context):
-    print(f"got event: {event}")
     # Don't process other account's events.
     originating_account = event.get('account')
     if originating_account != ACCOUNT_ID:
