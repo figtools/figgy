@@ -53,11 +53,20 @@ resource "aws_ssm_parameter" "user_to_role_mappings" {
 # These are used by the Figgy CLI to know what accounts exist and which ones a user can assume into
 # for permission management.
 resource "aws_ssm_parameter" "account_mappings" {
-  count = local.enable_sso == false && local.bastion_account_number == var.aws_account_id ? length(keys(local.associated_acounts)) : 0
-  name  = "/figgy/accounts/${keys(local.associated_acounts)[count.index]}"
+  count = local.enable_sso == false && local.bastion_account_number == var.aws_account_id ? length(keys(local.associated_accounts)) : 0
+  name  = "/figgy/accounts/${keys(local.associated_accounts)[count.index]}"
   type  = "String"
-  value = local.associated_acounts[keys(local.associated_acounts)[count.index]]
+  value = local.associated_accounts[keys(local.associated_accounts)[count.index]]
 }
+
+
+# This is only used for figgy-sandbox stuff. You can delete if you want but it's harmless.
+resource "aws_ssm_parameter" "account_id" {
+  name  = "/figgy/account_id"
+  type  = "String"
+  value = data.aws_caller_identity.current.account_id
+}
+
 
 # These are used by the Figgy CLI to know what accounts exist and which ones a user can assume into
 # for permission management.
