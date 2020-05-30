@@ -45,19 +45,16 @@ locals {
     "dev" = [ "app"]
   }
 
-  # Set to "false" for the "bastion" authentication type, or "true" for all other SSO auth types.
-  enable_sso = true
-
-  # SSO Type: Options are okta/google
-  sso_type = "okta"
+  # SSO Type: Options are okta/google/bastion
+  sso_type = "bastion"
 
   # Bastion account #. Set to your bastion account # if you are leveraging bastion based authentication. Otherwise ignore.
   # If `enable_sso = true` then ignore this.
-  bastion_account_number = "816219277933"
+  bastion_account_number = "513912394837"
 
   # MFA Enabled - "true/false" - Require MFA for authentication for bastion based auth? For SSO users MFA
   # is managed by your SSO provider. This is only for `bastion` MFA enforcement. The CLI supports MFA for SSO / Bastion auth types.
-  mfa_enabled = true
+  mfa_enabled = false
 
   # This is optional. If you'd like to receive notifications for configuration events, input a webhook url here.
   # You may enter it here, or instead update
