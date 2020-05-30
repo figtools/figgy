@@ -54,34 +54,6 @@ AUDIT_PARAMETER_ATTR_DESCRIPTION = "description"
 AUDIT_PARAMETER_ATTR_VALUE = "value"
 AUDIT_PARAMETER_ATTR_KEY_ID = "key_id"
 
-# Plugin table constants
-PLUGIN_TABLE_NAME = "plugin-state"
-PLUGIN_SERVICE_KEY_NAME = "service_name"
-PLUGIN_PLUGIN_KEY_NAME = "plugin_name"
-PLUGIN_SHA_ATTR_NAME = "sha1"
-PLUGIN_USER_ATTR_NAME = "user_name"
-
-# Service State table Constants
-SERVICE_STATE_TABLE_NAME = "service-state"
-SERVICE_STATE_KEY_NAME = "service_name"
-SERVICE_STATE_CVE_ATTR_NAME = "cve_overrides"
-
-# Tfe Cache table constants
-TFE_CACHE_TABLE_NAME = "tfe-cache"
-TFE_RESOURCE_KEY_NAME = "resource_name"
-TFE_TYPE_ATTR_NAME = "type"
-
-# Service name cache table constants
-SERVICE_NAME_CACHE_TABLE_NAME = "service-name-cache"
-SERVICE_NAME_KEY_NAME = "service_name"
-
-# Lambda Constants
-CREDENTIALS_MGR_LAMBDA_NAME = 'py-tfe-credentials-manager'
-LOGTAIL_AUTH_LAMBDA_NAME = 'logtail-ENV-generate_token'
-
-# Legacy Decryption
-LEGACY_KMS_ENCRYPTION_PREFIX = '53cur3D8'
-
 # Merge Key constants
 MERGE_KEY_PREFIX = "${"
 MERGE_KEY_SUFFIX = "}"
@@ -151,3 +123,9 @@ ROOT_USER = "root"
 # Build configs
 OVERRIDE_KEYRING_ENV_VAR = "OVERRIDE_KEYRING"
 ONE_WEEK_SECONDS = 60 * 60 * 24 * 7
+
+# Figgy Sandbox
+SANDBOX_ROLES = ['dev', 'devops', 'sre', 'data', 'dba']
+GET_SANBOX_CREDS_URL = "https://pvii3xi8k5.execute-api.us-east-1.amazonaws.com/dev/v1/get-credentials"
+FIGGY_SANDBOX_REGION = 'us-east-1'
+FIGGY_SANDBOX_PROFILE = 'figgy-sandbox'

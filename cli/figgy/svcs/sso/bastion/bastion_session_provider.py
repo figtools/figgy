@@ -13,10 +13,10 @@ from input import Input
 from models.assumable_role import AssumableRole
 from models.aws_session import FiggyAWSSession
 from models.defaults.defaults import CLIDefaults
+from models.defaults.provider import Provider
 from models.role import Role
 from models.run_env import RunEnv
 from svcs.cache_manager import CacheManager
-from svcs.setup import FiggySetup
 from svcs.sso.provider.session_provider import SessionProvider
 from svcs.vault import FiggyVault
 from utils.secrets_manager import SecretsManager
@@ -34,13 +34,13 @@ class BastionSessionProvider(SessionProvider):
         super().__init__(defaults)
         self.__id = uuid.uuid4()
         self._utils = Utils(defaults.colors_enabled)
-        self._setup: FiggySetup = FiggySetup()
         self.__bastion_session = boto3.session.Session(profile_name=self._defaults.provider_config.profile_name)
         self._ssm = None
         self._sts = None
         self._iam_client = None
         self._iam = None
-        vault = FiggyVault(SecretsManager.get_password(defaults.user))
+        # Todo lookup access key from ~/.aws/creds?
+        vault = FiggyVault(defaults.provider_config.profile_name)
         self._sts_cache: CacheManager = CacheManager(file_override=STS_SESSION_CACHE_PATH, vault=vault)
         self._role_name_prefix = os.getenv(FIGGY_ROLE_PREFIX_OVERRIDE_ENV, FIGGY_ROLE_NAME_PREFIX)
 
@@ -111,16 +111,17 @@ class BastionSessionProvider(SessionProvider):
                 try:
                     if self._defaults.mfa_enabled:
                         self._defaults.mfa_serial = self.get_mfa_serial()
-                        mfa = SecretsManager.generate_mfa(self._defaults.user) if self._defaults.auto_mfa else Input.get_mfa()
+                        mfa = SecretsManager.generate_mfa(
+                            self._defaults.user) if self._defaults.auto_mfa else Input.get_mfa()
                         response = self.__get_sts().assume_role(RoleArn=assumable_role.role_arn,
                                                                 RoleSessionName=self._defaults.user,
-                                                                DurationSeconds=ENV_SESSION_DURATION,
+                                                                DurationSeconds=self._defaults.session_duration,
                                                                 SerialNumber=self._defaults.mfa_serial,
                                                                 TokenCode=mfa)
                     else:
                         response = self.__get_sts().assume_role(RoleArn=assumable_role.role_arn,
                                                                 RoleSessionName=self._defaults.user,
-                                                                DurationSeconds=ENV_SESSION_DURATION)
+                                                                DurationSeconds=self._defaults.session_duration)
 
                     session = FiggyAWSSession.from_sts_response(response)
                     log.info(f"Got session response: {response}")
@@ -129,9 +130,10 @@ class BastionSessionProvider(SessionProvider):
                     if isinstance(e, ParamValidationError) or "AccessDenied" == e.response['Error']['Code']:
                         if exit_on_fail:
                             self._utils.error_exit(f"Error authenticating with AWS from Bastion Profile:"
-                                                   f" {self._defaults.profile}: {e}")
+                                                   f" {self._defaults.provider_config.profile_name}: {e}")
                     else:
                         if exit_on_fail:
+                            log.error(f"Failed to authenticate due to error: {e}")
                             self._utils.error_exit(
                                 f"Error getting session for role: {assumable_role.role_arn} "
                                 f"-- Are you sure you have permissions?")
@@ -139,14 +141,18 @@ class BastionSessionProvider(SessionProvider):
                     raise e
 
     def get_assumable_roles(self):
-        ROLE_PATH =  f'/figgy/users/{self.__get_iam_user}/roles'
-        user_roles = self.__get_ssm().get_parameter(ROLE_PATH)
-        self._utils.stc_validate(user_roles is not None and user_roles is not "[]",
-                                 "Something is wrong with your user's configuration with Figgy. "
-                                 "Unable to find any eligible roles for your user. Please contact your"
-                                 " administrator.")
+        if self.is_role_session:
+            user_roles = [self._defaults.role.role]
+        else:
+            ROLE_PATH = f'/figgy/users/{self.__get_iam_user}/roles'
+            user_roles = self.__get_ssm().get_parameter(ROLE_PATH)
+            self._utils.stc_validate(user_roles is not None and user_roles is not "[]",
+                                     "Something is wrong with your user's configuration with Figgy. "
+                                     "Unable to find any eligible roles for your user. Please contact your"
+                                     " administrator.")
 
-        user_roles = json.loads(user_roles)
+            user_roles = json.loads(user_roles)
+
         environments = self.__get_ssm().get_all_parameters([PS_FIGGY_ACCOUNTS_PREFIX], option='OneLevel')
         names: List[str] = [env.get('Name') for env in environments]
         parameters = self.__get_ssm().get_parameter_values(names)
@@ -159,10 +165,21 @@ class BastionSessionProvider(SessionProvider):
                 assumable_roles.append(AssumableRole(
                     run_env=RunEnv(env=env_name, account_id=account_id),
                     role=Role(role, full_name=f'{FIGGY_ROLE_NAME_PREFIX}{env_name}-{role}'),
-                    account_id=account_id
+                    account_id=account_id,
+                    provider_name=Provider.AWS_BASTION.value
                 ))
 
         return assumable_roles
+
+    def is_role_session(self):
+        """
+        For sandbox demos, where users aren't coming from user accounts, we want to skip looking up user -> role.
+        :return: bool - Is this session originating from a role?
+        """
+        creds = self.__bastion_session.get_credentials().get_frozen_credentials()
+        print(creds)
+
+        return hasattr(creds, 'token') and creds.token is not None
 
     def cleanup_session_cache(self):
         self._sts_cache.wipe_cache()

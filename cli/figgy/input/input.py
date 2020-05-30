@@ -76,8 +76,8 @@ class Input:
         selection = ''
         c = TerminalFactory(Utils.not_windows()).instance().get_colors()
         while selection.lower() != 'y' and selection.lower() != 'n':
-            selection = input(f'Enable colored output? (Colors: {c.fg_rd}RED{c.fg.rs} {c.fg_bl}BLUE{c.fg.rs} '
-                              f'{c.fg_gr}GREEN{c.fg.rs} <-- If you see weirdness, select N) Y/n?: ')
+            selection = input(f'Enable colored output? (Colors: {c.fg_rd}RED{c.rs} {c.fg_bl}BLUE{c.rs} '
+                              f'{c.fg_gr}GREEN{c.rs} <-- If you see weirdness, select N) Y/n?: ')
             selection = selection.lower() if selection != '' else 'y'
         return selection == 'y'
 
@@ -147,6 +147,17 @@ class Input:
     def is_secret() -> bool:
         return Input.y_n_input("Is this value a secret? ", default_yes=False)
 
+
+    @staticmethod
+    def input(message: str) -> str:
+        result = None
+        while not result or result.strip() == '':
+            result = input(message)
+
+        return result
+
+
+
     @staticmethod
     def y_n_input(message: str, default_yes: bool = True, invalid_no=False) -> bool:
         """
@@ -182,7 +193,7 @@ class Input:
         :return: Selected option
         """
         selection = ''
-        msg = f'{message}\nOptions: {valid_options}\n -> ' if len(valid_options) < 5 else f'{message} -> '
+        msg = f'{message}\nOptions: {valid_options}\n -> ' if len(valid_options) < 10 else f'{message} -> '
         while not selection:
             if default:
                 selection = prompt(msg, completer=WordCompleter(words=valid_options), default=default)

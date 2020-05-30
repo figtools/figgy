@@ -12,6 +12,7 @@ log = logging.getLogger(__name__)
 
 EMPTY_CACHE_STR = 'CACHE_EMPTY'
 
+
 def write_empty_cache_file(path: str):
     with open(path, "w") as cache:
         cache.write(EMPTY_CACHE_STR)

@@ -1,4 +1,6 @@
-ENV_SESSION_DURATION = 43200  # 12 hours
+DEFAULT_SESSION_DURATION = 43200  # 12 hours
+SANDBOX_SESSION_DURATION = 60 * 60 # 1 hour
+
 BASTION_PROFILE_ENV_NAME = 'FIGGY_AWS_PROFILE'
 
 AWS_REGIONS = ['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2', 'af-south-1', 'ap-east-1', 'ap-east-2',

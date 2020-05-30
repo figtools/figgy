@@ -1,3 +1,7 @@
+from typing import Union
+
+from commands.config_context import ConfigContext
+from commands.help_context import HelpContext
 from config import *
 from config.style.terminal_factory import TerminalFactory
 from utils.utils import Utils
@@ -10,7 +14,8 @@ class Command(ABC):
     Root command class from which all other command classes inherit.
     """
 
-    def __init__(self, command_type: frozenset, colors_enabled: bool, context: CommandContext):
+    def __init__(self, command_type: frozenset, colors_enabled: bool,
+                 context: Union[CommandContext, HelpContext, ConfigContext]):
         self.type = command_type
         self.run_env = context.run_env
         self.c = TerminalFactory(colors_enabled).instance().get_colors()

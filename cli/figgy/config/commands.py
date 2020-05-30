@@ -7,11 +7,11 @@ version = frozenset({'version'})
 command = frozenset({'command'})
 resource = frozenset({'resource'})
 configure = frozenset({'configure'})
-login = frozenset({'login'})
 
 # Resource types
 config = frozenset({'config'})
 iam = frozenset({'iam'})
+login = frozenset({'login'})
 
 resources = config | iam
 
@@ -55,6 +55,9 @@ help = frozenset({'help'})
 required = frozenset({'required'})
 action = frozenset({'action'})
 store_true = 'store_true'
+
+# help commands
+sandbox = frozenset({'sandbox'})
 
 # Maps CLI `--options` for each argument, and sets flags if necessary
 arg_options = {
@@ -190,7 +193,12 @@ arg_options = {
         login: {
             info: {action: store_true, required: False},
             skip_upgrade: {action: store_true, required: False},
-            debug: {action: store_true, required: False}
+            debug: {action: store_true, required: False},
+        },
+        sandbox: {
+            info: {action: store_true, required: False},
+            skip_upgrade: {action: store_true, required: False},
+            debug: {action: store_true, required: False},
         }
     }
 }
@@ -204,13 +212,13 @@ merge_suffixes = [merge_uri_suffix, empty_uri_suffix]
 config_commands = [sync, put, edit, delete, cleanup, get, share, generate,
                    list_com, browse, audit, dump, restore, promote]
 iam_commands = [export]
-help_commands = [configure, version, login]
+help_commands = [configure, version, login, sandbox]
 
 # Used to build out parser, map of resource to sub-commands
 resource_map = {
     config: config_commands,
     iam: iam_commands,
-    login: [login]
+    login: [login, sandbox]
 }
 
 options = ci_path | info

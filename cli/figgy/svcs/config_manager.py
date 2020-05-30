@@ -2,10 +2,11 @@ from configparser import ConfigParser
 from enum import Enum
 from typing import Type, Union, Optional, Callable, Any
 
-from config import CONFIG_OVERRIDE_FILE_PATH, Config
+from config import CONFIG_OVERRIDE_FILE_PATH, Config, EMPTY_CONFIG
 from config.style.terminal_factory import TerminalFactory
 from input import Input
 from utils.utils import Utils
+from os import path
 
 
 class ConfigManager:
@@ -23,7 +24,7 @@ class ConfigManager:
         with open(self.config_file, 'r') as file:
             self.config.read_file(file)
 
-    def set(self, key: Enum, val: Any) -> None:
+    def set(self, key: Union[Type[Config.Section], Enum], val: Any) -> None:
         """
         Set the value in self.config_file for key: KEY
         Values are forced to strings if non-string values are passed
@@ -97,4 +98,8 @@ class ConfigManager:
         """
         Get an instance of the figgy user provided configuration file
         """
+        if not path.exists(CONFIG_OVERRIDE_FILE_PATH):
+            with open(CONFIG_OVERRIDE_FILE_PATH, 'w') as figgy:
+                figgy.write(EMPTY_CONFIG)
+
         return ConfigManager(CONFIG_OVERRIDE_FILE_PATH)

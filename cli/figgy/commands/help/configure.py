@@ -46,56 +46,12 @@ class Configure(HelpCommand, ABC):
         self._setup.save_defaults(defaults)
         self.c = TerminalFactory(Utils.is_mac()).instance().get_colors()
 
-        provider_factory: SessionProviderFactory = SessionProviderFactory(defaults)
-        session_provider: SessionProvider = provider_factory.instance()
-        session_provider.cleanup_session_cache()
-        # Get assertion and parse out account -> role -> run_env mappings.
-        assumable_roles: List[AssumableRole] = session_provider.get_assumable_roles()
-        print(f"\n{self.c.fg_bl}The following roles were detected for user: {defaults.user} - if something is missing, "
-              f"contact your system administrator.{self.c.rs}\n")
-
-        if assumable_roles:
-            self.print_role_table(assumable_roles)
-
-        valid_envs = list(set([x.run_env.env for x in assumable_roles]))
-        valid_roles = list(set([x.role.role for x in assumable_roles]))
-        role: Role = Input.select_role(valid_roles=valid_roles)
-        print("\n")
-        run_env: RunEnv = Input.select_default_account(valid_envs=valid_envs)
-        print("\n")
-        defaults.role = role
-        defaults.run_env = run_env
-        defaults.valid_envs = valid_envs
-        defaults.valid_roles = valid_roles
-        defaults.assumable_roles = assumable_roles
+        defaults = self._setup.configure_roles(current_defaults=defaults)
         defaults = self._setup.configure_preferences(defaults)
+
         self._setup.save_defaults(defaults)
         print(f"\n{self.c.fg_gr}Setup successful! Enjoy figgy!{self.c.rs}")
         return defaults
-
-    @staticmethod
-    def print_role_table(roles: List[AssumableRole]):
-        printable_roles: Dict[int: Dict] = {}
-        for role in roles:
-            item = printable_roles.get(role.account_id, {})
-            item['env'] = role.run_env.env
-            item['roles'] = item.get('roles', []) + [role.role.role]
-            printable_roles[role.account_id] = item
-
-        print(tabulate(
-            [
-                [
-                    account_id,
-                    printable_roles[account_id]['env'],
-                    ', '.join(printable_roles[account_id]['roles'])
-                ]
-                for account_id in printable_roles.keys()
-            ],
-            headers=['AccountId', 'Environment', 'Roles'],
-            tablefmt="grid",
-            numalign="center",
-            stralign="left",
-        ))
 
     def execute(self):
         self.configure()

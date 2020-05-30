@@ -2,7 +2,7 @@
 class Role:
 
     def __init__(self, role: str, full_name: str = None):
-        self.role = role
+        self.role: str = role
         self.full_name = full_name
 
     def __str__(self):

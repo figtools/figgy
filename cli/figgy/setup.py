@@ -47,6 +47,6 @@ setup(
     author="Jordan Mance",
     author_email="jordan@figgy.dev",
     url=GITHUB,
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     install_requires=requirements
 )
