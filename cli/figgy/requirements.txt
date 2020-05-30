@@ -1,4 +1,4 @@
-boto3==1.13.16
+boto3==1.13.19
 prompt_toolkit==3.0.5
 sty==1.0.0b8
 click==7.1.2
@@ -19,3 +19,4 @@ aws-google-auth==0.0.35
 pillow==7.1.2
 urllib3==1.25.9
 pyotp==2.3.0
+pydantic==1.5.1

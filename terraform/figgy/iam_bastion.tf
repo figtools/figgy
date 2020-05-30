@@ -1,3 +1,11 @@
+locals {
+  # sandbox_principals is only used in the figgy sandbox environment. This should never be true for you.
+  sandbox_principals = [local.bastion_account_number, "arn:aws:iam::${local.bastion_account_number}:role/figgy-devops"]
+  bastion_principal = [local.bastion_account_number]
+
+  # The figgy sandbox allows role assumption by accountId and by RoleId. This is unique to the figgy sandbox.
+  principals = var.sandbox_deploy ? local.sandbox_principals : local.bastion_principal
+}
 
 # Be careful if you change this name, it is used by bastion integrations. When we retrieve the SAML assertion from our SSO provider,
 # the role ARNs provide us the accountId -> run_env -> role mapping that is necessary for Figgy to operate properly.
@@ -20,9 +28,7 @@ data "aws_iam_policy_document" "bastion_role_policy" {
     principals {
       type = "AWS"
 
-      identifiers = [
-        local.bastion_account_number
-      ]
+      identifiers = local.principals
     }
 
     condition {

@@ -110,7 +110,7 @@ class FiggyCLI:
         if BASTION_PROFILE_ENV_NAME in os.environ and not prompt:
             return os.environ.get(BASTION_PROFILE_ENV_NAME)
         else:
-            defaults: CLIDefaults = self.get_defaults(self._configure_set)
+            defaults: CLIDefaults = self.get_defaults(self._is_setup_command)
             if defaults is not None and not prompt:
                 return defaults.provider_config.profile
             else:
@@ -132,7 +132,7 @@ class FiggyCLI:
             print(f'Role override selected: {role_override}\n')
             return Role(role_override)
 
-        defaults = self.get_defaults(self._configure_set)
+        defaults = self.get_defaults(self._is_setup_command)
         if defaults is not None and not prompt:
             return defaults.role
         else:
@@ -145,7 +145,7 @@ class FiggyCLI:
         Returns: True/False
 
         """
-        defaults = self.get_defaults(skip=self._configure_set)
+        defaults = self.get_defaults(skip=self._is_setup_command)
         if defaults is not None:
             return defaults.colors_enabled
         else:
@@ -170,6 +170,10 @@ class FiggyCLI:
 
         return matching_role
 
+    @staticmethod
+    def is_setup_command(args):
+        return Utils.is_set_true(configure, args) or Utils.command_set(sandbox, args)
+
     def __init__(self, args):
         """
         Initializes global shared properties
@@ -181,10 +185,10 @@ class FiggyCLI:
         self._profile = None
         self._command_factory = None
         self._session_manager = None
-        self._configure_set: bool = Utils.is_set_true(configure, args)
+        self._is_setup_command: bool = FiggyCLI.is_setup_command(args)
         self._utils = Utils(self.get_colors_enabled())
         self._sts = boto3.client('sts')
-        self._defaults: CLIDefaults = FiggyCLI.get_defaults(skip=self._configure_set)
+        self._defaults: CLIDefaults = FiggyCLI.get_defaults(skip=self._is_setup_command)
         self._run_env = self._defaults.run_env
         role_override = Utils.attr_if_exists(role, args)
         self._role: Role = self.get_role(args.prompt, role_override=role_override)
@@ -200,7 +204,7 @@ class FiggyCLI:
         self._utils.validate(Utils.attr_exists(configure, args) or Utils.attr_exists(command, args),
                              f"No command found. Proper format is `{CLI_NAME} <resource> <command> --option(s)`")
 
-        self._assumable_role = self.find_assumable_role(self._run_env, self._role, skip=self._configure_set)
+        self._assumable_role = self.find_assumable_role(self._run_env, self._role, skip=self._is_setup_command)
         #Todo validate this role?
 
         command_val = Utils.attr_if_exists(command, args)
@@ -219,20 +223,20 @@ class FiggyCLI:
         """
         if not self._session_manager:
             self._session_manager = SessionManager(self.get_colors_enabled(),
-                                                   self.get_defaults(skip=self._configure_set),
+                                                   self.get_defaults(skip=self._is_setup_command),
                                                    self._get_session_provider())
 
         return self._session_manager
 
     def _get_session_provider(self):
         if not self._session_provider:
-            self._session_provider = SessionProviderFactory(self.get_defaults(skip=self._configure_set)).instance()
+            self._session_provider = SessionProviderFactory(self.get_defaults(skip=self._is_setup_command)).instance()
 
         return self._session_provider
 
     def get_command_factory(self) -> CommandFactory:
         if not self._command_factory:
-            self._command_factory = CommandFactory(self._context, self.get_defaults(skip=self._configure_set))
+            self._command_factory = CommandFactory(self._context, self.get_defaults(skip=self._is_setup_command))
 
         return self._command_factory
 

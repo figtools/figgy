@@ -1,7 +1,7 @@
 
 class RunEnv:
 
-    def __init__(self, env, account_id: str = None):
+    def __init__(self, env: str, account_id: str = None):
         self.env = env
         self.account_id = account_id
 

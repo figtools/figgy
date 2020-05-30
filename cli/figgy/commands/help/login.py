@@ -1,3 +1,4 @@
+import requests
 from abc import ABC
 from typing import List
 from commands.help_context import HelpContext
@@ -7,11 +8,16 @@ from input.input import Input, Utils
 from models.assumable_role import AssumableRole
 from models.defaults.defaults import CLIDefaults
 from models.defaults.provider import Provider
+from models.role import Role
+from svcs.cache_manager import CacheManager
+from svcs.config_manager import ConfigManager
 from svcs.observability.usage_tracker import UsageTracker
 from svcs.observability.version_tracker import VersionTracker
 from svcs.setup import FiggySetup
 from svcs.sso.provider.provider_factory import SessionProviderFactory
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from models.sandbox.login_response import SandboxLoginResponse
+
+from utils.awscli import AWSCLIUtils
 
 
 class Login(HelpCommand, ABC):
@@ -21,7 +27,7 @@ class Login(HelpCommand, ABC):
     """
 
     def __init__(self, help_context: HelpContext, figgy_setup: FiggySetup):
-        super().__init__(configure, False, help_context)
+        super().__init__(login, Utils.not_windows(), help_context)
         self._setup = figgy_setup
         self._defaults: CLIDefaults = figgy_setup.get_defaults()
         self._utils = Utils(self._defaults.colors_enabled)
@@ -39,7 +45,45 @@ class Login(HelpCommand, ABC):
 
         print(f"{self.c.gr}Login successful. All sessions are cached.{self.c.rs}")
 
+    def login_sandbox(self):
+        print(f"Got resource: {self.context.resource} with command: {self.context.command}")
+        print(f"{self.c.fg_bl}Logging you into the Figgy Sandbox environment.{self.c.rs}")
+        user = Input.input("Please input a user name: ")
+        role = Input.select("Please select a role to impersonate: ", valid_options=SANDBOX_ROLES)
+        colors = Input.select_enable_colors()
+        params = {'role': role, 'user': user}
+        result = requests.get(GET_SANBOX_CREDS_URL, params=params)
+
+        if result.status_code != 200:
+            self._utils.error_exit("Unable to get temporary credentials from the Figgy sandbox. If this problem "
+                                   f"persists please notify us on our GITHUB: {FIGGY_GITHUB}")
+
+        data = result.json()
+        response = SandboxLoginResponse(**data)
+        AWSCLIUtils.write_credentials(access_key=response.AWS_ACCESS_KEY_ID, secret_key=response.AWS_SECRET_ACCESS_KEY,
+                                      token=response.AWS_SESSION_TOKEN, region=FIGGY_SANDBOX_REGION,
+                                      profile_name=FIGGY_SANDBOX_PROFILE, color=self.c)
+
+        defaults = CLIDefaults.sandbox(user=user, role=role, colors=colors)
+        self._setup.save_defaults(defaults)
+
+        config_mgr = ConfigManager.figgy()
+        config_mgr.set(Config.Section.Bastion.PROFILE, FIGGY_SANDBOX_PROFILE)
+        defaults = self._setup.configure_roles(current_defaults=defaults, role=Role(role))
+        self._setup.save_defaults(defaults)
+
+        print(f"\n{self.c.fg_gr}Login successful. Your sandbox session will last for{self.c.rs} "
+              f"{self.c.fg_bl}1 hour.{self.c.rs}")
+
+        print(f"\nIf your session expires, feel free to rerun `{CLI_NAME} login sandbox` to get another sandbox session. "
+              f"\nAll previous figgy sessions have been disabled, you'll need to run {CLI_NAME} "
+              f"--configure to leave the sandbox.")
+
+
     @VersionTracker.notify_user
     @UsageTracker.track_command_usage
     def execute(self):
-        self.login()
+        if self.context.command == login:
+            self.login()
+        elif self.context.command == sandbox:
+            self.login_sandbox()

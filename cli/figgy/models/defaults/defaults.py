@@ -2,7 +2,7 @@ import jsonpickle
 import uuid
 from models.assumable_role import AssumableRole
 from models.defaults.provider import Provider
-from models.defaults.provider_config import ProviderConfig, ProviderConfigFactory
+from models.defaults.provider_config import ProviderConfig, ProviderConfigFactory, BastionProviderConfig
 from models.role import Role
 from models.run_env import RunEnv
 from config import *
@@ -22,6 +22,7 @@ class CLIDefaults:
     region: str
     mfa_enabled: bool
     provider: Provider
+    session_duration: int
     report_errors: Optional[bool]
     auto_mfa: Optional[bool]
     provider_config: Optional[Any]
@@ -42,10 +43,27 @@ class CLIDefaults:
                            user=None,
                            run_env=RunEnv("unconfigured"),
                            provider=Provider.UNSELECTED,
+                           session_duration=DEFAULT_SESSION_DURATION,
                            region="unconfigured",
                            mfa_enabled=False,
                            mfa_serial=None,
                            provider_config=None,
+                           report_errors=False,
+                           auto_mfa=False,
+                           user_id=str(uuid.uuid4()))
+
+    @staticmethod
+    def sandbox(user: str, role: str, colors: bool):
+        return CLIDefaults(role=Role(role),
+                           colors_enabled=colors,
+                           user=user,
+                           run_env=RunEnv("unconfigured"),
+                           provider=Provider.AWS_BASTION,
+                           session_duration=SANDBOX_SESSION_DURATION,
+                           region=FIGGY_SANDBOX_REGION,
+                           mfa_enabled=False,
+                           mfa_serial=None,
+                           provider_config=BastionProviderConfig(FIGGY_SANDBOX_PROFILE),
                            report_errors=False,
                            auto_mfa=False,
                            user_id=str(uuid.uuid4()))

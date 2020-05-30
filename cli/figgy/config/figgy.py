@@ -22,7 +22,7 @@ class Config:
             IDP_ID = 'identity_provider_id'
             SP_ID = 'service_provider_id'
 
-        class Bastion(ConfigSection):
+        class Bastion(ConfigSection, Enum):
             NAME = 'BASTION'
             PROFILE = 'profile'
 
@@ -34,3 +34,24 @@ class Config:
             REPORT_ERRORS = 'report_errors'
             AWS_REGION = 'aws_region'
 
+
+EMPTY_CONFIG = """
+[FIGGY]
+mfa_enabled = false
+auto_mfa = false
+colors_enabled = true
+report_errors = true
+aws_region = us-east-1
+
+[OKTA]
+app_link = https://your-domain.okta.com/home/amazon_aws/0oaaqxeiciFzAVassP4x6/123
+factor_type = GOOGLE
+
+[GOOGLE]
+identity_provider_id = N0tre9le3
+service_provider_id = 12345678010
+
+[BASTION]
+profile = default
+
+"""

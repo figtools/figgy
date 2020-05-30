@@ -50,6 +50,10 @@ class BastionProviderConfig(ProviderConfig):
 
         return BastionProviderConfig(profile_name=profile)
 
+    @property
+    def profile(self):
+        return self.profile_name
+
 
 @dataclass
 class GoogleProviderConfig(ProviderConfig):

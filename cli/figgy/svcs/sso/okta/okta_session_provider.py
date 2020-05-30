@@ -14,7 +14,6 @@ from models.run_env import RunEnv
 from models.sso.okta.okta_primary_auth import OktaPrimaryAuth, OktaSession
 from models.sso.okta.okta_session_auth import OktaSessionAuth
 from svcs.cache_manager import CacheManager
-from svcs.setup import FiggySetup
 from svcs.sso.okta.okta import Okta, InvalidSessionError
 from svcs.sso.provider.sso_session_provider import SSOSessionProvider
 from svcs.vault import FiggyVault
@@ -32,7 +31,7 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
         vault = FiggyVault(SecretsManager.get_password(defaults.user))
         self._cache_manager: CacheManager = CacheManager(file_override=OKTA_SESSION_CACHE_PATH, vault=vault)
         self._saml_cache: CacheManager = CacheManager(file_override=SAML_SESSION_CACHE_PATH, vault=vault)
-        self._setup: FiggySetup = FiggySetup()
+        # self._setup: FiggySetup = FiggySetup()
 
     def _write_okta_session_to_cache(self, session: OktaSession) -> None:
         self._cache_manager.write(self._SESSION_CACHE_KEY, session)
@@ -50,6 +49,7 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
 
         Returns: Initialized Okta service.
         """
+        count = 0
         while True:
             try:
                 if prompt:
@@ -61,7 +61,6 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
 
                 okta = Okta(OktaSessionAuth(cached_session))
                 return okta
-
             except (FileNotFoundError, InvalidSessionError, JSONDecodeError, AttributeError) as e:
                 try:
                     password = SecretsManager.get_password(self._defaults.user)
@@ -73,9 +72,13 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
                     self._write_okta_session_to_cache(primary_auth.get_session())
                     return Okta(primary_auth)
                 except InvalidSessionError as e:
-                    log.error(f"Caught error when authing with OKTA & caching session: {e}")
-                    self._defaults = self._setup.basic_configure(configure_provider=self._defaults.provider_config is None)
+                    count += 1
                     prompt = True
+                    log.error(f"Caught error when authing with OKTA & caching session: {e}. ")
+                    if count > 3:
+                        Utils.error_exit("Unable to autheticate with OKTA with your provided credentials. Perhaps your"
+                                         f"user, password, or MFA changed? Try reunning `{CLI_NAME} --configure` again.")
+                    # self._defaults = self._setup.basic_configure(configure_provider=self._defaults.provider_config is None)
 
     @Utils.trace
     def get_saml_assertion(self, prompt: bool = False) -> str:

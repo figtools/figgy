@@ -1,13 +1,20 @@
 import logging
-from typing import Callable
+from typing import Callable, List, Dict
+
+from tabulate import tabulate
 
 from config import *
 from input import Input
+from models.assumable_role import AssumableRole
 from models.defaults.defaults import CLIDefaults
 from models.defaults.provider import Provider
 from models.defaults.provider_config import ProviderConfigFactory
+from models.role import Role
+from models.run_env import RunEnv
 from svcs.cache_manager import CacheManager
 from svcs.config_manager import ConfigManager
+from svcs.sso.provider.provider_factory import SessionProviderFactory
+from svcs.sso.provider.session_provider import SessionProvider
 from utils.secrets_manager import SecretsManager
 from utils.utils import Utils
 
@@ -24,27 +31,6 @@ class FiggySetup:
     def __init__(self):
         self._cache_mgr = CacheManager(DEFAULTS_FILE_CACHE_KEY)
         self._config_mgr, self.c = ConfigManager.figgy(), Utils.default_colors()
-
-    def configure_preferences(self, current_defaults: CLIDefaults):
-        updated_defaults = current_defaults
-        updated_defaults.region = self._config_mgr.get_or_prompt(Config.Section.Figgy.AWS_REGION, Input.select_region)
-        updated_defaults.colors_enabled = self._config_mgr.get_or_prompt(Config.Section.Figgy.COLORS_ENABLED,
-                                                                         Input.select_enable_colors)
-        updated_defaults.report_errors = self._config_mgr.get_or_prompt(Config.Section.Figgy.REPORT_ERRORS,
-                                                                        Input.select_report_errors)
-        self.save_defaults(updated_defaults)
-        return updated_defaults
-
-    def basic_configure(self, configure_provider=True) -> CLIDefaults:
-        defaults: CLIDefaults = self.get_defaults()
-        if not defaults:
-            Utils.stc_error_exit(f"Please run {CLI_NAME} --{Utils.get_first(configure)} to set up Figgy, "
-                                 f"you've got problems friend!")
-        else:
-            defaults = self.configure_auth(defaults, configure_provider=configure_provider)
-
-        self.save_defaults(defaults)
-        return defaults
 
     def configure_auth(self, current_defaults: CLIDefaults, configure_provider=True) -> CLIDefaults:
         updated_defaults = current_defaults
@@ -85,6 +71,61 @@ class FiggySetup:
 
         return updated_defaults
 
+    def configure_roles(self, current_defaults: CLIDefaults, run_env: RunEnv = None, role: Role = None) -> CLIDefaults:
+        updated_defaults = current_defaults
+        provider_factory: SessionProviderFactory = SessionProviderFactory(current_defaults)
+        session_provider: SessionProvider = provider_factory.instance()
+        session_provider.cleanup_session_cache()
+
+        # Get assertion and parse out account -> role -> run_env mappings.
+        assumable_roles: List[AssumableRole] = session_provider.get_assumable_roles()
+        print(
+            f"\n{self.c.fg_bl}The following roles were detected for user: {current_defaults.user} - if something is missing, "
+            f"contact your system administrator.{self.c.rs}\n")
+
+        if assumable_roles:
+            self.print_role_table(assumable_roles)
+
+        valid_envs = list(set([x.run_env.env for x in assumable_roles]))
+        valid_roles = list(set([x.role.role for x in assumable_roles]))
+
+        if not role:
+            role: Role = Input.select_role(valid_roles=valid_roles)
+            print("\n")
+
+        if not run_env:
+            run_env: RunEnv = Input.select_default_account(valid_envs=valid_envs)
+            print("\n")
+
+        updated_defaults.run_env = run_env
+        updated_defaults.valid_envs = valid_envs
+        updated_defaults.valid_roles = valid_roles
+        updated_defaults.assumable_roles = assumable_roles
+        updated_defaults.role = role
+
+        return updated_defaults
+
+    def configure_preferences(self, current_defaults: CLIDefaults):
+        updated_defaults = current_defaults
+        updated_defaults.region = self._config_mgr.get_or_prompt(Config.Section.Figgy.AWS_REGION, Input.select_region)
+        updated_defaults.colors_enabled = self._config_mgr.get_or_prompt(Config.Section.Figgy.COLORS_ENABLED,
+                                                                         Input.select_enable_colors)
+        updated_defaults.report_errors = self._config_mgr.get_or_prompt(Config.Section.Figgy.REPORT_ERRORS,
+                                                                        Input.select_report_errors)
+        self.save_defaults(updated_defaults)
+        return updated_defaults
+
+    def basic_configure(self, configure_provider=True) -> CLIDefaults:
+        defaults: CLIDefaults = self.get_defaults()
+        if not defaults:
+            Utils.stc_error_exit(f"Please run {CLI_NAME} --{Utils.get_first(configure)} to set up Figgy, "
+                                 f"you've got problems friend!")
+        else:
+            defaults = self.configure_auth(defaults, configure_provider=configure_provider)
+
+        self.save_defaults(defaults)
+        return defaults
+
     def save_defaults(self, defaults: CLIDefaults):
         self._cache_mgr.write(DEFAULTS_FILE_CACHE_KEY, defaults)
 
@@ -96,3 +137,27 @@ class FiggySetup:
             return CLIDefaults.unconfigured()
 
         return defaults if defaults else CLIDefaults.unconfigured()
+
+    @staticmethod
+    def print_role_table(roles: List[AssumableRole]):
+        printable_roles: Dict[int: Dict] = {}
+        for role in roles:
+            item = printable_roles.get(role.account_id, {})
+            item['env'] = role.run_env.env
+            item['roles'] = item.get('roles', []) + [role.role.role]
+            printable_roles[role.account_id] = item
+
+        print(tabulate(
+            [
+                [
+                    account_id,
+                    printable_roles[account_id]['env'],
+                    ', '.join(printable_roles[account_id]['roles'])
+                ]
+                for account_id in printable_roles.keys()
+            ],
+            headers=['AccountId', 'Environment', 'Roles'],
+            tablefmt="grid",
+            numalign="center",
+            stralign="left",
+        ))

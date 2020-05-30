@@ -68,6 +68,8 @@ FROM_HELP_TEXT = "/path/to/ci-config.json file to use as the source template fil
                  " will automatically have all of the configurations from the source-file configured to replicate to it."
 LOGIN_HELP_TEXT = "Logs you in to all viable AWS accounts and caches session locally. This will prevent you from having" \
                   "to input your MFA every time you swap into a new account or role."
+LOGIN_SANDBOX_HELP_TEXT = "Get a temporary session from the free figgy sandbox and have fun, experiment, do whatever" \
+                          "you want!"
 
 # Point in time (--point-in-time)
 POINT_IN_TIME = "Restore all parameters to a point in time."
@@ -111,7 +113,8 @@ HELP_TEXT_MAP = {
     copy_from: COPY_FROM_HELP_TEXT,
     generate: GENERATE_HELP_TEXT,
     from_path: FROM_HELP_TEXT,
-    login: LOGIN_HELP_TEXT
+    login: LOGIN_HELP_TEXT,
+    sandbox: LOGIN_SANDBOX_HELP_TEXT,
 }
 
 # Other

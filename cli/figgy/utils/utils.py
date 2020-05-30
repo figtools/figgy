@@ -112,6 +112,11 @@ class Utils:
             return False
 
     @staticmethod
+    def command_set(check_command: frozenset, args):
+        command_name = args.command if hasattr(args, Utils.get_first(command)) else None
+        return command_name == Utils.get_first(check_command)
+
+    @staticmethod
     def attr_if_exists(attr: frozenset, args, default=None) -> Union[object, None]:
         attr_name = Utils.clean_attr_name(attr)
         return args.__dict__.get(attr_name, default)
@@ -122,7 +127,7 @@ class Utils:
         return args.__dict__.get(attr_name, None) is not None
 
     @staticmethod
-    def clean_attr_name(attr: frozenset):
+    def clean_attr_name(attr: frozenset) -> str:
         return Utils.get_first(attr).replace('-', '_')
 
     def notify(self, message: str):
@@ -452,7 +457,7 @@ class Utils:
 
     @staticmethod
     def default_colors() -> Color:
-        return TerminalFactory(Utils.is_mac()).instance().get_colors()
+        return TerminalFactory(Utils.not_windows()).instance().get_colors()
 
     def get_config_key_safe(self, key: str, config: Dict, default=None):
         if key in config:

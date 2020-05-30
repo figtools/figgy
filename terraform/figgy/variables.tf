@@ -23,3 +23,8 @@ variable "webhook_url" {
   description = "Slack Webhook URL for figgy submit notifications such as parameter shares / critical figgy errors."
   default = "unconfigured"  # don't change this unless you update the logic in the SSM parameter
 }
+
+variable "sandbox_deploy" {
+  description = "Ignore this and keep this false. This is only used for the figgy sandbox environment to facilitate the figgy playground."
+  default = false
+}
