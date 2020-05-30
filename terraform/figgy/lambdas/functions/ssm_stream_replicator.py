@@ -51,6 +51,7 @@ def handle(event, context):
     # Don't process other account's events.
     originating_account = event.get('account')
     if originating_account != ACCOUNT_ID:
+        log.info(f"{originating_account} != {ACCOUNT_ID}")
         log.info(f"Received event from different account with id: {ACCOUNT_ID}. Skipping this event.")
         return
 
