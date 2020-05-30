@@ -188,7 +188,7 @@ data "aws_iam_policy_document" "lambda_read_figgy_configs" {
       "ssm:GetParameters",
       "ssm:GetParametersByPath"
     ]
-    resources = [ "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter%s/figgy/*"]
+    resources = [ "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter/figgy/*"]
   }
 
   statement {
