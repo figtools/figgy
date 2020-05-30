@@ -19,6 +19,7 @@ log = Utils.get_logger(__name__, logging.INFO)
 webhook_url = ssm.get_parameter_value(FIGGY_WEBHOOK_URL_PATH)
 slack: SlackService = SlackService(webhook_url=webhook_url)
 
+ACCOUNT_ID = ssm.get_parameter_value(ACCOUNT_ID_PS_PATH)
 
 def notify_slack(config: ReplicationConfig, user: str):
     message = SlackMessage(
@@ -47,6 +48,12 @@ def parse_user(detail: Dict) -> str:
 
 
 def handle(event, context):
+    # Don't process other account's events.
+    originating_account = event.get('account')
+    if originating_account != ACCOUNT_ID:
+        log.info(f"Received event from different account with id: {ACCOUNT_ID}. Skipping this event.")
+        return
+
     try:
         log.info(f"Event: {event}")
         detail = event["detail"]

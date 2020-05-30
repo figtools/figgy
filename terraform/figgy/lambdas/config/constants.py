@@ -39,6 +39,7 @@ DELETE_PARAMS_ACTION = "DeleteParameters"
 
 SSM_SECURE_STRING = "SecureString"
 REPL_KEY_PS_PATH = "/figgy/kms/replication-key-id"
+ACCOUNT_ID_PS_PATH = "/figgy/account_id"
 FIGGY_WEBHOOK_URL_PATH = "/figgy/integrations/slack/webhook_url"
 
 # For PS items stored with this value, we will auto-clean them up. Used for automated E2E testing.
