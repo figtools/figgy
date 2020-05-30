@@ -8,7 +8,7 @@ CLI_NAME = 'figgy'
 FIGGY_GITHUB = "https://github.com/mancej/figgy"
 
 # Todo: Update to prod before release.
-FIGGY_OBS_API_BASE_URL = "https://96zdpxzc37.execute-api.us-east-1.amazonaws.com/dev/v1"
+FIGGY_OBS_API_BASE_URL = "https://q39v8f3u13.execute-api.us-east-1.amazonaws.com/sandbox-bastion/v1/get-credentials"
 
 # Paths
 FIGGY_ERROR_REPORTING_URL = f"{FIGGY_OBS_API_BASE_URL}/log-error"
