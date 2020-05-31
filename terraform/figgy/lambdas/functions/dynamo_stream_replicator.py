@@ -44,8 +44,13 @@ def handle(event, context):
                 if destination and run_env:
                     log.info(f"Record updated with key: {destination} and run_env: {run_env}")
                     config: ReplicationConfig = repl_dao.get_config_repl(destination, run_env)
-                    log.info(f"Got config: {config}, syncing...")
-                    repl_svc.sync_config(config) and notify_slack(config)
+                    if config:
+                        log.info(f"Got config: {config}, syncing...")
+                        repl_svc.sync_config(config) and notify_slack(config)
+                    else:
+                        log.warning(f"Unable to find record with destination: {destination} and {run_env}. This *could* "
+                                    f"indicate a serious issue with replication. If you see lots of these, please pay "
+                                    f"attention.")
             else:
                 log.info("Event is a delete event, skipping!")
     except Exception as e:
