@@ -98,7 +98,7 @@ class Delete(ConfigCommand):
         key, notify, delete_another = None, False, True
 
         while not self._utils.is_valid_input(key, f"PS Name", notify) or delete_another:
-            key = prompt(self._del_message, style=style,
+            key = prompt(self._del_message, style=FIGGY_STYLE,
                          completer=self._config_completer)
             notify = True
             try:

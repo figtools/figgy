@@ -94,11 +94,14 @@ class VersionTracker:
             log.info("Rolling dice to check version..")
             if VersionTracker._UPGRADE_CHECK_PERCENTAGE > random.randint(0, 99):
                 log.info("Checking for new version..")
-                details = VersionTracker.get_version()
-                if details.notify_chance > random.randint(0, 99) and details.version != VERSION:
-                    log.info("Notifying user of new version")
-                    if hasattr(self, 'c') and isinstance(self.c, Color):
-                        VersionTracker.print_new_version_msg(self.c, details)
+                try:
+                    details = VersionTracker.get_version()
+                    if details.notify_chance > random.randint(0, 99) and details.version != VERSION:
+                        log.info("Notifying user of new version")
+                        if hasattr(self, 'c') and isinstance(self.c, Color):
+                            VersionTracker.print_new_version_msg(self.c, details)
+                except ValueError:
+                    log.warning("Unable to fetch version information from remote resource.")
 
             return function(self, *args, **kwargs)
 
