@@ -74,7 +74,7 @@ class ReplicationDao:
 
         return results
 
-    def get_config_repl(self, destination, run_env) -> ReplicationConfig:
+    def get_config_repl(self, destination, run_env) -> Optional[ReplicationConfig]:
         filter_exp = Key(REPL_DEST_KEY_NAME).eq(destination) & \
                      Key(REPL_RUN_ENV_KEY_NAME).eq(run_env)
         result = self._table.query(KeyConditionExpression=filter_exp)
@@ -83,7 +83,9 @@ class ReplicationDao:
         if "Items" in result and len(result["Items"]) > 0:
             item = result["Items"][0]
 
-        return ReplicationConfig.from_item(item)
+            return ReplicationConfig.from_item(item)
+        else:
+            return None
 
     def put_config_repl(self, destination, svc_env, props) -> None:
         item = {
