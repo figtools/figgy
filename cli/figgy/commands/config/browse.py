@@ -191,13 +191,14 @@ class BrowseApp(NPSApp):
         tree = npy_form.add(LogicalMLTree)
 
         td = DeletableNPSTreeData(content='Root', selectable=True, expanded=True, ignoreRoot=True)
-
+        start = Utils.millis_since_epoch()
         children = []
         if self._browse.prefix:
             prefix_child = td.newChild(content=self._browse.prefix, selectable=False, expanded=False)
             children = [prefix_child]
         else:
             log.info(f"--{Utils.get_first(prefix)} missing, defaulting to normal browse tree.")
+
             for namespace in self._config_view.get_authorized_namespaces():
                 child = td.newChild(content=namespace, selectable=False, expanded=False)
                 children.append(child)
@@ -213,6 +214,8 @@ class BrowseApp(NPSApp):
 
         for future in as_completed(futures):
             pass
+
+
 
         tree.values = td
         npy_form.edit()

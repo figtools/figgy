@@ -40,7 +40,9 @@ def handle(event, context):
         if action == DELETE_PARAM_ACTION or action == DELETE_PARAMS_ACTION:
             log.info(f"Deleting from cache: {ps_name}")
             items: Set[ConfigItem] = cache_dao.get_items(ps_name)
-            [cache_dao.mark_deleted(item) for item in items]
+            sorted_items = sorted(items)
+            [cache_dao.delete(item) for item in items[:-1]]  # Delete all but the most recent item.
+            cache_dao.mark_deleted(sorted_items[-1])
         elif action == PUT_PARAM_ACTION:
             log.info(f"Putting in cache: {ps_name}")
             cache_dao.put_in_cache(ps_name)

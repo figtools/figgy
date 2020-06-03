@@ -32,6 +32,19 @@ class ConfigItem:
 
         return ConfigItem(name=name, last_updated=last_updated, state=ConfigState[state])
 
+    def __lt__(self, other):
+        if isinstance(other, ConfigItem):
+            return other.last_updated > self.last_updated
+        else:
+            raise ValueError(f"Cannot compare {self.__class__} against {other.__class__}}")
+
+    def __gt__(self, other):
+        if isinstance(other, ConfigItem):
+            return other.last_updated < self.last_updated
+        else:
+            raise ValueError(f"Cannot compare {self.__class__} against {other.__class__}}")
+
+
 
 class ConfigCacheDao:
 
