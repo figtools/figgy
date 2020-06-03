@@ -1,11 +1,11 @@
 from typing import Optional
 
-from config import *
+from figgy.config import *
 from abc import ABC, abstractmethod
-from commands.config_context import ConfigContext
-from commands.command_context import CommandContext
-from commands.types.command import Command
-from models.defaults.defaults import CLIDefaults
+from figgy.commands.config_context import ConfigContext
+from figgy.commands.command_context import CommandContext
+from figgy.commands.types.command import Command
+from figgy.models.defaults.defaults import CLIDefaults
 
 
 class ConfigCommand(Command, ABC):

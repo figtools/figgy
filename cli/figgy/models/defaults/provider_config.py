@@ -4,12 +4,12 @@ from dataclasses import dataclass
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 
-from config import Config, CONFIG_OVERRIDE_FILE_PATH, SUPPORTED_OKTA_FACTOR_TYPES
-from input.input import Input, List
-from svcs.config_manager import ConfigManager
-from utils.utils import Utils, Color
+from figgy.config import Config, CONFIG_OVERRIDE_FILE_PATH, SUPPORTED_OKTA_FACTOR_TYPES
+from figgy.input.input import Input, List
+from figgy.svcs.config_manager import ConfigManager
+from figgy.utils.utils import Utils, Color
 
-from models.defaults.provider import Provider
+from figgy.models.defaults.provider import Provider
 import re
 
 

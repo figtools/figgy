@@ -1,6 +1,6 @@
 import os
 
-from config import *
+from figgy.config import *
 from test.cli.config import *
 from test.cli.data.configure import DataConfigure
 from test.cli.dev.audit import DevAudit

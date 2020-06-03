@@ -3,18 +3,18 @@ from typing import *
 
 from botocore.exceptions import ClientError
 
-from commands.config.get import Get
-from commands.config.put import Put
-from commands.config_context import ConfigContext
-from commands.types.config import ConfigCommand
-from data.dao.config import ConfigDao
-from data.dao.ssm import SsmDao
-from extras.key_utils import KeyUtils
-from models.replication_config import ReplicationConfig, ReplicationType
-from config import *
-from svcs.observability.usage_tracker import UsageTracker
-from svcs.observability.version_tracker import VersionTracker
-from utils.utils import Utils
+from figgy.commands.config.get import Get
+from figgy.commands.config.put import Put
+from figgy.commands.config_context import ConfigContext
+from figgy.commands.types.config import ConfigCommand
+from figgy.data.dao.config import ConfigDao
+from figgy.data.dao.ssm import SsmDao
+from figgy.extras.key_utils import KeyUtils
+from figgy.models.replication_config import ReplicationConfig, ReplicationType
+from figgy.config import *
+from figgy.svcs.observability.anonymous_usage_tracker import AnonymousUsageTracker
+from figgy.svcs.observability.version_tracker import VersionTracker
+from figgy.utils.utils import Utils
 
 
 class Sync(ConfigCommand):
@@ -399,7 +399,7 @@ class Sync(ConfigCommand):
 
 
     @VersionTracker.notify_user
-    @UsageTracker.track_command_usage
+    @AnonymousUsageTracker.track_command_usage
     def execute(self):
         if self._replication_only:
             self.run_repl_sync()

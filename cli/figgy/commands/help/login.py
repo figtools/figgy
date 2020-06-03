@@ -1,23 +1,23 @@
 import requests
 from abc import ABC
 from typing import List
-from commands.help_context import HelpContext
-from commands.types.help import HelpCommand
-from config import *
-from input.input import Input, Utils
-from models.assumable_role import AssumableRole
-from models.defaults.defaults import CLIDefaults
-from models.defaults.provider import Provider
-from models.role import Role
-from svcs.cache_manager import CacheManager
-from svcs.config_manager import ConfigManager
-from svcs.observability.usage_tracker import UsageTracker
-from svcs.observability.version_tracker import VersionTracker
-from svcs.setup import FiggySetup
-from svcs.sso.provider.provider_factory import SessionProviderFactory
-from models.sandbox.login_response import SandboxLoginResponse
+from figgy.commands.help_context import HelpContext
+from figgy.commands.types.help import HelpCommand
+from figgy.config import *
+from figgy.input.input import Input, Utils
+from figgy.models.assumable_role import AssumableRole
+from figgy.models.defaults.defaults import CLIDefaults
+from figgy.models.defaults.provider import Provider
+from figgy.models.role import Role
+from figgy.svcs.cache_manager import CacheManager
+from figgy.svcs.config_manager import ConfigManager
+from figgy.svcs.observability.anonymous_usage_tracker import AnonymousUsageTracker
+from figgy.svcs.observability.version_tracker import VersionTracker
+from figgy.svcs.setup import FiggySetup
+from figgy.svcs.sso.provider.provider_factory import SessionProviderFactory
+from figgy.models.sandbox.login_response import SandboxLoginResponse
 
-from utils.awscli import AWSCLIUtils
+from figgy.utils.awscli import AWSCLIUtils
 
 
 class Login(HelpCommand, ABC):
@@ -81,7 +81,7 @@ class Login(HelpCommand, ABC):
 
 
     @VersionTracker.notify_user
-    @UsageTracker.track_command_usage
+    @AnonymousUsageTracker.track_command_usage
     def execute(self):
         if self.context.command == login:
             self.login()

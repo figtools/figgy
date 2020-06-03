@@ -4,11 +4,11 @@ from dataclasses import dataclass, field
 import requests
 from typing import List, Dict
 
-from models.defaults.defaults import CLIDefaults
-from svcs.cache_manager import CacheManager
-from utils.utils import Utils
+from figgy.models.defaults.defaults import CLIDefaults
+from figgy.svcs.cache_manager import CacheManager
+from figgy.utils.utils import Utils
 from concurrent.futures import ThreadPoolExecutor
-from config import *
+from figgy.config import *
 
 log = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ class FiggyMetrics:
         self.metrics[command] = metric
 
 
-class UsageTracker:
+class AnonymousUsageTracker:
     """
     We want to track the usage counts of various commands and the version of Figgy people are currently using.
     This data will be valuable for informing future decisions & when considering upgrade paths or potentially
@@ -40,9 +40,9 @@ class UsageTracker:
 
     @staticmethod
     def report_usage(metrics: FiggyMetrics):
-        metrics_json = {UsageTracker._METRICS_KEY: {}, UsageTracker._USER_KEY: metrics.user_id}
+        metrics_json = {AnonymousUsageTracker._METRICS_KEY: {}, AnonymousUsageTracker._USER_KEY: metrics.user_id}
         for key, val in metrics.metrics.items():
-            metrics_json[UsageTracker._METRICS_KEY][key] = val.get(FiggyMetrics.COUNT_KEY, 0)
+            metrics_json[AnonymousUsageTracker._METRICS_KEY][key] = val.get(FiggyMetrics.COUNT_KEY, 0)
 
         requests.post(url=FIGGY_LOG_METRICS_URL, json=metrics_json)
 
@@ -56,7 +56,7 @@ class UsageTracker:
             command = getattr(self, 'type', None)
             if command:
                 command = Utils.get_first(command)
-                cache = CacheManager(UsageTracker._CACHE_NAME)
+                cache = CacheManager(AnonymousUsageTracker._CACHE_NAME)
 
                 if hasattr(self, 'context') and hasattr(self.context, 'defaults') and self.context.defaults is not None:
                     if isinstance(self.context.defaults, CLIDefaults):
@@ -66,16 +66,16 @@ class UsageTracker:
                 else:
                     user_id = "NoOne"
 
-                last_write, metrics = cache.get(UsageTracker._METRICS_KEY, default=FiggyMetrics(user_id=user_id))
+                last_write, metrics = cache.get(AnonymousUsageTracker._METRICS_KEY, default=FiggyMetrics(user_id=user_id))
                 metrics.increment_count(command)
-                if Utils.millis_since_epoch() - metrics.last_report > UsageTracker.REPORT_FREQUENCY:
+                if Utils.millis_since_epoch() - metrics.last_report > AnonymousUsageTracker.REPORT_FREQUENCY:
                     # Ship it async. If it don't worky, oh well :shruggie:
                     with ThreadPoolExecutor(max_workers=1) as pool:
-                        pool.submit(UsageTracker.report_usage, metrics)
-                        cache.write(UsageTracker._METRICS_KEY, FiggyMetrics(user_id=user_id))
+                        pool.submit(AnonymousUsageTracker.report_usage, metrics)
+                        cache.write(AnonymousUsageTracker._METRICS_KEY, FiggyMetrics(user_id=user_id))
                         return function(self, *args, **kwargs)
                 else:
-                    cache.write(UsageTracker._METRICS_KEY, metrics)
+                    cache.write(AnonymousUsageTracker._METRICS_KEY, metrics)
 
             return function(self, *args, **kwargs)
 

@@ -1,12 +1,12 @@
 from botocore.exceptions import ClientError
 
-from commands.config_context import ConfigContext
-from commands.types.config import ConfigCommand
-from models.replication_config import ReplicationType, ReplicationConfig
-from svcs.observability.usage_tracker import UsageTracker
-from svcs.observability.version_tracker import VersionTracker
-from utils.utils import *
-from config.style.style import FIGGY_STYLE
+from figgy.commands.config_context import ConfigContext
+from figgy.commands.types.config import ConfigCommand
+from figgy.models.replication_config import ReplicationType, ReplicationConfig
+from figgy.svcs.observability.anonymous_usage_tracker import AnonymousUsageTracker
+from figgy.svcs.observability.version_tracker import VersionTracker
+from figgy.utils.utils import *
+from figgy.config.style.style import FIGGY_STYLE
 
 
 class Share(ConfigCommand):
@@ -72,6 +72,6 @@ class Share(ConfigCommand):
             share_another = to_continue.lower() == "y"
 
     @VersionTracker.notify_user
-    @UsageTracker.track_command_usage
+    @AnonymousUsageTracker.track_command_usage
     def execute(self):
         self._share_param()

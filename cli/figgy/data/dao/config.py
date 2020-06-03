@@ -1,13 +1,13 @@
 from boto3.dynamodb.conditions import Key, Attr
 from decimal import *
-from config import *
-from data.models.config_item import ConfigItem
-from models.replication_config import ReplicationConfig, ReplicationType
-from models.restore_config import RestoreConfig
-from models.run_env import RunEnv
-from models.audit_log import AuditLog
-from models.parameter_history import ParameterHistory
-from models.parameter_store_history import PSHistory
+from figgy.config import *
+from figgy.data.models.config_item import ConfigItem
+from figgy.models.replication_config import ReplicationConfig, ReplicationType
+from figgy.models.restore_config import RestoreConfig
+from figgy.models.run_env import RunEnv
+from figgy.models.audit_log import AuditLog
+from figgy.models.parameter_history import ParameterHistory
+from figgy.models.parameter_store_history import PSHistory
 from typing import Callable, Dict, List, Any, Set
 import json
 import logging

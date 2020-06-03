@@ -3,9 +3,9 @@
 
 """bootstrap.__main__: executed when bootstrap directory is called as script."""
 
-from figgy import main
+from figgy.entrypoint import cli
 
 try:
-    main()
+    cli.main()
 except Warning:
     pass

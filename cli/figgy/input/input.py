@@ -1,8 +1,8 @@
 from typing import Optional
 
-from models.defaults.provider import Provider
-from utils.utils import *
-from config import *
+from figgy.models.defaults.provider import Provider
+from figgy.utils.utils import *
+from figgy.config import *
 import getpass
 import configparser
 

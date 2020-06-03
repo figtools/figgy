@@ -3,20 +3,20 @@ from typing import Callable, List, Dict
 
 from tabulate import tabulate
 
-from config import *
-from input import Input
-from models.assumable_role import AssumableRole
-from models.defaults.defaults import CLIDefaults
-from models.defaults.provider import Provider
-from models.defaults.provider_config import ProviderConfigFactory
-from models.role import Role
-from models.run_env import RunEnv
-from svcs.cache_manager import CacheManager
-from svcs.config_manager import ConfigManager
-from svcs.sso.provider.provider_factory import SessionProviderFactory
-from svcs.sso.provider.session_provider import SessionProvider
-from utils.secrets_manager import SecretsManager
-from utils.utils import Utils
+from figgy.config import *
+from figgy.input import Input
+from figgy.models.assumable_role import AssumableRole
+from figgy.models.defaults.defaults import CLIDefaults
+from figgy.models.defaults.provider import Provider
+from figgy.models.defaults.provider_config import ProviderConfigFactory
+from figgy.models.role import Role
+from figgy.models.run_env import RunEnv
+from figgy.svcs.cache_manager import CacheManager
+from figgy.svcs.config_manager import ConfigManager
+from figgy.svcs.sso.provider.provider_factory import SessionProviderFactory
+from figgy.svcs.sso.provider.session_provider import SessionProvider
+from figgy.utils.secrets_manager import SecretsManager
+from figgy.utils.utils import Utils
 
 log = logging.getLogger(__name__)
 
@@ -49,8 +49,10 @@ class FiggySetup:
         try:
             mfa_enabled = Utils.parse_bool(self._config_mgr.get_or_prompt(Config.Section.Figgy.MFA_ENABLED,
                                                                           Input.select_mfa_enabled))
+
             if mfa_enabled:
-                auto_mfa = self._config_mgr.get_or_prompt(Config.Section.Figgy.AUTO_MFA, Input.select_auto_mfa)
+                auto_mfa = Utils.parse_bool(self._config_mgr.get_or_prompt(Config.Section.Figgy.AUTO_MFA,
+                                                                           Input.select_auto_mfa))
             else:
                 auto_mfa = False
 

@@ -1,8 +1,8 @@
 from abc import ABC
 
-from commands.command_context import CommandContext
-from commands.iam_context import IAMContext
-from commands.types.command import Command
+from figgy.commands.command_context import CommandContext
+from figgy.commands.iam_context import IAMContext
+from figgy.commands.types.command import Command
 
 
 class IAMCommand(Command, ABC):

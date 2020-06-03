@@ -1,10 +1,10 @@
 import argparse
 import logging
-from config import *
-from models.assumable_role import AssumableRole
-from models.run_env import RunEnv
-from models.role import Role
-from utils.utils import Utils
+from figgy.config import *
+from figgy.models.assumable_role import AssumableRole
+from figgy.models.run_env import RunEnv
+from figgy.models.role import Role
+from figgy.utils.utils import Utils
 from typing import Optional, Dict, Union, List, Set
 
 logger = logging.getLogger(__name__)

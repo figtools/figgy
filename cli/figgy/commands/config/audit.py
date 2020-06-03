@@ -1,10 +1,10 @@
-from commands.config_context import ConfigContext
-from commands.types.config import ConfigCommand
-from data.dao.config import ConfigDao
-from data.dao.ssm import SsmDao
-from svcs.observability.usage_tracker import UsageTracker
-from svcs.observability.version_tracker import VersionTracker
-from utils.utils import *
+from figgy.commands.config_context import ConfigContext
+from figgy.commands.types.config import ConfigCommand
+from figgy.data.dao.config import ConfigDao
+from figgy.data.dao.ssm import SsmDao
+from figgy.svcs.observability.anonymous_usage_tracker import AnonymousUsageTracker
+from figgy.svcs.observability.version_tracker import VersionTracker
+from figgy.utils.utils import *
 
 
 class Audit(ConfigCommand):
@@ -40,6 +40,6 @@ class Audit(ConfigCommand):
                 print()
 
     @VersionTracker.notify_user
-    @UsageTracker.track_command_usage
+    @AnonymousUsageTracker.track_command_usage
     def execute(self):
         self._audit()

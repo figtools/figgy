@@ -1,12 +1,12 @@
-from commands.factory import Factory
-from commands.help.login import Login
-from commands.help.version import Version
-from commands.help_context import HelpContext
-from commands.help.configure import Configure
-from config import *
-from svcs.setup import FiggySetup
-from svcs.sso.session_manager import SessionManager
-from utils.utils import Utils, CollectionUtils
+from figgy.commands.factory import Factory
+from figgy.commands.help.login import Login
+from figgy.commands.help.version import Version
+from figgy.commands.help_context import HelpContext
+from figgy.commands.help.configure import Configure
+from figgy.config import *
+from figgy.svcs.setup import FiggySetup
+from figgy.svcs.sso.session_manager import SessionManager
+from figgy.utils.utils import Utils, CollectionUtils
 
 
 class HelpFactory(Factory):

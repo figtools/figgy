@@ -1,6 +1,6 @@
 import base64
 
-from utils.utils import *
+from figgy.utils.utils import *
 
 
 class KmsSvc:

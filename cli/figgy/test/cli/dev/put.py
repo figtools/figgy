@@ -1,8 +1,8 @@
 import pexpect
-from test.cli.config import *
-from test.cli.figgy import FiggyTest
-from config import *
-from utils.utils import *
+from figgy.test.cli.config import *
+from figgy.test.cli.figgy import FiggyTest
+from figgy.config import *
+from figgy.utils.utils import *
 
 
 class DevPut(FiggyTest):

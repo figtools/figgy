@@ -7,12 +7,12 @@ import boto3
 from botocore.errorfactory import ClientError
 from botocore.exceptions import NoCredentialsError, ParamValidationError
 from json import JSONDecodeError
-from config import *
-from models.assumable_role import AssumableRole
-from models.defaults.defaults import CLIDefaults
-from svcs.sso.okta.okta import Okta
-from svcs.sso.provider.session_provider import SessionProvider
-from utils.utils import Utils, InvalidSessionError
+from figgy.config import *
+from figgy.models.assumable_role import AssumableRole
+from figgy.models.defaults.defaults import CLIDefaults
+from figgy.svcs.sso.okta.okta import Okta
+from figgy.svcs.sso.provider.session_provider import SessionProvider
+from figgy.utils.utils import Utils, InvalidSessionError
 
 log = logging.getLogger(__name__)
 

@@ -5,20 +5,20 @@ import xml.etree.ElementTree as ET
 from abc import ABC
 from json import JSONDecodeError
 from typing import List
-from config import *
-from input import Input
-from models.assumable_role import AssumableRole
-from models.defaults.defaults import CLIDefaults
-from models.role import Role
-from models.run_env import RunEnv
-from models.sso.okta.okta_primary_auth import OktaPrimaryAuth, OktaSession
-from models.sso.okta.okta_session_auth import OktaSessionAuth
-from svcs.cache_manager import CacheManager
-from svcs.sso.okta.okta import Okta, InvalidSessionError
-from svcs.sso.provider.sso_session_provider import SSOSessionProvider
-from svcs.vault import FiggyVault
-from utils.secrets_manager import SecretsManager
-from utils.utils import Utils
+from figgy.config import *
+from figgy.input import Input
+from figgy.models.assumable_role import AssumableRole
+from figgy.models.defaults.defaults import CLIDefaults
+from figgy.models.role import Role
+from figgy.models.run_env import RunEnv
+from figgy.models.sso.okta.okta_primary_auth import OktaPrimaryAuth, OktaSession
+from figgy.models.sso.okta.okta_session_auth import OktaSessionAuth
+from figgy.svcs.cache_manager import CacheManager
+from figgy.svcs.sso.okta.okta import Okta, InvalidSessionError
+from figgy.svcs.sso.provider.sso_session_provider import SSOSessionProvider
+from figgy.svcs.vault import FiggyVault
+from figgy.utils.secrets_manager import SecretsManager
+from figgy.utils.utils import Utils
 
 log = logging.getLogger(__name__)
 

@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
-from models.role import Role
-from models.run_env import RunEnv
+from figgy.models.role import Role
+from figgy.models.run_env import RunEnv
 from tabulate import tabulate
 
 

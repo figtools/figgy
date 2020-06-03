@@ -1,6 +1,6 @@
 from pathlib import Path
-from config.aws import *
-from config.constants import *
+from figgy.config.aws import *
+from figgy.config.constants import *
 
 # Root subcommand types
 version = frozenset({'version'})

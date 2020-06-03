@@ -1,4 +1,4 @@
-from config import *
+from figgy.config import *
 
 
 class Account:

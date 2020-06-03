@@ -1,7 +1,7 @@
 from abc import ABC
 
-from commands.help_context import HelpContext
-from commands.types.command import Command
+from figgy.commands.help_context import HelpContext
+from figgy.commands.types.command import Command
 
 
 class HelpCommand(Command, ABC):

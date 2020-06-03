@@ -1,7 +1,7 @@
 import pexpect
 
-from test.cli.figgy import FiggyTest
-from utils.utils import *
+from figgy.test.cli.figgy import FiggyTest
+from figgy.utils.utils import *
 
 
 class DevRunTests(FiggyTest):

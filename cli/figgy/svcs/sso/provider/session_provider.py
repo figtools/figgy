@@ -5,11 +5,11 @@ from typing import List, Tuple
 import boto3
 from botocore.exceptions import ClientError
 
-from input import Input
-from models.assumable_role import AssumableRole
-from models.defaults.defaults import CLIDefaults
-from utils.secrets_manager import SecretsManager
-from utils.utils import Utils
+from figgy.input import Input
+from figgy.models.assumable_role import AssumableRole
+from figgy.models.defaults.defaults import CLIDefaults
+from figgy.utils.secrets_manager import SecretsManager
+from figgy.utils.utils import Utils
 from threading import Lock
 log = logging.getLogger(__name__)
 

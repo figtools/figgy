@@ -1,8 +1,8 @@
 from typing import Optional, List, Set
 
-from commands.command_context import CommandContext
-from models.defaults.defaults import CLIDefaults
-from models.run_env import RunEnv
+from figgy.commands.command_context import CommandContext
+from figgy.models.defaults.defaults import CLIDefaults
+from figgy.models.run_env import RunEnv
 
 
 class HelpContext(CommandContext):

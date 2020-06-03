@@ -1,8 +1,8 @@
-from commands.factory import Factory
-from commands.iam.export import Export
-from commands.iam_context import IAMContext
-from utils.utils import *
-from config import *
+from figgy.commands.factory import Factory
+from figgy.commands.iam.export import Export
+from figgy.commands.iam_context import IAMContext
+from figgy.utils.utils import *
+from figgy.config import *
 from boto3.session import Session
 from typing import Optional
 

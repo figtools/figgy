@@ -1,14 +1,14 @@
 from pathlib import Path
-from config.aws import *
+from figgy.config.aws import *
 
-VERSION = '0.0.1a'
+VERSION = '0.0.12a'
 CLI_NAME = 'figgy'
 
 # Figgy Github
 FIGGY_GITHUB = "https://github.com/mancej/figgy"
 
 # Todo: Update to prod before release.
-FIGGY_OBS_API_BASE_URL = "https://96zdpxzc37.execute-api.us-east-1.amazonaws.com/dev"
+FIGGY_OBS_API_BASE_URL = "https://96zdpxzc37.execute-api.us-east-1.amazonaws.com/dev/v1"
 
 # Paths
 FIGGY_ERROR_REPORTING_URL = f"{FIGGY_OBS_API_BASE_URL}/log-error"
@@ -19,13 +19,7 @@ FIGGY_LOG_METRICS_URL = f"{FIGGY_OBS_API_BASE_URL}/log-metrics"
 FIGGY_ROLE_NAME_PREFIX = 'figgy-'
 FIGGY_ROLE_PREFIX_OVERRIDE_ENV = 'FIGGY_ROLE_PREFIX_OVERRIDE'
 
-CLI_LATEST_VERSION_PS_PATH = '/devops/devops-ci/figgy/latest-version'
-WSS_TAIL_URL_PS_PATH = '/shared/devops/websockets/logtail/url'
-WWS_AUTH_LAMBDA_ARN_PS_PATH = '/shared/devops/websockets/logtail/auth-lambda/arn'
 # TODO: UPDATE THIS
-CLI_BUCKET = 'figgy-bucket'
-CLI_UPDATE_COMMAND = f'aws s3 cp s3://{CLI_BUCKET}/figgy/$$VERSION$$/$$OS$$/figgy$$SUFFIX$$ /your/install/path ' \
-                     f'--profile YOUR_CLI_PROFILE_NAME '
 
 # Table-specific Constants
 REPL_TABLE_NAME = "figgy-config-replication"

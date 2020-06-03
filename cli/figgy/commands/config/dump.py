@@ -1,14 +1,14 @@
 from prompt_toolkit.shortcuts import prompt
-from config import *
-from data.dao.ssm import SsmDao
-from data.dao.config import ConfigDao
+from figgy.config import *
+from figgy.data.dao.ssm import SsmDao
+from figgy.data.dao.config import ConfigDao
 from prompt_toolkit.completion import WordCompleter
-from commands.types.config import ConfigCommand
-from commands.config_context import ConfigContext
-from config import *
-from svcs.observability.usage_tracker import UsageTracker
-from svcs.observability.version_tracker import VersionTracker
-from utils.utils import *
+from figgy.commands.types.config import ConfigCommand
+from figgy.commands.config_context import ConfigContext
+from figgy.config import *
+from figgy.svcs.observability.anonymous_usage_tracker import AnonymousUsageTracker
+from figgy.svcs.observability.version_tracker import VersionTracker
+from figgy.utils.utils import *
 
 
 class Dump(ConfigCommand):
@@ -49,6 +49,6 @@ class Dump(ConfigCommand):
 
 
     @VersionTracker.notify_user
-    @UsageTracker.track_command_usage
+    @AnonymousUsageTracker.track_command_usage
     def execute(self):
         self._dump()

@@ -1,7 +1,7 @@
-from config.commands import *
-from config.constants import *
-from config.figgy import *
-from utils.collection_utils import CollectionUtils
+from figgy.config.commands import *
+from figgy.config.constants import *
+from figgy.config.figgy import *
+from figgy.utils.collection_utils import CollectionUtils
 
 # User communication text
 CLEANUP_REPLICA_ORPHANS = "Some orphaned replication mappings were discovered for your service. " \

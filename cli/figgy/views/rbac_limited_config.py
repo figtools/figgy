@@ -3,12 +3,12 @@ from typing import List
 
 from prompt_toolkit.completion import WordCompleter
 
-from config import *
-from data.dao.ssm import SsmDao
-from models.role import Role
-from svcs.cache_manager import CacheManager
-from svcs.config import ConfigService
-from utils.utils import Utils
+from figgy.config import *
+from figgy.data.dao.ssm import SsmDao
+from figgy.models.role import Role
+from figgy.svcs.cache_manager import CacheManager
+from figgy.svcs.config import ConfigService
+from figgy.utils.utils import Utils
 
 
 class RBACLimitedConfigView:

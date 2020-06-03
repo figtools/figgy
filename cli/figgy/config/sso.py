@@ -1,4 +1,4 @@
-from config.constants import HOME
+from figgy.config.constants import HOME
 
 # OKTA Constants
 OKTA_SESSION_DURATION = 43200

@@ -1,8 +1,8 @@
 import os
 
-from config.style.terms.default import DefaultTerm
-from config.style.terms.iterm import iTerm
-from config.style.terms.apple import AppleTerminal
+from figgy.config.style.terms.default import DefaultTerm
+from figgy.config.style.terms.iterm import iTerm
+from figgy.config.style.terms.apple import AppleTerminal
 
 
 class TerminalFactory:

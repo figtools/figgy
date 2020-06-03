@@ -9,15 +9,15 @@ from abc import ABC, abstractmethod
 
 from botocore.exceptions import NoCredentialsError, ParamValidationError, ClientError
 
-from config import *
-from models.assumable_role import AssumableRole
-from models.aws_session import FiggyAWSSession
-from models.defaults.defaults import CLIDefaults
-from svcs.cache_manager import CacheManager
-from svcs.sso.provider.session_provider import SessionProvider
-from svcs.vault import FiggyVault
-from utils.secrets_manager import SecretsManager
-from utils.utils import InvalidSessionError, Utils
+from figgy.config import *
+from figgy.models.assumable_role import AssumableRole
+from figgy.models.aws_session import FiggyAWSSession
+from figgy.models.defaults.defaults import CLIDefaults
+from figgy.svcs.cache_manager import CacheManager
+from figgy.svcs.sso.provider.session_provider import SessionProvider
+from figgy.svcs.vault import FiggyVault
+from figgy.utils.secrets_manager import SecretsManager
+from figgy.utils.utils import InvalidSessionError, Utils
 
 log = logging.getLogger(__name__)
 

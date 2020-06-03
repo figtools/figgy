@@ -1,5 +1,5 @@
-from models.sso.okta.okta_auth import OktaAuth
-from models.sso.okta.okta_session import OktaSession
+from figgy.models.sso.okta.okta_auth import OktaAuth
+from figgy.models.sso.okta.okta_session import OktaSession
 
 
 class OktaSessionAuth(OktaAuth):

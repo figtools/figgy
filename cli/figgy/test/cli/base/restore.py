@@ -1,6 +1,6 @@
 import pexpect
-from test.cli.base.configure import Configure
-from utils.utils import *
+from figgy.test.cli.base.configure import Configure
+from figgy.utils.utils import *
 
 
 class Restore:

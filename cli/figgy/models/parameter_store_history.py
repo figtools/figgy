@@ -1,5 +1,5 @@
-from models.parameter_history import ParameterHistory
-from models.restore_config import RestoreConfig
+from figgy.models.parameter_history import ParameterHistory
+from figgy.models.restore_config import RestoreConfig
 from typing import List, Set, Dict
 
 

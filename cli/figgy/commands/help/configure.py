@@ -3,19 +3,19 @@ from typing import List, Dict
 
 from tabulate import tabulate
 
-from commands.help_context import HelpContext
-from commands.types.help import HelpCommand
-from config import *
-from config.style.terminal_factory import TerminalFactory
-from utils.utils import Utils
-from input.input import Input
-from models.assumable_role import AssumableRole
-from models.defaults.defaults import CLIDefaults
-from models.role import Role
-from models.run_env import RunEnv
-from svcs.setup import FiggySetup
-from svcs.sso.provider.provider_factory import SessionProviderFactory
-from svcs.sso.provider.session_provider import SessionProvider
+from figgy.commands.help_context import HelpContext
+from figgy.commands.types.help import HelpCommand
+from figgy.config import *
+from figgy.config.style.terminal_factory import TerminalFactory
+from figgy.utils.utils import Utils
+from figgy.input.input import Input
+from figgy.models.assumable_role import AssumableRole
+from figgy.models.defaults.defaults import CLIDefaults
+from figgy.models.role import Role
+from figgy.models.run_env import RunEnv
+from figgy.svcs.setup import FiggySetup
+from figgy.svcs.sso.provider.provider_factory import SessionProviderFactory
+from figgy.svcs.sso.provider.session_provider import SessionProvider
 
 
 class Configure(HelpCommand, ABC):

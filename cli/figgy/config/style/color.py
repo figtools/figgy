@@ -1,6 +1,6 @@
 from sty import fg
 
-from config.style.palette import Palette
+from figgy.config.style.palette import Palette
 
 
 class Color:

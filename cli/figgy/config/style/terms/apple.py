@@ -1,8 +1,8 @@
 from sty import fg
 
-from config.style.color import Color
-from config.style.palette import Palette
-from config.style.terms.term import Term
+from figgy.config.style.color import Color
+from figgy.config.style.palette import Palette
+from figgy.config.style.terms.term import Term
 
 
 class AppleTerminal(Term):

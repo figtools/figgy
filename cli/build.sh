@@ -1,4 +1,5 @@
 #! /bin/sh
 
+source /Users/jordanmance/venv/figgy-homebrew/bin/activate
 
-python figgy/setup.py install
+python setup.py sdist bdist_wheel

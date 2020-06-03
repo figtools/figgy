@@ -7,20 +7,20 @@ from typing import Set, List, Tuple, Optional
 import boto3
 from botocore.exceptions import NoCredentialsError, ClientError, ParamValidationError
 
-from config.constants import *
-from data.dao.ssm import SsmDao
-from input import Input
-from models.assumable_role import AssumableRole
-from models.aws_session import FiggyAWSSession
-from models.defaults.defaults import CLIDefaults
-from models.defaults.provider import Provider
-from models.role import Role
-from models.run_env import RunEnv
-from svcs.cache_manager import CacheManager
-from svcs.sso.provider.session_provider import SessionProvider
-from svcs.vault import FiggyVault
-from utils.secrets_manager import SecretsManager
-from utils.utils import Utils, InvalidSessionError
+from figgy.config.constants import *
+from figgy.data.dao.ssm import SsmDao
+from figgy.input import Input
+from figgy.models.assumable_role import AssumableRole
+from figgy.models.aws_session import FiggyAWSSession
+from figgy.models.defaults.defaults import CLIDefaults
+from figgy.models.defaults.provider import Provider
+from figgy.models.role import Role
+from figgy.models.run_env import RunEnv
+from figgy.svcs.cache_manager import CacheManager
+from figgy.svcs.sso.provider.session_provider import SessionProvider
+from figgy.svcs.vault import FiggyVault
+from figgy.utils.secrets_manager import SecretsManager
+from figgy.utils.utils import Utils, InvalidSessionError
 import time
 
 log = logging.getLogger(__name__)
