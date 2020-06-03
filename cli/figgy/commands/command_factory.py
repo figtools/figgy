@@ -3,30 +3,30 @@ import time
 import logging
 import uuid
 
-from commands.config_context import ConfigContext
-from commands.config_factory import ConfigFactory
-from commands.help_context import HelpContext
-from commands.help_factory import HelpFactory
-from commands.iam_context import IAMContext
-from commands.iam_factory import IAMFactory
-from commands.factory import Factory
-from models.defaults.defaults import CLIDefaults
-from models.run_env import RunEnv
-from commands.figgy_context import FiggyContext
-from svcs.kms import KmsSvc
-from svcs.config import ConfigService
-from svcs.cache_manager import CacheManager
-from svcs.sso.provider.provider_factory import SessionProviderFactory
-from svcs.sso.provider.session_provider import SessionProvider
-from svcs.sso.session_manager import SessionManager
-from data.dao.config import ConfigDao
-from utils.utils import Utils
-from config import *
-from data.dao.ssm import SsmDao
+from figgy.commands.config_context import ConfigContext
+from figgy.commands.config_factory import ConfigFactory
+from figgy.commands.help_context import HelpContext
+from figgy.commands.help_factory import HelpFactory
+from figgy.commands.iam_context import IAMContext
+from figgy.commands.iam_factory import IAMFactory
+from figgy.commands.factory import Factory
+from figgy.models.defaults.defaults import CLIDefaults
+from figgy.models.run_env import RunEnv
+from figgy.commands.figgy_context import FiggyContext
+from figgy.svcs.kms import KmsSvc
+from figgy.svcs.config import ConfigService
+from figgy.svcs.cache_manager import CacheManager
+from figgy.svcs.sso.provider.provider_factory import SessionProviderFactory
+from figgy.svcs.sso.provider.session_provider import SessionProvider
+from figgy.svcs.sso.session_manager import SessionManager
+from figgy.data.dao.config import ConfigDao
+from figgy.utils.utils import Utils
+from figgy.config import *
+from figgy.data.dao.ssm import SsmDao
 from typing import Dict
 from concurrent.futures import ThreadPoolExecutor, thread, as_completed
 
-from views.rbac_limited_config import RBACLimitedConfigView
+from figgy.views.rbac_limited_config import RBACLimitedConfigView
 from threading import Lock
 logger = logging.getLogger(__name__)
 

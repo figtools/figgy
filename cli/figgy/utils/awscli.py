@@ -1,5 +1,5 @@
-from config import *
-from utils.utils import *
+from figgy.config import *
+from figgy.utils.utils import *
 
 
 class AWSCLIUtils:

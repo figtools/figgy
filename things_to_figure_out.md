@@ -4,7 +4,8 @@ These are problems I intend to solve, once I figure out the best way to do it.
 
 - Get CircleCi builds working with full test suite execution.
 
-
+- Wipe figgy vault on reconfigure 
+- Wipe defaults on reconfigure
 __
    
 - What do I do with auto-upgrade feature?

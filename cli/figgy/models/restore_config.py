@@ -1,5 +1,5 @@
-from models.run_env import RunEnv
-from config import *
+from figgy.models.run_env import RunEnv
+from figgy.config import *
 import getpass
 from decimal import Decimal
 from typing import List, Dict, TypeVar

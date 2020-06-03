@@ -1,7 +1,7 @@
 from typing import Optional
 
-from models.defaults.defaults import CLIDefaults
-from models.run_env import RunEnv
+from figgy.models.defaults.defaults import CLIDefaults
+from figgy.models.run_env import RunEnv
 
 
 class CommandContext:

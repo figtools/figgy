@@ -1,6 +1,6 @@
 from pathlib import Path
-from config.aws import *
-from config.constants import *
+from figgy.config.aws import *
+from figgy.config.constants import *
 
 # Root subcommand types
 version = frozenset({'version'})
@@ -255,4 +255,3 @@ data_ns = '/data'
 devops_ns = '/devops'
 figgy_ns = '/figgy'
 DEV_PS_WRITE_NS = ['/shared', '/app']
-

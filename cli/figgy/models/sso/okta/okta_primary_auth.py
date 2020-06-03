@@ -1,12 +1,12 @@
 import time
 from dataclasses import dataclass
 
-from models.defaults.defaults import CLIDefaults
-from models.sso.okta.okta_session import OktaSession
-from utils.utils import *
+from figgy.models.defaults.defaults import CLIDefaults
+from figgy.models.sso.okta.okta_session import OktaSession
+from figgy.utils.utils import *
 import logging
 import requests
-from models.sso.okta.okta_auth import OktaAuth
+from figgy.models.sso.okta.okta_auth import OktaAuth
 
 log = logging.getLogger(__name__)
 

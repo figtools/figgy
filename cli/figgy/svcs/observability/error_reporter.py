@@ -5,12 +5,12 @@ import json
 import traceback
 import datetime
 import re
-from config import *
-from config.style.terminal_factory import TerminalFactory
-from input import Input
-from utils.utils import Utils
+from figgy.config import *
+from figgy.config.style.terminal_factory import TerminalFactory
+from figgy.input import Input
+from figgy.utils.utils import Utils
 
-from models.defaults.defaults import CLIDefaults
+from figgy.models.defaults.defaults import CLIDefaults
 
 log = logging.getLogger(__name__)
 

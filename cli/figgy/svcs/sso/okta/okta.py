@@ -9,8 +9,8 @@ from collections import namedtuple
 import requests
 from bs4 import BeautifulSoup as bs
 
-from models.sso.okta.okta_auth import OktaAuth
-from utils.utils import *
+from figgy.models.sso.okta.okta_auth import OktaAuth
+from figgy.utils.utils import *
 
 log = logging.getLogger(__name__)
 

@@ -1,6 +1,6 @@
 from abc import abstractmethod, ABC
 
-from config.style.color import Color
+from figgy.config.style.color import Color
 
 
 class Term(ABC):

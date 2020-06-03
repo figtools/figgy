@@ -1,22 +1,22 @@
 import re
 import xml.etree.ElementTree as ET
 
-from config.sso import *
-from config.constants import SAML_SESSION_CACHE_PATH
+from figgy.config.sso import *
+from figgy.config.constants import SAML_SESSION_CACHE_PATH
 from dataclasses import dataclass
 from typing import Optional, Any, List
 
-from models.assumable_role import AssumableRole
-from models.role import Role
-from models.run_env import RunEnv
-from svcs.sso.google.google import Google
+from figgy.models.assumable_role import AssumableRole
+from figgy.models.role import Role
+from figgy.models.run_env import RunEnv
+from figgy.svcs.sso.google.google import Google
 
-from models.defaults.defaults import CLIDefaults
-from svcs.cache_manager import CacheManager
-from svcs.sso.provider.sso_session_provider import SSOSessionProvider
-from svcs.vault import FiggyVault
-from utils.secrets_manager import SecretsManager
-from utils.utils import Utils
+from figgy.models.defaults.defaults import CLIDefaults
+from figgy.svcs.cache_manager import CacheManager
+from figgy.svcs.sso.provider.sso_session_provider import SSOSessionProvider
+from figgy.svcs.vault import FiggyVault
+from figgy.utils.secrets_manager import SecretsManager
+from figgy.utils.utils import Utils
 
 
 @dataclass

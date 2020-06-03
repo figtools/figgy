@@ -1,11 +1,11 @@
 import logging
 from typing import Set
 
-from data.dao.config import ConfigDao
-from data.models.config_item import ConfigState, ConfigItem
-from models.run_env import RunEnv
-from svcs.cache_manager import CacheManager
-from utils.utils import Utils
+from figgy.data.dao.config import ConfigDao
+from figgy.data.models.config_item import ConfigState, ConfigItem
+from figgy.models.run_env import RunEnv
+from figgy.svcs.cache_manager import CacheManager
+from figgy.utils.utils import Utils
 
 log = logging.getLogger(__name__)
 

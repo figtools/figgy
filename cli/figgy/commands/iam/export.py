@@ -3,11 +3,11 @@ from typing import Optional
 
 from boto3.session import Session
 
-from commands.iam_context import IAMContext
-from commands.types.iam import IAMCommand
-from svcs.observability.usage_tracker import UsageTracker
-from utils.utils import *
-from utils.awscli import AWSCLIUtils
+from figgy.commands.iam_context import IAMContext
+from figgy.commands.types.iam import IAMCommand
+from figgy.svcs.observability.anonymous_usage_tracker import AnonymousUsageTracker
+from figgy.utils.utils import *
+from figgy.utils.awscli import AWSCLIUtils
 
 
 class Export(IAMCommand):
@@ -35,6 +35,6 @@ class Export(IAMCommand):
                 AWSCLIUtils.write_credentials(credentials.access_key, credentials.secret_key, credentials.token,
                                               profile_name=role_name, region=self.context.defaults.region, color=self.c)
 
-    @UsageTracker.track_command_usage
+    @AnonymousUsageTracker.track_command_usage
     def execute(self):
         self._export()

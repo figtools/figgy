@@ -1,4 +1,4 @@
-from config import *
+from figgy.config import *
 import argparse
 import logging
 import json
@@ -7,10 +7,10 @@ import os
 import time
 import re
 
-from config.style.color import Color
-from config.style.terminal_factory import TerminalFactory
-from models.role import Role
-from models.run_env import RunEnv
+from figgy.config.style.color import Color
+from figgy.config.style.terminal_factory import TerminalFactory
+from figgy.models.role import Role
+from figgy.models.run_env import RunEnv
 from sys import exit
 import glob
 from typing import Dict, List, Type, Union
@@ -114,6 +114,7 @@ class Utils:
     @staticmethod
     def command_set(check_command: frozenset, args):
         command_name = args.command if hasattr(args, Utils.get_first(command)) else None
+
         return command_name == Utils.get_first(check_command)
 
     @staticmethod

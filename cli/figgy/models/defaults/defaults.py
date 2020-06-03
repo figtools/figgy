@@ -1,11 +1,11 @@
 import jsonpickle
 import uuid
-from models.assumable_role import AssumableRole
-from models.defaults.provider import Provider
-from models.defaults.provider_config import ProviderConfig, ProviderConfigFactory, BastionProviderConfig
-from models.role import Role
-from models.run_env import RunEnv
-from config import *
+from figgy.models.assumable_role import AssumableRole
+from figgy.models.defaults.provider import Provider
+from figgy.models.defaults.provider_config import ProviderConfig, ProviderConfigFactory, BastionProviderConfig
+from figgy.models.role import Role
+from figgy.models.run_env import RunEnv
+from figgy.config import *
 from typing import Dict, Optional, List, Any
 from dataclasses import dataclass, field
 

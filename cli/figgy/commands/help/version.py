@@ -1,8 +1,8 @@
-from commands.help_context import HelpContext
-from commands.types.help import HelpCommand
-from config import *
-from svcs.observability.usage_tracker import UsageTracker
-from svcs.observability.version_tracker import VersionTracker
+from figgy.commands.help_context import HelpContext
+from figgy.commands.types.help import HelpCommand
+from figgy.config import *
+from figgy.svcs.observability.anonymous_usage_tracker import AnonymousUsageTracker
+from figgy.svcs.observability.version_tracker import VersionTracker
 
 
 class Version(HelpCommand):
@@ -17,6 +17,6 @@ class Version(HelpCommand):
     def version(self):
         self.tracker.check_version(self.c)
 
-    @UsageTracker.track_command_usage
+    @AnonymousUsageTracker.track_command_usage
     def execute(self):
         self.version()

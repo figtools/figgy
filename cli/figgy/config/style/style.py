@@ -1,8 +1,8 @@
 from prompt_toolkit.styles import Style
 
 # Prompt Colors
-from config.style.color import Color
-from config.style.terminal_factory import TerminalFactory
+from figgy.config.style.color import Color
+from figgy.config.style.terminal_factory import TerminalFactory
 
 colors: Color = TerminalFactory(True).instance().get_colors()
 

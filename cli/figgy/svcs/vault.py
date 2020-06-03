@@ -1,4 +1,4 @@
-from utils.utils import Utils
+from figgy.utils.utils import Utils
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256, HMAC
 from Crypto.Protocol.KDF import PBKDF2

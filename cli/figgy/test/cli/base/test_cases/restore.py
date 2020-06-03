@@ -2,7 +2,7 @@ import pexpect
 import inspect
 import re
 import sys
-from test.cli.base.restore import Restore
+from figgy.test.cli.base.restore import Restore
 
 
 class RestoreTestSuite:

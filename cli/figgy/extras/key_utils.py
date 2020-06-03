@@ -1,6 +1,6 @@
 import re
 from typing import Set, Dict
-from config import *
+from figgy.config import *
 
 
 class KeyUtils(object):
@@ -57,7 +57,7 @@ class KeyUtils(object):
             repl_from: Dict representing the `replicate_frorm` block in ci-config.json file
             dest_namespace: namespace found in the `ci-config.json` file. Where replication is destined for.
 
-        Returns: an updated repl_conf dictionary with repl_from configs merged into it.
+        Returns: an updated repl_conf dictionary with repl_from figgy.configs merged into it.
         """
 
         source_ns = repl_from.get(SOURCE_NS_KEY)

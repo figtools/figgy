@@ -1,10 +1,10 @@
 import logging
 import botocore
 import urllib3
-from utils.utils import *
+from figgy.utils.utils import *
 from botocore.exceptions import ClientError
 from typing import List, Optional
-from utils.utils import Utils
+from figgy.utils.utils import Utils
 from concurrent.futures import ThreadPoolExecutor
 from typing import Tuple
 

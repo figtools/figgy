@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from models.defaults.defaults import CLIDefaults
-from models.sso.okta.okta_session import OktaSession
+from figgy.models.defaults.defaults import CLIDefaults
+from figgy.models.sso.okta.okta_session import OktaSession
 
 
 class OktaAuth(ABC):

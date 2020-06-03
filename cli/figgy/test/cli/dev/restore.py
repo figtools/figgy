@@ -1,12 +1,12 @@
 import pexpect
-from test.cli.config import *
-from test.cli.figgy import FiggyTest
-from test.cli.dev.put import DevPut
-from test.cli.dev.delete import DevDelete
-from test.cli.dev.get import DevGet
-from test.cli.dev.audit import DevAudit
-from config import *
-from utils.utils import *
+from figgy.test.cli.config import *
+from figgy.test.cli.figgy import FiggyTest
+from figgy.test.cli.dev.put import DevPut
+from figgy.test.cli.dev.delete import DevDelete
+from figgy.test.cli.dev.get import DevGet
+from figgy.test.cli.dev.audit import DevAudit
+from figgy.config import *
+from figgy.utils.utils import *
 import time
 import uuid
 

@@ -1,23 +1,23 @@
 from boto3.resources.base import ServiceResource
 
-import commands.config.list
-from commands.config.audit import Audit
-from commands.config.browse import Browse
-from commands.config.cleanup import Cleanup
-from commands.config.delete import Delete
-from commands.config.dump import Dump
-from commands.config.edit import Edit
-from commands.config.generate import Generate
-from commands.config.promote import Promote
-from commands.config.restore import Restore
-from commands.config.share import *
-from commands.config.sync import *
-from commands.config_context import ConfigContext
-from commands.factory import Factory
-from svcs.kms import KmsSvc
-from svcs.sso.session_manager import SessionManager
-from views.rbac_limited_config import RBACLimitedConfigView
-from utils.utils import *
+from figgy.commands.config.list import List
+from figgy.commands.config.audit import Audit
+from figgy.commands.config.browse import Browse
+from figgy.commands.config.cleanup import Cleanup
+from figgy.commands.config.delete import Delete
+from figgy.commands.config.dump import Dump
+from figgy.commands.config.edit import Edit
+from figgy.commands.config.generate import Generate
+from figgy.commands.config.promote import Promote
+from figgy.commands.config.restore import Restore
+from figgy.commands.config.share import *
+from figgy.commands.config.sync import *
+from figgy.commands.config_context import ConfigContext
+from figgy.commands.factory import Factory
+from figgy.svcs.kms import KmsSvc
+from figgy.svcs.sso.session_manager import SessionManager
+from figgy.views.rbac_limited_config import RBACLimitedConfigView
+from figgy.utils.utils import *
 
 
 class ConfigFactory(Factory):
@@ -64,9 +64,7 @@ class ConfigFactory(Factory):
         elif command == share:
             return Share(self._ssm, self._config, self._config_completer, self._colors_enabled, self._config_context)
         elif command == list_com:
-            return commands.config.list.List(self._ssm, self._config_completer,
-                                             self._colors_enabled, self._config_context,
-                                             self.get(get))
+            return List(self._ssm, self._config_completer, self._colors_enabled, self._config_context, self.get(get))
         elif command == browse:
             return Browse(self._ssm, self._config, self._colors_enabled, self._config_context, self.get(get),
                           self.get(delete), self._config_view)

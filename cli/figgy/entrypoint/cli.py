@@ -1,37 +1,27 @@
 import argparse
-import os
-import stat
-import sys
-import traceback
 import getpass
-from json import JSONDecodeError
-
-import jsonpickle
-import platform
 import logging
-from config import *
-from typing import Optional, Tuple, List
-from zipfile import ZipFile
-
+import os
+import sys
 import boto3
-from botocore.errorfactory import ClientError
 
-from extras.s3_download_progress import S3Progress
-from input.input import Input
-from commands.command_factory import CommandFactory
-from commands.figgy_context import FiggyContext
-from commands.types.command import Command
-from data.dao.ssm import SsmDao
-from extras.completer import Completer
-from models.assumable_role import AssumableRole
-from models.defaults.defaults import CLIDefaults
-from models.role import Role
-from models.run_env import RunEnv
-from svcs.cache_manager import CacheManager
-from svcs.observability.error_reporter import FiggyErrorReporter
-from svcs.sso.provider.provider_factory import SessionProviderFactory
-from svcs.sso.session_manager import SessionManager
-from utils.utils import Utils
+from json import JSONDecodeError
+from typing import Optional, List
+from figgy.config import *
+from figgy.input.input import Input
+from figgy.models.assumable_role import AssumableRole
+from figgy.models.defaults.defaults import CLIDefaults
+from figgy.models.role import Role
+from figgy.models.run_env import RunEnv
+from figgy.svcs.cache_manager import CacheManager
+from figgy.svcs.observability.error_reporter import FiggyErrorReporter
+from figgy.svcs.sso.provider.provider_factory import SessionProviderFactory
+from figgy.svcs.sso.session_manager import SessionManager
+from figgy.utils.utils import Utils
+
+from figgy.commands.command_factory import CommandFactory
+from figgy.commands.figgy_context import FiggyContext
+from figgy.commands.types.command import Command
 
 root_logger = logging.getLogger()
 root_logger.setLevel(logging.CRITICAL)
@@ -149,7 +139,7 @@ class FiggyCLI:
         if defaults is not None:
             return defaults.colors_enabled
         else:
-            return True
+            return Utils.not_windows()
 
     def get_command(self) -> Command:
         """
@@ -211,8 +201,6 @@ class FiggyCLI:
         resource_val = Utils.attr_if_exists(resource, args)
         found_command: frozenset = frozenset({Utils.attr_if_exists(command, args)}) if command_val else None
         found_resource: frozenset = frozenset({Utils.attr_if_exists(resource, args)}) if resource_val else None
-
-        log.info(f"Command {found_command}, resource: {found_resource}")
 
         self._context = FiggyContext(self.get_colors_enabled(), found_resource, found_command,
                                      self._run_env, self._assumable_role, args)

@@ -1,12 +1,12 @@
 import pexpect
-from test.cli.config import *
-from test.cli.figgy import FiggyTest
-from config import *
-from utils.utils import *
+from figgy.test.cli.config import *
+from figgy.test.cli.figgy import FiggyTest
+from figgy.config import *
+from figgy.utils.utils import *
 from subprocess import check_output
-from test.cli.dev.configure import DevConfigure
-from test.cli.data.configure import DataConfigure
-from test.cli.devops.configure import DevOpsConfigure
+from figgy.test.cli.dev.configure import DevConfigure
+from figgy.test.cli.data.configure import DataConfigure
+from figgy.test.cli.devops.configure import DevOpsConfigure
 import time
 
 class CLIInit:

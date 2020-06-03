@@ -1,20 +1,20 @@
 import logging
 import re
 
-from config import *
+from figgy.config import *
 from botocore.exceptions import ClientError
 from npyscreen import Form, MultiLineEdit, NPSApp, BoxTitle
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 
-from commands.config_context import ConfigContext
-from commands.types.config import ConfigCommand
-from data.dao.ssm import SsmDao
-from input import Input
-from svcs.observability.usage_tracker import UsageTracker
-from svcs.observability.version_tracker import VersionTracker
-from utils.utils import Utils
-from views.rbac_limited_config import RBACLimitedConfigView
+from figgy.commands.config_context import ConfigContext
+from figgy.commands.types.config import ConfigCommand
+from figgy.data.dao.ssm import SsmDao
+from figgy.input import Input
+from figgy.svcs.observability.anonymous_usage_tracker import AnonymousUsageTracker
+from figgy.svcs.observability.version_tracker import VersionTracker
+from figgy.utils.utils import Utils
+from figgy.views.rbac_limited_config import RBACLimitedConfigView
 
 log = logging.getLogger(__name__)
 
@@ -98,6 +98,6 @@ class Edit(ConfigCommand):
                     f"{self.c.fg_rd}Exception caught attempting to add config: {e}{self.c.rs}")
 
     @VersionTracker.notify_user
-    @UsageTracker.track_command_usage
+    @AnonymousUsageTracker.track_command_usage
     def execute(self):
         self.edit()

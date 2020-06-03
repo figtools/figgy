@@ -1,1 +1,1 @@
-from input.input import Input
+from figgy.input.input import Input

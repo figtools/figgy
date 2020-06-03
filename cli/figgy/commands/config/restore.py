@@ -1,6 +1,6 @@
 import time
 
-from config import *
+from figgy.config import *
 from datetime import datetime
 from typing import List
 
@@ -9,16 +9,16 @@ from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from tabulate import tabulate
 
-from commands.config.delete import Delete
-from commands.config_context import ConfigContext
-from commands.types.config import ConfigCommand
-from data.dao.config import ConfigDao
-from data.dao.ssm import SsmDao
-from models.parameter_store_history import PSHistory
-from models.restore_config import RestoreConfig
-from svcs.kms import KmsSvc
-from svcs.observability.usage_tracker import UsageTracker
-from svcs.observability.version_tracker import VersionTracker
+from figgy.commands.config.delete import Delete
+from figgy.commands.config_context import ConfigContext
+from figgy.commands.types.config import ConfigCommand
+from figgy.data.dao.config import ConfigDao
+from figgy.data.dao.ssm import SsmDao
+from figgy.models.parameter_store_history import PSHistory
+from figgy.models.restore_config import RestoreConfig
+from figgy.svcs.kms import KmsSvc
+from figgy.svcs.observability.anonymous_usage_tracker import AnonymousUsageTracker
+from figgy.svcs.observability.version_tracker import VersionTracker
 
 
 class Restore(ConfigCommand):
@@ -251,7 +251,7 @@ class Restore(ConfigCommand):
                 self._delete.delete_param(name)
 
     @VersionTracker.notify_user
-    @UsageTracker.track_command_usage
+    @AnonymousUsageTracker.track_command_usage
     def execute(self):
         if self._point_in_time:
             self._restore_params_to_point_in_time()

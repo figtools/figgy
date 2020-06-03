@@ -2,10 +2,10 @@ from configparser import ConfigParser
 from enum import Enum
 from typing import Type, Union, Optional, Callable, Any
 
-from config import CONFIG_OVERRIDE_FILE_PATH, Config, EMPTY_CONFIG
-from config.style.terminal_factory import TerminalFactory
-from input import Input
-from utils.utils import Utils
+from figgy.config import CONFIG_OVERRIDE_FILE_PATH, Config, EMPTY_CONFIG
+from figgy.config.style.terminal_factory import TerminalFactory
+from figgy.input import Input
+from figgy.utils.utils import Utils
 from os import path
 
 

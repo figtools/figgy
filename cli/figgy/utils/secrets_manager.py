@@ -1,8 +1,8 @@
-from utils.utils import *
+from figgy.utils.utils import *
 import platform
 import keyring
 import pyotp
-from config import *
+from figgy.config import *
 from keyring.backends.OS_X import Keyring
 from keyring.backends.Windows import WinVaultKeyring
 from keyrings.alt.file import EncryptedKeyring, PlaintextKeyring

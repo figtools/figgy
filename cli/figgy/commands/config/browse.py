@@ -5,18 +5,18 @@ import npyscreen
 from botocore.exceptions import ClientError
 from npyscreen import MLTreeMultiSelect, NPSTreeData, NPSApp, Form, TreeLineSelectable
 
-from commands.config.delete import Delete
-from commands.config.get import Get
-from commands.config_context import ConfigContext
-from commands.types.config import ConfigCommand
-from data.dao.config import ConfigDao
-from data.dao.ssm import SsmDao
-from input import Input
-from svcs.observability.usage_tracker import UsageTracker
-from svcs.observability.version_tracker import VersionTracker
-from utils.utils import *
-from utils.utils import Utils
-from views.rbac_limited_config import RBACLimitedConfigView
+from figgy.commands.config.delete import Delete
+from figgy.commands.config.get import Get
+from figgy.commands.config_context import ConfigContext
+from figgy.commands.types.config import ConfigCommand
+from figgy.data.dao.config import ConfigDao
+from figgy.data.dao.ssm import SsmDao
+from figgy.input import Input
+from figgy.svcs.observability.anonymous_usage_tracker import AnonymousUsageTracker
+from figgy.svcs.observability.version_tracker import VersionTracker
+from figgy.utils.utils import *
+from figgy.utils.utils import Utils
+from figgy.views.rbac_limited_config import RBACLimitedConfigView
 
 log = logging.getLogger(__name__)
 
@@ -88,7 +88,7 @@ class Browse(ConfigCommand, npyscreen.NPSApp):
                 self.add_children(child_dir, dir_node, all_children=grand_children,
                                   first_children=calculated_first_children)
 
-    @UsageTracker.track_command_usage
+    @AnonymousUsageTracker.track_command_usage
     def _browse(self):
         browse_app = BrowseApp(self, self._config_view)
         browse_app.run()
@@ -151,7 +151,7 @@ class Browse(ConfigCommand, npyscreen.NPSApp):
                 val, desc = self._get.get_val_and_desc(path)
                 self._print_val(path, val, desc)
 
-    @UsageTracker.track_command_usage
+    @AnonymousUsageTracker.track_command_usage
     @VersionTracker.notify_user
     def execute(self):
         self._browse()
@@ -191,13 +191,14 @@ class BrowseApp(NPSApp):
         tree = npy_form.add(LogicalMLTree)
 
         td = DeletableNPSTreeData(content='Root', selectable=True, expanded=True, ignoreRoot=True)
-
+        start = Utils.millis_since_epoch()
         children = []
         if self._browse.prefix:
             prefix_child = td.newChild(content=self._browse.prefix, selectable=False, expanded=False)
             children = [prefix_child]
         else:
             log.info(f"--{Utils.get_first(prefix)} missing, defaulting to normal browse tree.")
+
             for namespace in self._config_view.get_authorized_namespaces():
                 child = td.newChild(content=namespace, selectable=False, expanded=False)
                 children.append(child)
@@ -213,6 +214,8 @@ class BrowseApp(NPSApp):
 
         for future in as_completed(futures):
             pass
+
+
 
         tree.values = td
         npy_form.edit()

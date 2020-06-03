@@ -1,8 +1,8 @@
-from models.run_env import RunEnv
-from config import *
+from figgy.models.run_env import RunEnv
+from figgy.config import *
 import getpass
 from typing import Dict, List
-from utils.utils import *
+from figgy.utils.utils import *
 
 
 class ReplicationType:

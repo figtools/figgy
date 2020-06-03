@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from sty import fg, FgRegister, Rule
+from sty import fg, FgRegister
 
 
 @dataclass
@@ -22,4 +22,4 @@ class Palette:
         self.rd: str = '#%02x%02x%02x' % red
         self.yl: str = '#%02x%02x%02x' % yellow
 
-        self.rs: Rule = fg.rs
+        self.rs = fg.rs

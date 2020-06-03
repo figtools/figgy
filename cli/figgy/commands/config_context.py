@@ -1,12 +1,12 @@
 from typing import Optional
 
-from models.defaults.defaults import CLIDefaults
-from models.run_env import RunEnv
-from models.role import Role
-from commands.command_context import CommandContext
-from commands.figgy_context import FiggyContext
-from utils.utils import Utils
-from config import *
+from figgy.models.defaults.defaults import CLIDefaults
+from figgy.models.run_env import RunEnv
+from figgy.models.role import Role
+from figgy.commands.command_context import CommandContext
+from figgy.commands.figgy_context import FiggyContext
+from figgy.utils.utils import Utils
+from figgy.config import *
 
 
 class ConfigContext(CommandContext):

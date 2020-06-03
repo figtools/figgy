@@ -3,9 +3,9 @@ import json
 import os
 import jsonpickle
 from typing import Dict, Any, Union, Set, Tuple, List, Callable, FrozenSet
-from config import *
-from svcs.vault import FiggyVault
-from utils.utils import Utils
+from figgy.config import *
+from figgy.svcs.vault import FiggyVault
+from figgy.utils.utils import Utils
 from pathlib import Path
 
 log = logging.getLogger(__name__)
@@ -104,14 +104,20 @@ class CacheManager:
         with open(self._cache_file, 'wb') as cache:
             cache.write(self.__encrypt(data))
 
-    def get_val_or_refresh(self, cache_key: str, refresher: Callable, *args, max_age=DEFAULT_REFRESH_INTERVAL) -> Any:
+    def get_val_or_refresh(self, cache_key: str, refresher: Callable, *args, max_age: int = DEFAULT_REFRESH_INTERVAL) \
+            -> Any:
         last_write, val = self.get_or_refresh(cache_key, refresher, *args, max_age=max_age)
         return val
 
     @prime_cache
     @wipe_bad_cache
-    def get_or_refresh(self, cache_key: str, refresher: Callable, *args, max_age=DEFAULT_REFRESH_INTERVAL) \
+    def get_or_refresh(self, cache_key: str, refresher: Callable, *args, max_age: int = DEFAULT_REFRESH_INTERVAL) \
             -> Tuple[int, Any]:
+
+        if not isinstance(max_age, int):
+            log.warning(f"Received an invalid max_age of : {max_age}. Defaulting to {DEFAULT_SESSION_DURATION}")
+            max_age = DEFAULT_SESSION_DURATION
+
         last_write, val = self.get(cache_key)
         if Utils.millis_since_epoch() - last_write > max_age or not val:
             new_val = refresher(*args)

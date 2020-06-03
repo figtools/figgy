@@ -1,4 +1,4 @@
-from config import *
+from figgy.config import *
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
 from typing import List

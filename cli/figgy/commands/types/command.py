@@ -1,12 +1,12 @@
 from typing import Union
 
-from commands.config_context import ConfigContext
-from commands.help_context import HelpContext
-from config import *
-from config.style.terminal_factory import TerminalFactory
-from utils.utils import Utils
+from figgy.commands.config_context import ConfigContext
+from figgy.commands.help_context import HelpContext
+from figgy.config import *
+from figgy.config.style.terminal_factory import TerminalFactory
+from figgy.utils.utils import Utils
 from abc import ABC, abstractmethod
-from commands.command_context import CommandContext
+from figgy.commands.command_context import CommandContext
 
 
 class Command(ABC):

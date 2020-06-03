@@ -1,10 +1,10 @@
-from commands.factory import Factory
-from models.defaults.defaults import CLIDefaults
-from models.defaults.provider import Provider
-from svcs.sso.google.google_session_provider import GoogleSessionProvider
-from svcs.sso.bastion.bastion_session_provider import BastionSessionProvider
-from svcs.sso.okta.okta_session_provider import OktaSessionProvider
-from svcs.sso.provider.session_provider import SessionProvider
+from figgy.commands.factory import Factory
+from figgy.models.defaults.defaults import CLIDefaults
+from figgy.models.defaults.provider import Provider
+from figgy.svcs.sso.google.google_session_provider import GoogleSessionProvider
+from figgy.svcs.sso.bastion.bastion_session_provider import BastionSessionProvider
+from figgy.svcs.sso.okta.okta_session_provider import OktaSessionProvider
+from figgy.svcs.sso.provider.session_provider import SessionProvider
 
 
 class SessionProviderFactory(Factory):

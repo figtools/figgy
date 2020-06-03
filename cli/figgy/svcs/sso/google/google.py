@@ -10,23 +10,14 @@ import os
 import re
 import sys
 import requests
+import subprocess
 
-from PIL import Image
 from distutils.spawn import find_executable
 from bs4 import BeautifulSoup
 from requests import HTTPError
 from six import print_ as print
 from six.moves import urllib_parse, input
-
-from aws_google_auth import _version
-
-# The U2F USB Library is optional, if it's there, include it.
-try:
-    from aws_google_auth import u2f
-except ImportError:
-    logging.info("Failed to import U2F libraries, U2F login unavailable. "
-                 "Other methods can still continue.")
-
+from figgy.svcs.mfa.u2f import *
 
 class ExpectedGoogleException(Exception):
     def __init__(self, *args):
@@ -47,7 +38,8 @@ class Google:
         duration_seconds: number of seconds for the session to be active (max 43200)
         """
 
-        self.version = _version.__version__
+        # self.version = _version.__version__
+        self.version = "0.0.35"
         self.config = config
         self.base_url = 'https://accounts.google.com'
         self.save_failure = save_failure
@@ -380,12 +372,11 @@ class Google:
                 open_image = False
 
         print("Please visit the following URL to view your CAPTCHA: {}".format(captcha_url))
-
         if open_image:
             try:
                 with requests.get(captcha_url) as url:
-                    with io.BytesIO(url.content) as f:
-                        Image.open(f).show()
+                    subprocess.call(['open', url.content])
+
             except Exception:
                 pass
 
@@ -471,7 +462,7 @@ class Google:
         auth_response = None
         while True:
             try:
-                auth_response_dict = u2f.u2f_auth(u2f_challenges, facet)
+                auth_response_dict = u2f_auth(u2f_challenges, facet)
                 auth_response = json.dumps(auth_response_dict)
                 break
             except RuntimeWarning:

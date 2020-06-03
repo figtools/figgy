@@ -1,8 +1,8 @@
-from data.dao.ssm import SsmDao
+from figgy.data.dao.ssm import SsmDao
 from botocore.exceptions import ClientError
 import botocore.session
 from typing import Dict
-from utils.utils import Utils
+from figgy.utils.utils import Utils
 
 
 class SSMRebirth:

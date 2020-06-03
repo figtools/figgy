@@ -4,10 +4,10 @@ import requests
 import logging
 import random
 import re
-from config.constants import *
-from config.style.color import Color
-from config.style.terminal_factory import TerminalFactory
-from models.defaults.defaults import CLIDefaults
+from figgy.config.constants import *
+from figgy.config.style.color import Color
+from figgy.config.style.terminal_factory import TerminalFactory
+from figgy.models.defaults.defaults import CLIDefaults
 
 log = logging.getLogger(__name__)
 
@@ -53,13 +53,21 @@ class VersionTracker:
 
     @staticmethod
     def check_version(c: Color) -> None:
-        new_details = VersionTracker.get_version()
-        if new_details.version != VERSION:
-            VersionTracker.print_new_version_msg(c, new_details)
-            VersionTracker.print_changes(c, new_details)
-        else:
-            print(f"Version: {VERSION}.")
-            print(f"You are currently running the latest version of figgy.")
+        try:
+            new_details = VersionTracker.get_version()
+
+            if new_details.version != VERSION:
+                VersionTracker.print_new_version_msg(c, new_details)
+                VersionTracker.print_changes(c, new_details)
+            else:
+                print(f"Version: {VERSION}.")
+                print(f"You are currently running the latest version of figgy.")
+
+        except ValueError as e:
+            log.warning("Unable to fetch version information from remote endpoint.")
+            print(f"Version: {VERSION}")
+
+
 
 
     @staticmethod
@@ -78,7 +86,7 @@ class VersionTracker:
         print(f"Current Version: {c.fg_yl}{VERSION}{c.rs}")
         print(f"New Version: {c.fg_bl}{new_details.version}{c.rs}")
         print(f"To see what the new version has in store for you, run `{CLI_NAME} --version`")
-        print(f"To upgrade, run `pip install figgy --upgrade`")
+        print(f"To upgrade, run `pip install figgy-cli --upgrade`")
         print(f'{c.fg_bl}------------------------------------------{c.rs}')
         
 

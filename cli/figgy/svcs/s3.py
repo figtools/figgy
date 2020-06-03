@@ -7,7 +7,7 @@ import boto3
 from botocore.response import StreamingBody
 from tqdm import tqdm
 
-from utils.utils import *
+from figgy.utils.utils import *
 
 log = logging.getLogger(__name__)
 
