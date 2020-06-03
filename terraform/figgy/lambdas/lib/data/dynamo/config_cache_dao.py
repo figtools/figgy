@@ -36,13 +36,13 @@ class ConfigItem:
         if isinstance(other, ConfigItem):
             return other.last_updated > self.last_updated
         else:
-            raise ValueError(f"Cannot compare {self.__class__} against {other.__class__}}")
+            raise ValueError(f"Cannot compare {self.__class__} against {other.__class__}")
 
     def __gt__(self, other):
         if isinstance(other, ConfigItem):
             return other.last_updated < self.last_updated
         else:
-            raise ValueError(f"Cannot compare {self.__class__} against {other.__class__}}")
+            raise ValueError(f"Cannot compare {self.__class__} against {other.__class__}")
 
 
 
