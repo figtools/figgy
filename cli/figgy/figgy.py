@@ -33,6 +33,7 @@ from svcs.sso.provider.provider_factory import SessionProviderFactory
 from svcs.sso.session_manager import SessionManager
 from utils.utils import Utils
 
+
 root_logger = logging.getLogger()
 root_logger.setLevel(logging.CRITICAL)
 root_logger.handlers = []
@@ -211,8 +212,6 @@ class FiggyCLI:
         resource_val = Utils.attr_if_exists(resource, args)
         found_command: frozenset = frozenset({Utils.attr_if_exists(command, args)}) if command_val else None
         found_resource: frozenset = frozenset({Utils.attr_if_exists(resource, args)}) if resource_val else None
-
-        log.info(f"Command {found_command}, resource: {found_resource}")
 
         self._context = FiggyContext(self.get_colors_enabled(), found_resource, found_command,
                                      self._run_env, self._assumable_role, args)

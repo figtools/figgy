@@ -255,4 +255,3 @@ data_ns = '/data'
 devops_ns = '/devops'
 figgy_ns = '/figgy'
 DEV_PS_WRITE_NS = ['/shared', '/app']
-

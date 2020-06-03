@@ -9,5 +9,5 @@ This is a sentence. This is a sentence. This is a sentence. This is a sentence. 
 ## 0.0.2
 - Second version
 
-## 0.0.1
+## 0.0.1a
 - First version!

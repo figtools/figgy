@@ -1,7 +1,3 @@
- 
- 
- 
- 
 # Setting Figgy defaults to reduce user configuration requirements.
 Fill this file in and place it under ~/.figgy/config
 
