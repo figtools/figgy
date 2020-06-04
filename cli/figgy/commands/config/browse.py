@@ -215,8 +215,6 @@ class BrowseApp(NPSApp):
         for future in as_completed(futures):
             pass
 
-
-
         tree.values = td
         npy_form.edit()
         selection_objs = tree.get_selected_objects(return_node=True)

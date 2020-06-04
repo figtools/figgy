@@ -3,6 +3,7 @@ from typing import List, Set
 import boto3
 import logging
 import time
+import json
 from config.constants import *
 from lib.data.dynamo.config_cache_dao import ConfigCacheDao, ConfigItem
 from lib.data.ssm.ssm import SsmDao
@@ -17,6 +18,7 @@ log = Utils.get_logger(__name__, logging.INFO)
 MAX_DELETED_AGE = 60 * 60 * 24 * 14 * 1000  # 2 weeks in MS
 
 webhook_url = ssm_dao.get_parameter_value(FIGGY_WEBHOOK_URL_PATH)
+namespaces = json.loads(ssm_dao.get_parameter_value(FIGGY_NAMESPACES_PATH))
 slack: SlackService = SlackService(webhook_url=webhook_url)
 
 
@@ -34,20 +36,27 @@ def remove_old_deleted_items():
 
 def handle(event, context):
     try:
-        param_names = ssm_dao.get_all_param_names(PS_ROOT_NAMESPACES)
+        param_names = ssm_dao.get_all_param_names(namespaces)
         cached_configs: Set[ConfigItem] = cache_dao.get_all_configs()
         cached_names = set([config.name for config in cached_configs])
         missing_params: Set[str] = param_names.difference(cached_names)
         names_to_delete: Set[str] = cached_names.difference(param_names)
-        to_delete = [item for item in cached_configs if item.name in names_to_delete]
+        to_delete = [item.name for item in cached_configs if item.name in names_to_delete]
 
         for param in missing_params:
             log.info(f"Storing in cache: {param}")
             cache_dao.put_in_cache(param)
 
+            items: Set[ConfigItem] = cache_dao.get_items(param)
+            [cache_dao.delete(item) for item in items]  # If any dupes exist, get rid of em
+
         for param in to_delete:
-            log.info(f"Marking deleted from cache: {param}")
-            cache_dao.mark_deleted(param)
+            log.info(f"Deleting from cache: {param}")
+            items: Set[ConfigItem] = cache_dao.get_items(param)
+            sorted_items = sorted(items)
+            [cache_dao.delete(item) for item in sorted_items[:-1]]  # Delete all but the most recent item.
+            cache_dao.mark_deleted(sorted_items[-1])
+
 
         remove_old_deleted_items()
 
