@@ -32,18 +32,22 @@ def handle(event, context):
 
         detail = event["detail"]
         action = detail["eventName"]
-        ps_name = detail.get('requestParameters', {}).get('name')
+        params = detail.get('requestParameters', {})
+        ps_name = params.get('name')
 
         if not ps_name:
-            raise ValueError("ParameterStore name is missing from event!")
+            log.info(f"Received an event missing parameterStore path: {event}")
+            return
 
         if action == DELETE_PARAM_ACTION or action == DELETE_PARAMS_ACTION:
             log.info(f"Deleting from cache: {ps_name}")
             items: Set[ConfigItem] = cache_dao.get_items(ps_name)
             sorted_items = sorted(items)
-            [cache_dao.delete(item) for item in items[:-1]]  # Delete all but the most recent item.
+            [cache_dao.delete(item) for item in sorted_items[:-1]]  # Delete all but the most recent item.
             cache_dao.mark_deleted(sorted_items[-1])
         elif action == PUT_PARAM_ACTION:
+            items: Set[ConfigItem] = cache_dao.get_items(ps_name)
+            [cache_dao.delete(item) for item in items]  # If any stragglers exist, get rid of em
             log.info(f"Putting in cache: {ps_name}")
             cache_dao.put_in_cache(ps_name)
         else:

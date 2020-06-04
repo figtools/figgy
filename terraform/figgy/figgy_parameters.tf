@@ -30,6 +30,17 @@ EOF
 }
 
 # These are used by figgy CLI to help the CLI only show the user parameters they have access to
+resource "aws_ssm_parameter" "used_namespaces" {
+  name  = "/figgy/namespaces"
+  type  = "String"
+  value = jsonencode(local.root_namespaces)
+  description =<<EOF
+This does nothing to actually ENFORCE access, this parameter is only to improve the UX when using the figgy CLI so
+users are not shown parameters they cannot administrate."
+EOF
+}
+
+# These are used by figgy CLI to help the CLI only show the user parameters they have access to
 resource "aws_ssm_parameter" "role_to_kms_access" {
   count = length(local.role_types)
   name  = "/figgy/rbac/${local.role_types[count.index]}/keys"

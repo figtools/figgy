@@ -6,6 +6,8 @@ These are problems I intend to solve, once I figure out the best way to do it.
 
 - Wipe figgy vault on reconfigure 
 - Wipe defaults on reconfigure
+- Bug with issue deletes on trees in browse
+- Cache syncer assumes basic NS names.. remove that
 __
    
 - What do I do with auto-upgrade feature?
