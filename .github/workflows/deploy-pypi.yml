@@ -23,7 +23,9 @@ jobs:
         env:
           FIGGY_TEST: true
         run: |
-          sudo apt-get update && apt-get install libusb-1.0-0-dev libxmu-dev libxmu-headers freeglut3-dev libxext-dev libxi-dev libudev1 libudev-dev
+          sudo apt-get update \
+          && sudo apt-get install libusb-1.0-0-dev libxmu-dev libxmu-headers \
+          freeglut3-dev libxext-dev libxi-dev libudev1 libudev-dev
 
           cd cli
           pip install -r requirements.txt
