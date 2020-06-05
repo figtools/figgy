@@ -73,14 +73,14 @@ def main():
     DevEdit().run()
 
     # Then Test DATA Role
-    # print_test("Data Login")
-    # DataLogin().run()
-    # print_test("Data Put")
-    # DataPut().run()
-    # print_test("Data Share")
-    # DataShare().run()
-    # print_test("Data Sync")
-    # DataSync().run()
+    print_test("Data Login")
+    DataLogin().run()
+    print_test("Data Put")
+    DataPut().run()
+    print_test("Data Share")
+    DataShare().run()
+    print_test("Data Sync")
+    DataSync().run()
 
 
 def delete_cache(dir: str):
