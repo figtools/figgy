@@ -20,7 +20,8 @@ class DevCleanup(FiggyTest):
         self.step(f"Testing: {CLI_NAME} config {Utils.get_first(cleanup)} --env {DEFAULT_ENV} "
               f"--config figgy/test/assets/success/ci-config.json --skip-upgrade ")
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(cleanup)} --env {DEFAULT_ENV} '
-                                    f'--config figgy/test/assets/success/ci-config.json --skip-upgrade', timeout=10)
+                                    f'--config figgy/test/assets/success/ci-config.json --skip-upgrade',
+                                    encoding='utf-8', timeout=10)
         child.expect('.*No orphaned keys.*No remote replication configs.*')
         print("Empty cleanup, success!")
 
@@ -28,7 +29,8 @@ class DevCleanup(FiggyTest):
         self.step(f"Testing: {CLI_NAME} config {Utils.get_first(cleanup)} --env {DEFAULT_ENV} "
               f"--config figgy/test/assets/error/ci-config.json")
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(cleanup)} --env {DEFAULT_ENV} '
-                                    f'--config figgy/test/assets/error/ci-config.json --skip-upgrade', timeout=10)
+                                    f'--config figgy/test/assets/error/ci-config.json --skip-upgrade',
+                                    encoding='utf-8', timeout=10)
         child.expect('.*/app/ci-test/v1/config11.* exists.*but does not exist.*')
         child.sendline('n')
         child.expect('.*replication mapping.*does not exist.*')

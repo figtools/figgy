@@ -11,7 +11,7 @@ class Configure(FiggyTest):
         self.run()
 
     def run(self):
-        child = pexpect.spawn(f'figgy --{Utils.get_first(configure)}', timeout=3)
+        child = pexpect.spawn(f'figgy --{Utils.get_first(configure)}', timeout=3, encoding='utf-8')
         child.expect('.*Please input.*')
         child.sendline('bastion')
         child.expect('.*What type of user.*')

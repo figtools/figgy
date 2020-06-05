@@ -37,7 +37,8 @@ class DevAudit(FiggyTest):
         self.audit(f'/doesnt/exist/{new_uuid}', expect_results=False)
 
     def audit(self, name, audit_another=False, expect_results=True):
-        child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(audit)} --env {DEFAULT_ENV} --skip-upgrade', timeout=5)
+        child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(audit)} --env {DEFAULT_ENV} --skip-upgrade',
+                              encoding='utf-8', timeout=5)
         self.step(f"Auditing: {name}")
         child.expect('.*Please input a PS Name.*')
         child.sendline(name)

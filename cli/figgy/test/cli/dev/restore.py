@@ -18,6 +18,7 @@ RESTORE_PROPAGATION_TIME = 120
 class DevRestore(FiggyTest):
 
     def __init__(self):
+        super().__init__(None)
         self._guuid = uuid.uuid4().hex
         print(f"Guuid generated: {self._guuid}")
 
@@ -48,7 +49,7 @@ class DevRestore(FiggyTest):
         restore_prefix = f'{param_test_prefix}{self._guuid}/'
         self.step(f"Attempting restore to time: {restore_breakpoint_1} with prefix: {restore_prefix}")
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(restore)} --env {DEFAULT_ENV} --skip-upgrade'
-                              f' --point-in-time', timeout=5)
+                              f' --point-in-time', timeout=5, encoding='utf-8')
         child.expect('.*Which.*recursively restore.*')
         child.sendline(restore_prefix)
         child.expect('.*Are you sure you want.*')
@@ -75,7 +76,7 @@ class DevRestore(FiggyTest):
         restore_prefix = f'{param_test_prefix}{self._guuid}/'
         self.step(f"Attempting restore to time: {restore_breakpoint_2} with prefix: {restore_prefix}")
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(restore)} --env {DEFAULT_ENV} --skip-upgrade'
-                              f' --point-in-time', timeout=5)
+                              f' --point-in-time', timeout=5, encoding='utf-8')
         child.expect('.*Which.*recursively restore.*')
         child.sendline(restore_prefix)
         child.expect('.*Are you sure you want.*')
