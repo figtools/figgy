@@ -1,5 +1,5 @@
 boto3==1.13.19
-prompt_toolkit==3.0.5
+prompt-toolkit==2.0.7
 sty==1.0.0b8
 click==7.1.2
 tqdm==4.46.0
@@ -15,3 +15,4 @@ urllib3==1.25.9
 pyotp==2.3.0
 pydantic==1.5.1
 python-u2flib-host==3.0.3
+pycryptodome==3.9.7

@@ -9,16 +9,16 @@ from figgy.utils.utils import *
 class DevExport(FiggyTest):
 
     def __init__(self):
-        self._child = pexpect.spawn(f'python figgy.py {Utils.get_first(iam)} {Utils.get_first(export)} '
-                                    f'--env {dev} --skip-upgrade', timeout=5)
+        super().__init__(pexpect.spawn(f'{CLI_NAME} {Utils.get_first(iam)} {Utils.get_first(export)} '
+                                    f'--env {DEFAULT_ENV} --skip-upgrade', timeout=5, encoding='utf-8'))
         self._child.delayafterread = .01
         self._child.delaybeforesend = .5
 
     def run(self):
-        print(f"Testing GET for {param_1}")
+        self.step("Testing IAM export.")
         self.export()
 
     def export(self):
         print(f"Testing IAM export.")
-        self._child.expect('.*Successfully updated.*')
+        self.expect('.*Successfully updated.*')
         print("`figgy iam export` passed.")

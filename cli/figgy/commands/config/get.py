@@ -44,8 +44,8 @@ class Get(ConfigCommand):
         get_another = True
 
         while get_another:
-            key = prompt(f"PS Name: -> ",
-                         completer=self._config_completer)
+            key = Input.input(f"PS Name: -> ",
+                              completer=self._config_completer)
             if key:
                 value, desc = self.get_val_and_desc(key)
                 if value:

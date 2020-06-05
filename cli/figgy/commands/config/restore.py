@@ -19,6 +19,7 @@ from figgy.models.restore_config import RestoreConfig
 from figgy.svcs.kms import KmsSvc
 from figgy.svcs.observability.anonymous_usage_tracker import AnonymousUsageTracker
 from figgy.svcs.observability.version_tracker import VersionTracker
+from figgy.utils.utils import Utils
 
 
 class Restore(ConfigCommand):

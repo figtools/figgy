@@ -1,3 +1,5 @@
+import sys
+
 import pexpect
 from figgy.test.cli.config import *
 from figgy.test.cli.figgy import FiggyTest
@@ -14,19 +16,21 @@ class DevEdit(FiggyTest):
     _VALUE = 'asdf'
     _DESC = 'desc'
 
+    def __init__(self):
+        super().__init__(None)
+
     def run(self):
-        print(f"Testing edit for {param_1}")
+        self.step(f"Testing edit for {param_1}")
         self.edit()
 
     def edit(self):
         # Get Value
-        child = pexpect.spawn(f'python figgy.py config {Utils.get_first(edit)} --env {dev} --skip-upgrade',
+        child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(edit)} --env {DEFAULT_ENV} --skip-upgrade',
                               timeout=10)
-        child.delayafterread = .01
-        child.delaybeforesend = .5
 
         child.expect('.*Please input a PS Name.*')
         child.sendline(param_1)
+        time.sleep(3) # Give edit time to start
         child.send(DevEdit._VALUE)
         child.sendcontrol('n')  # <-- sends TAB
         child.send(DevEdit._DESC)
@@ -39,4 +43,4 @@ class DevEdit(FiggyTest):
         get = DevGet()
         get.get(param_1, DevEdit._VALUE, DevEdit._DESC)
         delete = DevDelete()
-        delete.delete()
+        delete.delete(param_1)

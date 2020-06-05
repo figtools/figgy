@@ -8,28 +8,30 @@ from figgy.utils.utils import *
 class DevGet(FiggyTest):
 
     def __init__(self):
-        self._child = pexpect.spawn(f'python figgy.py config {Utils.get_first(get)} --env {dev} --skip-upgrade',
-                                    timeout=5)
+        super().__init__(pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(get)} --env {DEFAULT_ENV} --skip-upgrade',
+                                    timeout=10, encoding='utf-8'))
         self._child.delayafterread = .01
         self._child.delaybeforesend = .5
 
     def run(self):
-        print(f"Testing GET for {param_1}")
+        self.step(f"Testing GET for {param_1}")
         self.get(param_1, param_1_val, get_more=False)
 
-    def get(self, key, value, get_more=False, expect_missing=False):
-        print(f"Getting key: {key} with more: {get_more}")
-        self._child.expect('.*Please input.*')
-        self._child.sendline(key)
+    def get(self, key, value, get_more=False, expect_missing=False, no_decrypt=False):
+        self.expect('.*PS Name*')
+        self.sendline(key)
         if expect_missing:
-            self._child.expect(f'.*Invalid PS Name specified..*')
+            self.expect(f'.*Invalid PS Name specified..*')
             print("Missing parameter validated.")
+        elif no_decrypt:
+            self.expect(f'.*do not have access.*')
+            print("Lack of decrypt permissions validated.")
         else:
-            self._child.expect(f'.*{value}.*Get another.*')
+            self.expect(f'.*{value}.*Get another.*')
             print(f"Expected value of {value} validated.")
         if get_more:
             print("Getting another")
-            self._child.sendline('y')
+            self.sendline('y')
         else:
             print("Not getting another")
-            self._child.sendline('n')
+            self.sendline('n')

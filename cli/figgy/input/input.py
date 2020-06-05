@@ -147,16 +147,23 @@ class Input:
     def is_secret() -> bool:
         return Input.y_n_input("Is this value a secret? ", default_yes=False)
 
-
     @staticmethod
-    def input(message: str) -> str:
-        result = None
-        while not result or result.strip() == '':
-            result = input(message)
+    def input(message: str, completer=None, default: str = None, optional: bool = False) -> str:
+        loop = True
+        while loop:
+            if completer:
+                result = prompt(message, completer=completer)
+            elif default:
+                result = prompt(message, default=default)
+            else:
+                result = input(message)
+
+            if optional:
+                return result
+
+            loop = not result or result.strip() == ''
 
         return result
-
-
 
     @staticmethod
     def y_n_input(message: str, default_yes: bool = True, invalid_no=False) -> bool:

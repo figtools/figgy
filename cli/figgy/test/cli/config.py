@@ -11,7 +11,7 @@ SNAGBOT_PASSWORD_ENV_KEY = 'SNAGBOT_OKTA_PASSWORD'
 param_1 = '/shared/test/automated_test/param_1'
 param_test_prefix = '/shared/test2/automated_test/'
 dump_prefix = '/shared/test/automated_test/'
-data_param_1 = '/data/test/automated_test/param_1'
+data_param_1 = '/data/test/automated_test/parm_1'
 devops_param_1 = '/devops/test/automated_test/param_1'
 
 # Values
@@ -28,3 +28,7 @@ devops_param_1_desc = 'devopsdesc1'
 
 # Share destination
 automated_test_dest_1 = '/app/automated-test/dest/1'
+
+
+# Others
+DEFAULT_ENV = 'stage'

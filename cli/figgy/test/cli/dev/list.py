@@ -1,3 +1,5 @@
+import sys
+
 import pexpect
 from figgy.test.cli.config import *
 from figgy.test.cli.figgy import FiggyTest
@@ -9,17 +11,20 @@ import time
 
 class DevList(FiggyTest):
 
+    def __init__(self):
+        super().__init__(None)
+
     def run(self):
         # self.successful_list()
         self.test_empty_input()
 
     def test_empty_input(self):
-        print("Testing empty input for list.")
+        self.step("Testing empty input for list.")
         self._setup(1, 3)
-        print(f"Testing python figgy.py config {Utils.get_first(list_com)} --env dev")
+        print(f"Testing {CLI_NAME} config {Utils.get_first(list_com)} --env dev")
         print("Waiting for cache population.")
-        time.sleep(120)
-        child = pexpect.spawn(f'python figgy.py config {Utils.get_first(list_com)} --env {dev} --skip-upgrade',
+        time.sleep(3)
+        child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(list_com)} --env {DEFAULT_ENV} --skip-upgrade',
                               timeout=7)
         child.expect('.*Please input a namespace prefix.*')
         child.sendline("")
@@ -39,12 +44,13 @@ class DevList(FiggyTest):
 
     def successful_list(self):
         self._setup(1, 3)
-        print("Testing successful list.")
-        print(f"Testing python figgy.py config {Utils.get_first(list_com)} --env dev")
-        child = pexpect.spawn(f'python figgy.py config {Utils.get_first(list_com)} --env {dev} --skip-upgrade',
+        self.step("Testing successful list.")
+        print(f"Testing {CLI_NAME} config {Utils.get_first(list_com)} --env dev")
+        child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(list_com)} --env {DEFAULT_ENV} --skip-upgrade',
                               timeout=7)
+
         print("Waiting for cache population.")
-        time.sleep(120)
+        time.sleep(15)
         child.expect('.*Please input a namespace prefix.*')
         child.sendline(dump_prefix)
         child.expect(f'.*1.*{dump_prefix}.*2.*{dump_prefix}.*3.*{param_1}.*Selection.*')

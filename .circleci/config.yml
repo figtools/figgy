@@ -224,50 +224,6 @@ jobs:
             echo "Deploying linux figgy to $dest"
             aws s3 cp dist/figgy $dest
 
-  build_devopsci:
-    docker:
-      # name of root build image
-      - image: circleci/python:3.7.1
-        environment:
-          TERM: "xterm" ## For some circleci base containers, it needs to be set. Circleci wonkiness.
-    steps:
-      - checkout
-
-      - run:
-          name: Download and Install pip
-          command: |
-            if [[ ! -e ~/cache/get-pip.py ]]; then
-              mkdir -p ~/cache && curl "https://bootstrap.pypa.io/get-pip.py" > ~/cache/get-pip.py
-            fi
-
-            pip || sudo python ~/cache/get-pip.py
-
-      - run:
-          name: Install awscli
-          command: sudo pip install awscli
-
-      - run:
-          name: Build devops.ci tar package if commit is tagged
-          command: |
-            tag=$(git tag --points-at HEAD)
-
-            if [[ ! -z "$tag" ]]; then
-              archive="devopsci_$tag.tar.gz"
-              echo "Tag $tag is set!  Let's compress this repo and push to s3"
-              s3_bucket="s3://old-bucket-id/devopsci/"
-
-              cd ..
-              cp -r project .ci
-              tar -czf $archive .ci/*
-              aws s3 cp "$archive" "$s3_bucket"
-
-              if [ $? -ne 0 ]; then
-                echo "Error occurred while pushing compressed archive: $archive to bucket: $s3_bucket"
-              else
-                echo "Compressed archive: $archive successfully pushed to bucket: $s3_bucket"
-              fi
-            fi
-
   build_mac:
     macos:
       xcode: "9.0"

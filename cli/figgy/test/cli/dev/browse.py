@@ -11,10 +11,15 @@ import time
 KEY_UP = 'k'
 KEY_DOWN = 'j'
 KEY_PATH = '/shared/aaa/aa'
+
+
 class DevBrowse(FiggyTest):
 
+    def __init__(self):
+        super().__init__(None)
+
     def run(self):
-        print(f"Testing browse for {param_1}")
+        self.step(f"Testing browse for {param_1}")
         self.browse()
 
     def _cleanup(self):
@@ -31,40 +36,48 @@ class DevBrowse(FiggyTest):
         get.get(key, value, get_more=False, expect_missing=True)
         print("Delete success validated.")
 
-    ## GEt through browse, then delete
+    ## Get through browse, then delete
     def browse(self):
         self._setup()
-        print("Sleeping for 120s to ensure the cache gets populated with the new /shared value")
-        time.sleep(120)
-        print(f"Adding {KEY_PATH} through browse...")
+        self.step("Sleeping for 15 to ensure the cache gets populated with the new /shared value")
+        time.sleep(15)
+        print(f"Getting {KEY_PATH} through browse...")
         # Get Value
-        child = pexpect.spawn(f'python figgy.py config {Utils.get_first(browse)} --env {dev} --skip-upgrade',
-                                    timeout=10)
-        child.sendline(KEY_DOWN)
-        child.sendline('e')
-        child.sendline(KEY_DOWN)
-        child.sendline('e')
-        child.sendline(KEY_DOWN)
-        child.sendline('s')
+        child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(browse)} --env {DEFAULT_ENV} --skip-upgrade',
+                              timeout=10)
+        child.send(KEY_DOWN)
+        child.send(KEY_DOWN)
+        child.send(KEY_DOWN)
+        child.send(KEY_DOWN)
+        child.send('e')
+        child.send(KEY_DOWN)
+        child.send(KEY_DOWN)
+        child.send('e')
+        child.send(KEY_DOWN)
+        child.send('s')
         child.sendcontrol('n')  # <-- sends TAB
         child.sendcontrol('m')  # <-- Sends ENTER
         child.expect(f'.*{DELETE_ME_VALUE}.*')
 
-        print("Add success. Deleting through browse.")
+        self.step("Get success. Deleting through browse.")
         # Delete Value
-        child = pexpect.spawn(f'python figgy.py config {Utils.get_first(browse)} --env {dev} --skip-upgrade',
-                                    timeout=10)
-        child.sendline(KEY_DOWN)
-        child.sendline('e')
-        child.sendline(KEY_DOWN)
-        child.sendline('e')
-        child.sendline(KEY_DOWN)
-        child.sendline('d')
+        child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(browse)} --env {DEFAULT_ENV} --skip-upgrade',
+                              timeout=10)
+        child.send(KEY_DOWN)
+        child.send(KEY_DOWN)
+        child.send(KEY_DOWN)
+        child.send(KEY_DOWN)
+        child.send('e')
+        child.send(KEY_DOWN)
+        child.send(KEY_DOWN)
+        child.send('e')
+        child.send(KEY_DOWN)
+        child.send('d')
         child.sendcontrol('n')  # <-- sends TAB
         child.sendcontrol('m')  # <-- Sends ENTER
         child.expect(f'.*{KEY_PATH}.*')
         child.sendline('y')
         child.expect(f'.*{KEY_PATH}.*deleted successfully.*')
 
-        print("Delete success!")
+        self.step("Delete success!")
         self._validate_delete(KEY_PATH, DELETE_ME_VALUE)

@@ -131,6 +131,10 @@ class Utils:
     def clean_attr_name(attr: frozenset) -> str:
         return Utils.get_first(attr).replace('-', '_')
 
+    @staticmethod
+    def sanitize_session_name(name: str):
+        return re.sub(r'\W+', '', name)[:15]
+
     def notify(self, message: str):
         print(f'{self.c.fg_bl}{message}{self.c.rs}')
 

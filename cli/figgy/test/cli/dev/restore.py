@@ -1,3 +1,5 @@
+import sys
+
 import pexpect
 from figgy.test.cli.config import *
 from figgy.test.cli.figgy import FiggyTest
@@ -10,6 +12,8 @@ from figgy.utils.utils import *
 import time
 import uuid
 
+RESTORE_PROPAGATION_TIME = 120
+
 
 class DevRestore(FiggyTest):
 
@@ -21,29 +25,29 @@ class DevRestore(FiggyTest):
         minimum, maximum = 1, 3
         first_val = 'FIRST_VAL'
         second_val = 'SECOND_VAL'
-        print("Adding new configs. To Restore")
+        self.step("Adding new configs. To Restore")
         self._setup(minimum, maximum, value_override=first_val)
         print("Waiting for propagation...")
-        time.sleep(120)
+        time.sleep(RESTORE_PROPAGATION_TIME)
         print("Validating")
         self._audit(minimum, maximum)
         restore_breakpoint_1 = int(time.time() * 1000)
-        print(f"First restore breakpoint: {restore_breakpoint_1} - would expect vals of {first_val}")
+        print(f"First restore breakpoint: {restore_breakpoint_1} - would expect val of {first_val}")
 
         time.sleep(15)
         self._setup(minimum, maximum, value_override=second_val)
         print("Waiting for propagation...")
-        time.sleep(120)
+        time.sleep(RESTORE_PROPAGATION_TIME)
         print("Validating")
         self._audit(minimum, maximum)
         restore_breakpoint_2 = int(time.time() * 1000)
-        print(f"Second restore breakpoint: {restore_breakpoint_1} - would expect vals of {second_val}")
+        print(f"Second restore breakpoint: {restore_breakpoint_1} - would expect val of {second_val}")
 
         time.sleep(15)
 
         restore_prefix = f'{param_test_prefix}{self._guuid}/'
-        print(f"Attempting restore to time: {restore_breakpoint_1} with prefix: {restore_prefix}")
-        child = pexpect.spawn(f'python figgy.py config {Utils.get_first(restore)} --env {dev} --skip-upgrade'
+        self.step(f"Attempting restore to time: {restore_breakpoint_1} with prefix: {restore_prefix}")
+        child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(restore)} --env {DEFAULT_ENV} --skip-upgrade'
                               f' --point-in-time', timeout=5)
         child.expect('.*Which.*recursively restore.*')
         child.sendline(restore_prefix)
@@ -56,7 +60,7 @@ class DevRestore(FiggyTest):
         print("Checking restore output...\r\n\r\n")
         child.expect(f'.*Value.*{param_test_prefix}{self._guuid}/test_param.*current.*Skipping.*')
 
-        print("Validating values were rolled back...")
+        self.step("Validating values were rolled back...")
         time.sleep(5)
 
         get = DevGet()
@@ -69,8 +73,8 @@ class DevRestore(FiggyTest):
         print("Testing restore to second restore point")
 
         restore_prefix = f'{param_test_prefix}{self._guuid}/'
-        print(f"Attempting restore to time: {restore_breakpoint_2} with prefix: {restore_prefix}")
-        child = pexpect.spawn(f'python figgy.py config {Utils.get_first(restore)} --env {dev} --skip-upgrade'
+        self.step(f"Attempting restore to time: {restore_breakpoint_2} with prefix: {restore_prefix}")
+        child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(restore)} --env {DEFAULT_ENV} --skip-upgrade'
                               f' --point-in-time', timeout=5)
         child.expect('.*Which.*recursively restore.*')
         child.sendline(restore_prefix)
@@ -83,7 +87,7 @@ class DevRestore(FiggyTest):
         print("Checking restore output...\r\n\r\n")
         child.expect(f'.*Restoring.*{param_test_prefix}{self._guuid}/test_param-2.*{second_val}.*')
 
-        print("Validating values were rolled back...")
+        self.step("Validating values were rolled back...")
         time.sleep(5)
 
         get = DevGet()
