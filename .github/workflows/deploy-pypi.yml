@@ -11,7 +11,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubunty-latest
+    runs-on: ubuntu-latest
     if: github.actor == github.event.repository.owner.login
     steps:
       - uses: actions/checkout@v2
