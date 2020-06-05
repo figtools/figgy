@@ -1,5 +1,8 @@
 Figgy Changelog:
 
+## 0.0.12a
+- Still workin on v1!
+
 ## 0.0.3
 - Third version!
 - Third version. This is a sentence. This is a sentence. This is a sentence. This is a sentence.
