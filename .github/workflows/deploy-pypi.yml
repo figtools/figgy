@@ -54,7 +54,7 @@ jobs:
       run: |
         sudo apt-get install libusb-1.0-0-dev
         python -m pip install --upgrade pip
-        pip install setuptools twine pip
+        pip install setuptools twine pip wheel
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Upload To PyPi
       env:
