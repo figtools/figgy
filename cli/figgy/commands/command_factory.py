@@ -50,7 +50,6 @@ class CommandFactory(Factory):
         self._kms = None
         self._s3_rsc = None
         self._all_sessions = None
-        self._config_completer = None
         self._config_svc = None
         self._cache_mgr = None
         self._rbac_config_view = None

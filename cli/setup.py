@@ -1,7 +1,7 @@
 import re
 from setuptools import setup, find_packages
 import platform
-
+import os
 # Platform Constants
 LINUX, MAC, WINDOWS = "Linux", "Darwin", "Windows"
 
@@ -21,7 +21,7 @@ FIGGY_WEBSITE = "https://figgy.dev"
 
 base_requirements = [
         "boto3 >= 1.13.19",
-        "prompt_toolkit >= 3.0.5",
+        "prompt_toolkit == 2.0.7",
         "sty >= 1.0.0b8",
         "click >= 7.1.2",
         "tqdm >= 4.46.0",
@@ -62,6 +62,11 @@ elif platform.system() == MAC:
     requirements = base_requirements + darwin_requriements
 else:
     requirements = base_requirements + linux_requirements
+
+if os.environ.get('FIGGY_TEST') == 'true':
+    excludes = []
+else:
+    excludes = ["test"]
 
 LONG_DESCRIPTION = """
 # figgy
@@ -171,7 +176,7 @@ and a lot more!
 
 setup(
     name="figgy-cli",
-    packages=find_packages(".", exclude=["test"]),
+    packages=find_packages(".", exclude=excludes),
     entry_points={
         "console_scripts": ['figgy = figgy.entrypoint.cli:main']
     },

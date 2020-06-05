@@ -1,5 +1,6 @@
 import requests
 from abc import ABC
+import re
 from typing import List
 from figgy.commands.help_context import HelpContext
 from figgy.commands.types.help import HelpCommand
@@ -46,9 +47,9 @@ class Login(HelpCommand, ABC):
         print(f"{self.c.gr}Login successful. All sessions are cached.{self.c.rs}")
 
     def login_sandbox(self):
-        print(f"Got resource: {self.context.resource} with command: {self.context.command}")
         print(f"{self.c.fg_bl}Logging you into the Figgy Sandbox environment.{self.c.rs}")
         user = Input.input("Please input a user name: ")
+
         role = Input.select("Please select a role to impersonate: ", valid_options=SANDBOX_ROLES)
         colors = Input.select_enable_colors()
         params = {'role': role, 'user': user}

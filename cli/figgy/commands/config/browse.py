@@ -23,11 +23,10 @@ log = logging.getLogger(__name__)
 
 class Browse(ConfigCommand, npyscreen.NPSApp):
 
-    def __init__(self, ssm_init: SsmDao, config_init: ConfigDao, colors_enabled: bool, context: ConfigContext,
+    def __init__(self, ssm_init: SsmDao, colors_enabled: bool, context: ConfigContext,
                  get_command: Get, delete_command: Delete, config_view: RBACLimitedConfigView):
         super().__init__(browse, colors_enabled, context)
         self._ssm = ssm_init
-        self._config: ConfigDao = config_init
         self._get = get_command
         self._config_view = config_view
         self.selected_ps_paths = []
@@ -56,10 +55,10 @@ class Browse(ConfigCommand, npyscreen.NPSApp):
             first_res = None
             all_res = None
             if first_children is None:
-                first_res = pool.submit(self._config.get_all_config_names, prefix=prefix, one_level=True)
+                first_res = pool.submit(self._config_view.get_config_names, prefix=prefix, one_level=True)
 
             if all_children is None:
-                all_res = pool.submit(self._config.get_all_config_names, prefix=prefix)
+                all_res = pool.submit(self._config_view.get_config_names, prefix=prefix)
 
             if first_res is not None:
                 first_children = set(first_res.result())
@@ -115,16 +114,13 @@ class Browse(ConfigCommand, npyscreen.NPSApp):
             if path in self.dirs:
                 all_children = set(list(map(lambda x: x['Name'],
                                             self._ssm.get_all_parameters([path], option='Recursive'))))
-                print(f"{self.c.fg_rd}You have selected a DIRECTORY to delete: {path}. "
-                      f"Do you want to delete ALL children?{self.c.rs}")
-                for child in all_children:
-                    print(f"Marked for deletion: {child}")
-                    delete_children = Input.y_n_input(f"Would you like to delete all children of {path}? ",
-                                                      default_yes=False)
-                    if delete_children:
-                        for child in all_children:
-                            if self._delete.delete_param(child):
-                                deleted.append(child)
+                delete_children = Input.y_n_input(f"You have selected a DIRECTORY to delete: {path}. "
+                      f"Do you want to delete ALL children of: {path}?", default_yes=False)
+
+                if delete_children:
+                    for child in all_children:
+                        if self._delete.delete_param(child):
+                            deleted.append(child)
             else:
                 if path not in deleted:
                     delete_it = Input.y_n_input(f"Delete {path}? ", default_yes=True)

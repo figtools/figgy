@@ -1,6 +1,6 @@
 from boto3.resources.base import ServiceResource
 
-from figgy.commands.config.list import List
+from figgy.commands.config.list import List as FigList
 from figgy.commands.config.audit import Audit
 from figgy.commands.config.browse import Browse
 from figgy.commands.config.cleanup import Cleanup
@@ -54,8 +54,7 @@ class ConfigFactory(Factory):
             return Cleanup(self._ssm, self._config, self._config_context, self._config_completer,
                            self._colors_enabled, self.get(delete), args=self._args)
         elif command == put:
-            return Put(self._ssm, self._colors_enabled, self._config_context, self._config_completer,
-                       self._config_view, self.get(get))
+            return Put(self._ssm, self._colors_enabled, self._config_context, self._config_view, self.get(get))
         elif command == delete:
             return Delete(self._ssm, self._config, self._config_context, self._colors_enabled,
                           self._config_completer)
@@ -64,9 +63,9 @@ class ConfigFactory(Factory):
         elif command == share:
             return Share(self._ssm, self._config, self._config_completer, self._colors_enabled, self._config_context)
         elif command == list_com:
-            return List(self._ssm, self._config_completer, self._colors_enabled, self._config_context, self.get(get))
+            return FigList(self._ssm, self._config_completer, self._colors_enabled, self._config_context, self.get(get))
         elif command == browse:
-            return Browse(self._ssm, self._config, self._colors_enabled, self._config_context, self.get(get),
+            return Browse(self._ssm, self._colors_enabled, self._config_context, self.get(get),
                           self.get(delete), self._config_view)
         elif command == audit:
             return Audit(self._ssm, self._config, self._config_completer, self._colors_enabled, self._config_context)

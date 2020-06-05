@@ -114,13 +114,13 @@ class BastionSessionProvider(SessionProvider):
                         mfa = SecretsManager.generate_mfa(
                             self._defaults.user) if self._defaults.auto_mfa else Input.get_mfa()
                         response = self.__get_sts().assume_role(RoleArn=assumable_role.role_arn,
-                                                                RoleSessionName=self._defaults.user,
+                                                                RoleSessionName=Utils.sanitize_session_name(self._defaults.user),
                                                                 DurationSeconds=self._defaults.session_duration,
                                                                 SerialNumber=self._defaults.mfa_serial,
                                                                 TokenCode=mfa)
                     else:
                         response = self.__get_sts().assume_role(RoleArn=assumable_role.role_arn,
-                                                                RoleSessionName=self._defaults.user,
+                                                                RoleSessionName=Utils.sanitize_session_name(self._defaults.user),
                                                                 DurationSeconds=self._defaults.session_duration)
 
                     session = FiggyAWSSession.from_sts_response(response)

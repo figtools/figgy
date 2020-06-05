@@ -78,6 +78,34 @@ class RBACLimitedConfigView:
         es, key_id = self._cache_mgr.get_or_refresh(cache_key, self._ssm.get_parameter, key_path)
         return key_id
 
+    @Utils.trace
+    def get_config_names(self, prefix=None, one_level=False) -> List[str]:
+        all_names = sorted(self._config_svc.get_parameter_names())
+        authed_nses = self.get_authorized_namespaces()
+        new_names = []
+
+        if prefix:
+            is_child = False
+            for ns in authed_nses:
+                if ns.startswith(prefix):
+                    is_child = True
+
+            if not is_child:
+                raise ValueError(f"Provided prefix of {prefix} is not in a valid authorized namespace.")
+
+            authed_nses = [prefix]
+
+        for ns in authed_nses:
+            filtered_names = [name for name in all_names if name.startswith(ns)]
+            new_names = new_names + filtered_names
+
+        if one_level:
+            if prefix:
+                new_names = [name for name in new_names if len(name.split('/')) == len(prefix) + 1]
+            else:
+                new_names = authed_nses
+
+        return new_names
 
     @Utils.trace
     def get_config_completer(self):
@@ -90,14 +118,7 @@ class RBACLimitedConfigView:
         # Not the most efficient, but plenty fast since we know the # of authed_nses is gonna be ~<=5
         # Tested at 30k params and it takes ~25ms
         if not self._config_completer:
-            all_names = sorted(self._config_svc.get_parameter_names())
-            authed_nses = self.get_authorized_namespaces() + [shared_ns]
-            new_names = []
-            for ns in authed_nses:
-                filtered_names = [name for name in all_names if name.startswith(ns)]
-                new_names = new_names + filtered_names
-
-            self._config_completer = WordCompleter(new_names, sentence=True, match_middle=True)
+            self._config_completer = WordCompleter(self.get_config_names(), sentence=True, match_middle=True)
 
         # print(f"Cache Count: {len(all_names)}")
         return self._config_completer

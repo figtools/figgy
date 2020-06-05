@@ -6,18 +6,18 @@ from figgy.utils.utils import *
 class Restore:
     def __init__(self, **kwargs):
         self.env = kwargs["env"]
-        self._child = pexpect.spawn(f'python3 figgy.py config {Utils.get_first(restore)} --env {self.env}', timeout=5)
+        super().__init__(pexpect.spawn(f'python3 {CLI_NAME} config {Utils.get_first(restore)} --env {self.env}', timeout=5)
 
     def choose_key(self, key: str, expect: str) -> None:
-        self._child.expect("Please input.+: ")
-        self._child.sendline(key)
-        self._child.expect(expect)
+        self.expect("Please input.+: ")
+        self.sendline(key)
+        self.expect(expect)
 
     def choose_restore_item(self, item_choice: str, expect: str):
-        self._child.sendline(item_choice)
-        self._child.expect(expect)
+        self.sendline(item_choice)
+        self.expect(expect)
 
     def confirm_restore_item(self, expect: str, confirm: str ='y'):
-        self._child.sendline(confirm)
-        self._child.expect(expect)
+        self.sendline(confirm)
+        self.expect(expect)
 

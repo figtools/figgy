@@ -1,6 +1,6 @@
 locals {
   # sandbox_principals is only used in the figgy sandbox environment. This should never be true for you.
-  sandbox_principals = [local.bastion_account_number, "arn:aws:iam::${local.bastion_account_number}:role/figgy-devops"]
+  sandbox_principals = [local.bastion_account_number, "arn:aws:iam::${local.bastion_account_number}:role/%%ROLE%%"]
   bastion_principal = [local.bastion_account_number]
 
   # The figgy sandbox allows role assumption by accountId and by RoleId. This is unique to the figgy sandbox.
@@ -14,13 +14,13 @@ locals {
 resource "aws_iam_role" "bastion_user_role" {
   count = local.enable_sso == false ? length(local.role_types) : 0
   name                 = "figgy-${var.run_env}-${local.role_types[count.index]}"
-  assume_role_policy   = local.enable_sso == false ? data.aws_iam_policy_document.bastion_role_policy[0].json : ""
+  assume_role_policy   = local.enable_sso == false ? data.aws_iam_policy_document.bastion_role_policy[count.index].json : ""
   max_session_duration = var.max_session_duration
 }
 
 # Role policy to allow cross-account assumption from bastion account
 data "aws_iam_policy_document" "bastion_role_policy" {
-  count = local.enable_sso == false ? 1 : 0
+  count = local.enable_sso == false ? length(local.role_types) : 0
   statement {
     actions = ["sts:AssumeRole"]
     effect  = "Allow"
@@ -28,7 +28,10 @@ data "aws_iam_policy_document" "bastion_role_policy" {
     principals {
       type = "AWS"
 
-      identifiers = local.principals
+      identifiers =[
+        for principal in local.principals:
+              replace(principal, "%%ROLE%%", "figgy-${local.role_types[count.index]}")
+      ]
     }
 
     condition {

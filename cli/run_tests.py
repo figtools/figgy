@@ -1,78 +1,106 @@
 import os
-
 from figgy.config import *
-from test.cli.config import *
-from test.cli.data.configure import DataConfigure
-from test.cli.dev.audit import DevAudit
-from test.cli.dev.auth import DevAuth
-from test.cli.dev.browse import DevBrowse
-from test.cli.dev.cleanup import DevCleanup
-from test.cli.dev.configure import DevConfigure
-from test.cli.dev.delete import DevDelete
-from test.cli.dev.dump import DevDump
-from test.cli.dev.export import DevExport
-from test.cli.dev.find import DevFind
-from test.cli.dev.get import DevGet
-from test.cli.dev.list import DevList
-from test.cli.dev.put import DevPut
-from test.cli.dev.restore import DevRestore
-from test.cli.dev.run_tests import DevRunTests
-from test.cli.dev.sync import DevSync
-from test.cli.dev.zip import DevZip
-from test.cli.init import CLIInit
+from figgy.test.cli.config import *
+from figgy.test.cli.data.configure import DataConfigure
+from figgy.test.cli.data.login import DataLogin
+from figgy.test.cli.data.put import DataPut
+from figgy.test.cli.data.share import DataShare
+from figgy.test.cli.data.sync import DataSync
+from figgy.test.cli.dev.audit import DevAudit
+from figgy.test.cli.dev.browse import DevBrowse
+from figgy.test.cli.dev.cleanup import DevCleanup
+from figgy.test.cli.dev.delete import DevDelete
+from figgy.test.cli.dev.dump import DevDump
+from figgy.test.cli.dev.edit import DevEdit
+from figgy.test.cli.dev.export import DevExport
+from figgy.test.cli.dev.get import DevGet
+from figgy.test.cli.dev.list import DevList
+from figgy.test.cli.dev.put import DevPut
+from figgy.test.cli.dev.restore import DevRestore
+from figgy.test.cli.dev.sync import DevSync
+from figgy.test.cli.dev.login import DevLogin
+from figgy.utils.utils import Utils
+
+CACHE_DIR = f'{HOME}/.figgy/cache'
+VAULT_DIR = f'{HOME}/.figgy/vault'
+c = Utils.default_colors()
+
+# FYI I know all these tests are UGLY, but I'm ok with it, it's just tests! :)
+
+## JORDAN: If you get EOF exceptions like this:
+## pexpect.exceptions.EOF: End Of File (EOF). Empty string style platform.
+## It means you created a TestObj and are calling `.expect()` on it after the child
+## process has already exited. For instance, creating a single DevGet() and calling .get() numerous times.
+
+def print_test(test: str):
+    print(f"{c.fg_bl}-----------------------------------------{c.rs}")
+    print(f"{c.fg_yl} Starting test: {test}{c.rs}")
+    print(f"{c.fg_bl}-----------------------------------------{c.rs}")
 
 
 def main():
-    # This is used when running in CircleCi
-    if MFA_SECRET_ENV_KEY in os.environ \
-            and MFA_USER_ENV_KEY in os.environ:
-        print(f"{MFA_SECRET_ENV_KEY} FOUND, configuring with MFA for data/devops/dev roles..")
-        print("Deleting any existing cached credentials...")
-        delete_cache()
-        CLIInit.init('dev')
+    delete_cache(f'{CACHE_DIR}/other')
+    delete_cache(f'{CACHE_DIR}/okta')
+    delete_cache(f'{VAULT_DIR}/sso')
+    delete_cache(f'{VAULT_DIR}/sts')
 
-    # Order matters. Put must come before delete, etc.
-
-    # Test DEV Role first.
-    DevConfigure().run()
+    # Test under DEV Role
+    print_test("Dev Login")
+    DevLogin().run()
+    print_test("Dev Put")
     DevPut().run()
+    print_test("Dev Get")
     DevGet().run()
+    print_test("Dev Delete")
     DevDelete().run()
+    print_test("Dev Dump")
     DevDump().run()
+    print_test("Dev List")
     DevList().run()
+    print_test("Dev Audit")
     DevAudit().run()
+    print_test("Dev Sync")
     DevSync().run()
+    print_test("Dev Cleanup")
     DevCleanup().run()
+    print_test("Dev Browse")
     DevBrowse().run()
+    print_test("Dev Restore")
     DevRestore().run()
+    print_test("Dev Export")
     DevExport().run()
-    DevAuth().run()
-    DevFind().run()
-    DevZip().run()
-    DevRunTests().run()
-    # DevEdit().run() -- Currently busted...
-    # # Then Test DATA Role
-    DataConfigure().run()
-    # DataShare().run()
+    print_test("Dev Edit")
+    DevEdit().run()
+
+    # Then Test DATA Role
+    print_test("Data Login")
+    DataLogin().run()
+    print_test("Data Put")
+    DataPut().run()
+    print_test("Data Share")
+    DataShare().run()
+    print_test("Data Sync")
+    DataSync().run()
 
 
-def delete_cache():
-    folder = CACHE_DIR
-    for the_file in os.listdir(folder):
-        file_path = os.path.join(folder, the_file)
+def delete_cache(dir: str):
+    folder = dir
+    if os.path.exists(dir):
+        for the_file in os.listdir(folder):
+            file_path = os.path.join(folder, the_file)
+            try:
+                if os.path.isfile(file_path):
+                    print(f"Deleting: {file_path}")
+                    os.unlink(file_path)
+            except Exception as e:
+                print(e)
+
         try:
-            if os.path.isfile(file_path):
-                print(f"Deleting: {file_path}")
-                os.unlink(file_path)
+            if os.path.isfile(OKTA_SESSION_CACHE_PATH):
+                print(f"Deleting: {OKTA_SESSION_CACHE_PATH}")
+                os.unlink(OKTA_SESSION_CACHE_PATH)
         except Exception as e:
             print(e)
-
-    try:
-        if os.path.isfile(OKTA_SESSION_CACHE_PATH):
-            print(f"Deleting: {OKTA_SESSION_CACHE_PATH}")
-            os.unlink(OKTA_SESSION_CACHE_PATH)
-    except Exception as e:
-        print(e)
 
 
 if __name__ == '__main__':

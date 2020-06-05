@@ -26,6 +26,7 @@ class ConfigService:
         self._cache_mgr = cache_mgr
         self._run_env = run_env
 
+    @Utils.trace
     def get_parameter_names(self) -> Set[str]:
         """
         Looks up local cached configs, then queries new config names from the remote cache, merges the two, and
@@ -41,7 +42,8 @@ class ConfigService:
 
         # Do a full refresh if cache is too old.
         if Utils.millis_since_epoch() - last_refresh > self.__CACHE_REFRESH_INTERVAL:
-            all_parameters = self._config_dao.get_all_config_names()
+            configs: Set[ConfigItem] = self._config_dao.get_config_names_after(0)
+            all_parameters: Set[str] = set([x.name for x in configs if x.state == ConfigState.ACTIVE])
             self._cache_mgr.write(cache_key, all_parameters)
         else:
 
@@ -66,6 +68,11 @@ class ConfigService:
 
             self._cache_mgr.append(cache_key, added_names)
             self._cache_mgr.delete(cache_key, deleted_names)
+
+            log.debug(f"Cached: {cached_contents}")
+            log.debug(f"Cached: {deleted_names}")
+            log.debug(f"Cached: {added_names}")
+
 
             all_parameters = set(cached_contents) - deleted_names | added_names
 

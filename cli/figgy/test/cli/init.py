@@ -21,7 +21,7 @@ class CLIInit:
         elif role == usr_devops:
             DevOpsConfigure().run()
 
-        figgy = pexpect.spawn(f'python figgy.py config {Utils.get_first(get)} --env {dev} --prompt --skip-upgrade',
+        figgy = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(get)} --env {DEFAULT_ENV} --prompt --skip-upgrade',
                                     timeout=5)
         figgy.expect('.*Please input the MFA.*')
         mfa = check_output(["mfa", "otp", os.environ[MFA_USER_ENV_KEY]])

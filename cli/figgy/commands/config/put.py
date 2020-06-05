@@ -19,11 +19,10 @@ from figgy.views.rbac_limited_config import RBACLimitedConfigView
 class Put(ConfigCommand):
 
     def __init__(self, ssm_init: SsmDao, colors_enabled: bool, config_context: ConfigContext,
-                 config_completer: WordCompleter, config_view: RBACLimitedConfigView, get: Get):
+                 config_view: RBACLimitedConfigView, get: Get):
         super().__init__(put, colors_enabled, config_context)
         self._ssm = ssm_init
         self._utils = Utils(colors_enabled)
-        self._config_completer = config_completer
         self._config_view = config_view
         self._get = get
         self._source_key = Utils.attr_if_exists(copy_from, config_context.args)
@@ -43,7 +42,7 @@ class Put(ConfigCommand):
                 f"Provided file path: {file_path} is invalid. No file found.")
             exit(1)
 
-    def put_param(self, key="default", loop=False, display_hints=True) -> None:
+    def put_param(self, key=None, loop=False, display_hints=True) -> None:
         """
         Allows a user to define a PS name and add a new parameter at that named location. User will be prompted for a
         value, desc, and whether or not the parameter is a secret. If (Y) is selected for the secret, will encrypt the
@@ -56,66 +55,58 @@ class Put(ConfigCommand):
                               looping and constantly calling put_param with a specified key.
         """
 
-        value, desc, notify, put_another = "default", None, False, True
+        value, desc, notify, put_another = True, None, False, True
 
         if display_hints:
             print(f"{self.c.fg_bl}Hint:{self.c.rs} To upload a file's contents, pass in `file:///path/to/your/file` "
                   f"in the value prompt")
 
-        while not self._utils.is_valid_input(value, f'{value} parameter value', notify) \
-                or not self._utils.is_valid_input(key, f'{key} parameter name', notify) \
-                or put_another:
-
-            if key == "default" or not key:
-                key = prompt(self._select_name,
-                             completer=self._config_completer)
-
-            self._utils.validate_ps_name(key)
-
-            if self._source_key:
-                plain_key = '/'.join(key.strip('/').split('/')[2:])
-                source_key = f'{self._source_key}/{plain_key}'
-                orig_value, orig_description = self._get.get_val_and_desc(source_key)
-            else:
-                orig_description = ''
-                orig_value = ''
-
-            value = prompt(f"Please input a value for {key}: ", default=orig_value if orig_value else '')
-
-            if value.lower().startswith(self._FILE_PREFIX):
-                value = self._load_file(value.replace(self._FILE_PREFIX, ""))
-
-            existing_desc = self._ssm.get_description(key)
-            desc = prompt(f"Please input an optional description: ",
-                          default=existing_desc if existing_desc else orig_description if orig_description else '')
-
-            is_secret = Input.is_secret()
-            parameter_type, kms_id = SSM_SECURE_STRING if is_secret else SSM_STRING, None
-            if is_secret:
-                valid_keys = self._config_view.get_authorized_kms_keys()
-                if len(valid_keys) > 1:
-                    key_name = Input.select_kms_key(valid_keys)
-                else:
-                    key_name = valid_keys[0]
-
-                kms_id = self._config_view.get_authorized_key_id(key_name)
-
-            notify = True
+        while put_another:
             try:
-                if not self._utils.is_valid_input(key, f"Parameter name", False) \
-                        or not self._utils.is_valid_input(value, key, False):
-                    continue
 
-                self._ssm.set_parameter(
-                    key, value, desc, parameter_type, key_id=kms_id)
-                if key not in self._config_completer.words:
-                    self._config_completer.words.append(key)
+                if not key:
+                    key = Input.input('Please input a PS Name: ', completer=self._config_view.get_config_completer())
+
+                if self._source_key:
+                    plain_key = '/'.join(key.strip('/').split('/')[2:])
+                    source_key = f'{self._source_key}/{plain_key}'
+                    orig_value, orig_description = self._get.get_val_and_desc(source_key)
+                else:
+                    orig_description = ''
+                    orig_value = ''
+
+                value = Input.input(f"Please input a value for {key}: ", default=orig_value if orig_value else '')
+
+                if value.lower().startswith(self._FILE_PREFIX):
+                    value = self._load_file(value.replace(self._FILE_PREFIX, ""))
+
+                existing_desc = self._ssm.get_description(key)
+                desc = Input.input(f"Please input an optional description: ", optional=True,
+                              default=existing_desc if existing_desc else orig_description if orig_description else '')
+
+                is_secret = Input.is_secret()
+                parameter_type, kms_id = SSM_SECURE_STRING if is_secret else SSM_STRING, None
+                if is_secret:
+                    valid_keys = self._config_view.get_authorized_kms_keys()
+                    if len(valid_keys) > 1:
+                        key_name = Input.select_kms_key(valid_keys)
+                    else:
+                        key_name = valid_keys[0]
+
+                    kms_id = self._config_view.get_authorized_key_id(key_name)
+
+                notify = True
+
+                self._ssm.set_parameter(key, value, desc, parameter_type, key_id=kms_id)
+                if key not in self._config_view.get_config_completer().words:
+                    self._config_view.get_config_completer().words.append(key)
+
             except ClientError as e:
                 if "AccessDeniedException" == e.response['Error']['Code']:
                     print(f"\n\nYou do not have permissions to put a new config value at the path:"
                           f" {self.c.fg_bl}{key}{self.c.rs}")
-                    print(f"Developers may add keys under the following namespaces: "
-                          f"{self.c.fg_bl}{DEV_PS_WRITE_NS}{self.c.rs}")
+                    print(f"Your role has access to the following namespaces: "
+                          f"{self.c.fg_bl}{self._config_view.get_authorized_namespaces()}{self.c.rs}")
                     print(f"{self.c.fg_rd}Error message: {e.response['Error']['Message']}{self.c.rs}")
                 else:
                     print(f"{self.c.fg_rd}Exception caught attempting to add config: {e}{self.c.rs}")
@@ -124,7 +115,7 @@ class Put(ConfigCommand):
             if loop:
                 to_continue = input(f"\nAdd another? (y/N): ")
                 put_another = True if to_continue.lower() == 'y' else False
-                key = "default"
+                key = None
             else:
                 put_another = False
 
