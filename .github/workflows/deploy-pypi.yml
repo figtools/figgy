@@ -5,6 +5,9 @@ on:
     branches: [develop, master]
   pull_request:
     branches: [develop, master]
+  watch:
+    types: [started]
+
 
 jobs:
   test:
