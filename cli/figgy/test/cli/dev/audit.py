@@ -44,10 +44,10 @@ class DevAudit(FiggyTest):
         child.sendline(name)
         if expect_results:
             child.expect(f'.*Found.*Parameter:.*{name}.*Audit another.*')
-            self.step("Audit log found.")
+            print("Audit log found.")
         else:
             child.expect(f'.*No results found for.*{name}.*')
-            self.step("No audit log found.")
+            print("No audit log found.")
 
         if audit_another:
             child.sendline('y')
