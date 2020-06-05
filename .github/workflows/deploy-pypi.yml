@@ -12,6 +12,7 @@ on:
 jobs:
   test:
     runs-on: ubunty-latest
+    if: github.actor == github.event.repository.owner.login
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3.8
@@ -19,7 +20,8 @@ jobs:
         with:
           python-version: 3.8
       - name: Install dependencies
-        env: FIGGY_TEST=true
+        env:
+          FIGGY_TEST: true
         run: |
           cd cli
           pip install -r requirements.txt
