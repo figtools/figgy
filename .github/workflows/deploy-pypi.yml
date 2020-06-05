@@ -41,7 +41,7 @@ jobs:
 #          python run_tests.py
 
   build:
-    if: github.ref == 'ref/head/master'
+    if: github.ref == 'refs/heads/master'
 #    needs: test
     runs-on: ubuntu-latest
     steps:
