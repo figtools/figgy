@@ -23,6 +23,7 @@ jobs:
         env:
           FIGGY_TEST: true
         run: |
+          sudo apt-get install libusb-1.0-0-dev
           cd cli
           pip install -r requirements.txt
           pip install -r requirements-linux.txt
