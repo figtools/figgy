@@ -202,14 +202,15 @@ data "aws_iam_policy_document" "get_figgy_configs" {
   }
 
   statement {
-    sid = "DenySpecialConfigs"
+    sid = "DenySpecialFigs"
     effect = "Deny"
     actions = [
       "ssm:GetParameter",
       "ssm:GetParameters"
     ]
     resources = [
-       "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter/figgy/integrations/*"
+       "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter/figgy/integrations/*",
+       "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter/admin/*"
     ]
   }
 }
