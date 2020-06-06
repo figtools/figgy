@@ -74,16 +74,15 @@ jobs:
         echo "Setting release version to $VERSION"
         export RELEASE_VERSION=$VERSION
         echo "::set-env name=RELEASE_VERSION::$VERSION"
-        CHANGELOG=$(./scripts/parse_changelog.sh)
-        echo "::set-output name=changelog::$CHANGELOG"
+        echo "::set-output name=changelog::$(./scripts/parse_changelog.sh)"
     - name: Create Release
       id: create_release
-      uses: actions/create-release@v1
+      uses: actions/create-release@1.1.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ env.RELEASE_VERSION }}
         release_name: Release ${{ env.RELEASE_VERSION }}
         body: ${{ steps.prep.outputs.changelog }}
-        draft: truecip
+        draft: false
         prerelease: true
