@@ -46,21 +46,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      -
     - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
+
     - name: Install dependencies
       run: |
         sudo apt-get install libusb-1.0-0-dev
         python -m pip install --upgrade pip
         pip install setuptools twine pip wheel
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
     - name: Upload To PyPi
       env:
         PYPI_RC: ${{ secrets.PYPI_FIGGY_CLI }}
       run: |
         echo "${PYPI_RC}" > ~/.pypirc
+        cd cli
+        ./scripts/deploy-pypi.sh
+
+    - name: Prep Release
+      run: |
         cd cli
         VERSION=$(./scripts/get_version.sh)
         echo "Setting release version to $VERSION"
@@ -68,6 +76,7 @@ jobs:
         echo "::set-env name=RELEASE_VERSION::$VERSION"
         CHANGELOG=$(./scripts/parse_changelog.sh)
         echo "::set-env name=CHANGELOG::$CHANGELOG"
+
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -77,8 +86,8 @@ jobs:
         tag_name: ${{ env.RELEASE_VERSION }}
         release_name: Release ${{ env.RELEASE_VERSION }}
         body: |
-          Figgy v. ${RELEASE_VERSION}
+          Figgy v. ${{ env.RELEASE_VERSION }}
 
-          ${CHANGELOG}
+          ${{ env.CHANGELOG }}
         draft: truecip
         prerelease: true
