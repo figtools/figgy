@@ -49,10 +49,6 @@ class Restore(ConfigCommand):
                 f"\n\nYou do not have permissions to a new config value at the path: "
                 f"{self.c.fg_bl}{item.ps_name}{self.c.rs}"
             )
-            print(
-                "Developers may add keys under the following namespaces: "
-                f"{self.c.fg_bl}{DEV_PS_WRITE_NS}{self.c.rs}"
-            )
         else:
             print(
                 f"{self.c.fg_rd}Error message: "

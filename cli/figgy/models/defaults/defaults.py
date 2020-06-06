@@ -21,6 +21,7 @@ class CLIDefaults:
     run_env: RunEnv
     region: str
     mfa_enabled: bool
+    service_ns: str
     provider: Provider
     session_duration: int
     report_errors: Optional[bool]
@@ -50,7 +51,8 @@ class CLIDefaults:
                            provider_config=None,
                            report_errors=False,
                            auto_mfa=False,
-                           user_id=str(uuid.uuid4()))
+                           user_id=str(uuid.uuid4()),
+                           service_ns="/app")
 
     @staticmethod
     def sandbox(user: str, role: str, colors: bool):
@@ -66,7 +68,8 @@ class CLIDefaults:
                            provider_config=BastionProviderConfig(FIGGY_SANDBOX_PROFILE),
                            report_errors=False,
                            auto_mfa=False,
-                           user_id=str(uuid.uuid4()))
+                           user_id=str(uuid.uuid4()),
+                           service_ns="/app")
 
     def __str__(self) -> str:
         return jsonpickle.encode(self)

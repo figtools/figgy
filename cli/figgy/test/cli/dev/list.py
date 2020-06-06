@@ -23,9 +23,9 @@ class DevList(FiggyTest):
         self._setup(1, 3)
         print(f"Testing {CLI_NAME} config {Utils.get_first(list_com)} --env dev")
         print("Waiting for cache population.")
-        time.sleep(3)
+        time.sleep(60)
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(list_com)} --env {DEFAULT_ENV} --skip-upgrade',
-                              timeout=7, encoding='utf-8')
+                              timeout=10, encoding='utf-8')
         child.expect('.*Please input a namespace prefix.*')
         child.sendline("")
         child.expect('.*Please input a namespace prefix.*')
@@ -47,10 +47,10 @@ class DevList(FiggyTest):
         self.step("Testing successful list.")
         print(f"Testing {CLI_NAME} config {Utils.get_first(list_com)} --env dev")
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(list_com)} --env {DEFAULT_ENV} --skip-upgrade',
-                              timeout=7, encoding='utf-8')
+                              timeout=10, encoding='utf-8')
 
         print("Waiting for cache population.")
-        time.sleep(15)
+        time.sleep(60)
         child.expect('.*Please input a namespace prefix.*')
         child.sendline(dump_prefix)
         child.expect(f'.*1.*{dump_prefix}.*2.*{dump_prefix}.*3.*{param_1}.*Selection.*')

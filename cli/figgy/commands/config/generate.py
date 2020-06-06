@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 
 
 class Generate(ConfigCommand):
-    _DEFAULT_PATH = './ci-config.json'
+    _DEFAULT_PATH = './figgy.json'
 
     def __init__(self, colors_enabled: bool, config_context: ConfigContext):
         super().__init__(generate, colors_enabled, config_context)
@@ -42,9 +42,9 @@ class Generate(ConfigCommand):
         new_name = prompt(f'Please select a new service name, it CANNOT be: {service_name}:  ',
                           default=new_service_name)
         self._utils.validate(new_name != service_name, f"You must select a new service name that differs from the one"
-        f"designated in your source ci-config.json file. "
+        f"designated in your source figgy.json file. "
         f"(NOT {service_name})")
-        new_ns = f'/app/{new_name}/'
+        new_ns = f'{self.context.defaults.service_ns}/{new_name}/'
 
         # Update all configs destinations to leverage new namespace. Easiest to search/replace across everything.
         output_string = json.dumps(from_config)

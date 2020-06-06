@@ -14,7 +14,7 @@ class AssumableRole:
     provider_name: Optional[str]
 
     def tabulate_data(self) -> List[str]:
-        return [self.account_id, self.run_env.env, self.role.role]
+        return [f'{self.account_id[0:5]} REDACTED', self.run_env.env, self.role.role]
 
     def tabulate_header(self):
         return ["Account #", "Environment", "Role"]

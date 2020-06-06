@@ -135,6 +135,22 @@ class Utils:
     def sanitize_session_name(name: str):
         return re.sub(r'\W+', '', name)[:15]
 
+
+    @staticmethod
+    def wipe_defaults():
+        try:
+            os.remove(DEFAULTS_FILE_CACHE_PATH)
+        except OSError:
+            pass
+
+    @staticmethod
+    def wipe_vaults():
+        for file in FIGGY_VAULT_FILES:
+            try:
+                os.remove(file)
+            except OSError:
+                pass
+
     def notify(self, message: str):
         print(f'{self.c.fg_bl}{message}{self.c.rs}')
 
@@ -313,14 +329,6 @@ class Utils:
         if not boolean:
             self.error_exit(error_msg)
 
-    # Todo do dynamic validation based on current role mappings.
-    def validate_ps_name(self, ps_name: str):
-        return True
-        # self.validate(ps_name.startswith(app_ns) or
-        #               ps_name.startswith(shared_ns) or
-        #               ps_name.startswith(data_ns) or
-        #               ps_name.startswith(devops_ns), "Invalidate PS Name specified. It must begin with "
-        #               f"{app_ns}, {shared_ns}, {devops_ns}, or {data_ns}")
 
     def is_valid_selection(self, selection: str, notify: bool):
         result = selection is not None and (selection.lower() == "y" or selection.lower() == "n")

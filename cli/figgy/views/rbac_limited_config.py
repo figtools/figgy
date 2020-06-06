@@ -82,7 +82,6 @@ class RBACLimitedConfigView:
     def get_config_names(self, prefix: str = None, one_level: bool = False) -> List[str]:
         all_names = sorted(self._config_svc.get_parameter_names())
         authed_nses = self.get_authorized_namespaces()
-        print(authed_nses)
         new_names = []
 
         if prefix:

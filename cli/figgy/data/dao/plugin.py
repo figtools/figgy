@@ -11,7 +11,7 @@ class PluginDao:
         Updates a plugin's sha1 in the plugin-state table, which in turn "validates" it.
         Args:
             service_name: service_name as defined in locals.tf
-            plugin_name: plugin_name to validate as defined in ci-config.json
+            plugin_name: plugin_name to validate as defined in figgy.json
             sha1: sha1 that is printed as part of the build output
             user: User performing the validation. Needed for change tracking purposes.
         """

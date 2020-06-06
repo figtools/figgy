@@ -18,7 +18,7 @@ from figgy.utils.utils import Utils
 
 
 class Sync(ConfigCommand):
-    _DEFAULT_PATH = './ci-config.json'
+    _DEFAULT_PATH = './figgy.json'
 
     def __init__(self, ssm_init: SsmDao, config_init: ConfigDao, colors_enabled: bool,
                  context: ConfigContext, get: Get, put: Put):
@@ -72,10 +72,10 @@ class Sync(ConfigCommand):
     def _sync_keys(self, config_namespace: str, all_keys: Set):
         """
         Looks for orphaned parameters (keys) under the namespace provided and prints out information about
-        missing parameters that are not defined in the ci-config.json file
+        missing parameters that are not defined in the figgy.json file
         Args:
             config_namespace: Namespace to query PS under.
-            all_keys: All keys that exist in ci-config.json to compare against.
+            all_keys: All keys that exist in figgy.json to compare against.
         """
         print(f"{self.c.fg_gr}Checking for orphaned config names.{self.c.rs}")
 
@@ -96,7 +96,7 @@ class Sync(ConfigCommand):
 
     def _sync_repl_configs(self, config_repl: Dict, namespace: str = None) -> None:
         """
-        Syncs replication configs from a defined "replication_config" block parsed from either the ci-config.json file
+        Syncs replication configs from a defined "replication_config" block parsed from either the figgy.json file
         or the data replication config json file.
         Args:
             config_repl: Dict of KV Pairs for a repl config. Source -> Dest
@@ -155,7 +155,7 @@ class Sync(ConfigCommand):
                     if cfg.source not in list(config_repl.keys()) \
                             and cfg.type == REPL_TYPE_APP \
                             and not cfg.source.startswith(shared_ns) \
-                            and not cfg.source.startswith(app_ns):
+                            and not cfg.source.startswith(self.context.defaults.service_ns):
                         orphans.add(cfg)
                         notify = True
 
@@ -189,7 +189,7 @@ class Sync(ConfigCommand):
                         and cfg.destination not in list(config_repl.values()) \
                         and cfg.destination not in expected_destinations \
                         and (isinstance(cfg.source, list)
-                             or cfg.source.startswith(shared_ns) or cfg.source.startswith(app_ns)):
+                             or cfg.source.startswith(shared_ns) or cfg.source.startswith(self.context.defaults.service_ns)):
                     print(f"{self.c.fg_rd}Orphaned replication mapping detected: {self.c.rs}"
                           f" {self.c.fg_bl}{cfg.source} -> {cfg.destination}{self.c.rs}.")
                     notify = False
@@ -233,7 +233,7 @@ class Sync(ConfigCommand):
         """
             Pushes merge key configs into replication config table.
         Args:
-            config_merge: Dict of merge_parameters parsed from ci-config.json file
+            config_merge: Dict of merge_parameters parsed from figgy.json file
             namespace: namespace for app
         """
         print(f"{self.c.fg_gr}Validating replication for all merge keys.{self.c.rs}")
@@ -302,22 +302,24 @@ class Sync(ConfigCommand):
 
         Args:
             config_repl: Dict of KV Pairs for a repl config. Source -> Dest
-            app_conf: bool: T/F - True if this is an application config block in an application config (ci-config.json).
+            app_conf: bool: T/F - True if this is an application config block in an application config (figgy.json).
                     False if other, which for now is only repl-configs for data teams.
         """
         for key in config_repl:
             if app_conf:
-                self._utils.validate(re.match(r'^/shared/.*$|^/app/.*$', key) is not None,
-                                     f"The SOURCE of your replication configs must begin with `/shared/` or `/app/`. "
+                self._utils.validate(re.match(f'^/shared/.*$|^{self.context.defaults.service_ns}/.*$', key) is not None,
+                                     f"The SOURCE of your replication configs must begin with `/shared/` or "
+                                     f"`{self.context.defaults.service_ns}/`. "
                                      f"{key} is non compliant.")
 
-            self._utils.validate(re.match(r'^/app/.*$', config_repl[key]) is not None,
-                                 "The DESTINATION of your replication configs must always begin with `/app/`")
+            self._utils.validate(re.match(f'^{self.context.defaults.service_ns}/.*$', config_repl[key]) is not None,
+                                 f"The DESTINATION of your replication configs must always begin with "
+                                 f"`{self.context.defaults.service_ns}/`")
 
     def _find_missing_shared_parameters(self, namespace: str, config_repl: Dict, shared_names: set, merge_conf: Dict):
         """
             Notifies the user if there is a parameter that has been shared into their namespace by an outside party
-            but they have not added it to the `shared_parameters` block of their ci-config.json
+            but they have not added it to the `shared_parameters` block of their figgy.json
         """
         all_repl_cfgs = self._config.get_all_configs(self.run_env, namespace)
         for cfg in all_repl_cfgs:
@@ -328,9 +330,9 @@ class Sync(ConfigCommand):
                 print(f"It appears that {self.c.fg_bl}{cfg.user}{self.c.rs} shared "
                       f"{self.c.fg_bl}{cfg.source}{self.c.rs} to {self.c.fg_bl}{cfg.destination}{self.c.rs} "
                       f"and you have not added {self.c.fg_bl}{cfg.destination}{self.c.rs} to the "
-                      f"{self.c.fg_bl}{SHARED_KEY}{self.c.rs} section of your ci-config.json. This is also not "
+                      f"{self.c.fg_bl}{SHARED_KEY}{self.c.rs} section of your figgy.json. This is also not "
                       f"referenced in any defined merge parameter. Please add "
-                      f"{self.c.fg_bl}{cfg.destination}{self.c.rs} to your ci-config.json, or delete this parameter "
+                      f"{self.c.fg_bl}{cfg.destination}{self.c.rs} to your figgy.json, or delete this parameter "
                       f"and the replication config with the cleanup command.")
 
     def _in_merge_value(self, dest: str, merge_conf: Dict):
@@ -347,7 +349,7 @@ class Sync(ConfigCommand):
         """
             Orchestrates a standard `sync` command WITHOUT The `--replication-only` flag set.
         """
-        # Validate & parse ci-config.json
+        # Validate & parse figgy.json
         config = self._utils.get_ci_config(self._config_path)
         shared_names = set(self._utils.get_config_key_safe(SHARED_KEY, config, default=[]))
         repl_conf = self._utils.get_config_key_safe(REPLICATION_KEY, config, default={})

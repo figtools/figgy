@@ -17,7 +17,7 @@ RESOURCE_PARSER_DESC = "Provides utilities to help manage application configs an
 COMMAND_PARSER_DESC = "Provides utilities to help manage application configs and secrets across all environments. " \
     f"For more details on commands, run: `{CLI_NAME} [resource] [command] --help`"
 CONFIG_REQ_TEXT = f"--config is a requirement argument."
-CI_CONFIG_HELP_TEXT = f"Path to your project's ci-config.json file."
+CI_CONFIG_HELP_TEXT = f"Path to your project's figgy.json file."
 UNUSED_CONFIG_DETECTED = f"%%red%%The following Names were found in PS but are not referenced in your configurations. \n" \
     f"Use the %%rs%%%%blue%%`cleanup`%%rs%%%%red%% command to clean them up once all " \
     f"deployed application versions no longer use these configurations: %%rs%%"
@@ -42,11 +42,11 @@ LIST_HELP_TEXT = f"Lists all matching configuration Names based on a namespace p
 PUT_HELP_TEXT = f"Store (or update) an arbitrary configuration in ParameterStore."
 SHARE_HELP_TEXT = f"Share a parameter from a source to an arbitrary destination path in Parameter Store via config " \
     f"replication."
-CLEANUP_HELP_TEXT = 'Cleanup will compare your config desired state as defined in your ci-config.json with the current ' \
+CLEANUP_HELP_TEXT = 'Cleanup will compare your config desired state as defined in your figgy.json with the current ' \
                     'config state in AWS. You will be prompted on whether or not you wish to delete orphaned ' \
-                    'configurations (configs that exist in AWS but not in your ci-config.json file).'
+                    'configurations (configs that exist in AWS but not in your figgy.json file).'
 MIGRATE_HELP_TEXT = f"Walks a user through migrating application configs from Consul into Parameter Store"
-SYNC_HELP_TEXT = "Synchronizes your defined ci-config.json configurations with those in Parameter Store. " \
+SYNC_HELP_TEXT = "Synchronizes your defined figgy.json configurations with those in Parameter Store. " \
                  "This ensures the proper configurations exist in the provided run environment for your application."
 GET_HELP_TEXT = "Retrieve an arbitrary value from ParameterStore by Name."
 BROWSE_HELP_TEXT = "Browse and look up or delete parameters through a tree structure."
@@ -61,10 +61,10 @@ RESTORE_HELP_TEXT = "Restore a single parameter or all parameters within a time 
 DEBUG_HELP_TEXT = "Turn on debug mode for enhanced logging."
 EDIT_HELP_TEXT = "Edit the value of an existing parameter store parameter, or create a new one"
 COPY_FROM_HELP_TEXT = "Copy values from another Parameter Store namespace."
-GENERATE_HELP_TEXT = "Generate a new ci-config.json file from an existing ci-config.json file. This is useful when you " \
+GENERATE_HELP_TEXT = "Generate a new figgy.json file from an existing figgy.json file. This is useful when you " \
                      "want to deploy a single service multiple times under different names with slightly differing " \
                      "configurations."
-FROM_HELP_TEXT = "/path/to/ci-config.json file to use as the source template file to generate from. Your generated file" \
+FROM_HELP_TEXT = "/path/to/figgy.json file to use as the source template file to generate from. Your generated file" \
                  " will automatically have all of the configurations from the source-file configured to replicate to it."
 LOGIN_HELP_TEXT = "Logs you in to all viable AWS accounts and caches session locally. This will prevent you from having" \
                   "to input your MFA every time you swap into a new account or role."

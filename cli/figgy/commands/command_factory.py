@@ -69,8 +69,7 @@ class CommandFactory(Factory):
         """
         with self.__mgr_lock:
             if not self._session_mgr:
-                self._session_mgr = SessionManager(self._context.colors_enabled, self._cli_defaults,
-                                                   self.__session_provider())
+                self._session_mgr = SessionManager(self._cli_defaults, self.__session_provider())
 
         return self._session_mgr
 
