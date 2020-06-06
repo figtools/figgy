@@ -74,7 +74,7 @@ jobs:
         echo "Setting release version to $VERSION"
         export RELEASE_VERSION=$VERSION
         echo "::set-env name=RELEASE_VERSION::$VERSION"
-        CHANGELOG=$(./scripts/parse_changelog.sh | tr '\n' '%0A')
+        CHANGELOG=$(./scripts/parse_changelog.sh)
         echo "::set-output name=changelog::$CHANGELOG"
     - name: Create Release
       id: create_release
@@ -84,9 +84,6 @@ jobs:
       with:
         tag_name: ${{ env.RELEASE_VERSION }}
         release_name: Release ${{ env.RELEASE_VERSION }}
-        body: |
-          Figgy v. ${{ env.RELEASE_VERSION }}
-
-          ${{ steps.prep.outputs.changelog }}
+        body: ${{ steps.prep.outputs.changelog }}
         draft: truecip
         prerelease: true
