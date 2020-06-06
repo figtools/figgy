@@ -1,6 +1,6 @@
 Figgy Changelog:
 
-## 0.0.23a
+## 0.0.24a
 - Continued Testing of release process
 - Plus some other stuff!
 - And some other stuff!
