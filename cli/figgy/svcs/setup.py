@@ -35,16 +35,10 @@ class FiggySetup:
         self._config_mgr, self.c = ConfigManager.figgy(), Utils.default_colors()
 
     def _get_session_manager(self, defaults: CLIDefaults) -> SessionManager:
-        if not self._session_manager:
-            self._session_manager = SessionManager(defaults, self.__get_session_provider(defaults))
-
-        return self._session_manager
+        return SessionManager(defaults, self.__get_session_provider(defaults))
 
     def __get_session_provider(self, defaults: CLIDefaults):
-        if not self._session_provider:
-            self._session_provider = SessionProviderFactory(defaults).instance()
-
-        return self._session_provider
+        return SessionProviderFactory(defaults).instance()
 
     def configure_auth(self, current_defaults: CLIDefaults, configure_provider=True) -> CLIDefaults:
         updated_defaults = current_defaults
@@ -133,7 +127,7 @@ class FiggySetup:
 
     def configure_figgy_defaults(self, current_defaults: CLIDefaults):
         updated_defaults = current_defaults
-        session = self._get_session_manager(current_defaults).get_session(current_defaults.assumable_roles[0])
+        session = self._get_session_manager(current_defaults).get_session(current_defaults.assumable_roles[0], prompt=True)
         ssm = SsmDao(session.client('ssm'))
         default_service_ns = ssm.get_parameter(PS_FIGGY_DEFAULT_SERVICE_NS_PATH)
         updated_defaults.service_ns = default_service_ns
