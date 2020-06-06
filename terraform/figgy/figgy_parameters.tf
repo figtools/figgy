@@ -40,6 +40,18 @@ users are not shown parameters they cannot administrate."
 EOF
 }
 
+
+# These are used by figgy CLI to help the CLI only show the user parameters they have access to
+resource "aws_ssm_parameter" "service_namespace" {
+  name  = "/figgy/defaults/service-namespace"
+  type  = "String"
+  value = local.service_namespace
+  description =<<EOF
+Figgy will automatically run `sync` and `cleanup` commands against this namespace. This namespace is where
+all application/service configurations should be stored.
+EOF
+}
+
 # These are used by figgy CLI to help the CLI only show the user parameters they have access to
 resource "aws_ssm_parameter" "role_to_kms_access" {
   count = length(local.role_types)

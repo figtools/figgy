@@ -13,7 +13,7 @@ from figgy.utils.utils import *
 
 
 class Cleanup(ConfigCommand):
-    _DEFAULT_PATH = './ci-config.json'
+    _DEFAULT_PATH = './figgy.json'
     """
     Detects orphaned ParameterStore names, replication configurations, and merge keys, then
     prompts the user to delete them. This is typically run after the `sync` command informs
@@ -28,12 +28,12 @@ class Cleanup(ConfigCommand):
         self._config_completer = config_completer_init  # type: WordCompleter
         self._utils = Utils(colors_enabled)
         self.example = f"{self.c.fg_bl}{CLI_NAME} config {self.command_printable} --env dev " \
-            f"--config /path/to/ci-config.json{self.c.rs}"
+            f"--config /path/to/figgy.json{self.c.rs}"
         self._config_path = context.ci_config_path if context.ci_config_path else Cleanup._DEFAULT_PATH
 
         # If user passes in --info flag, we don't need all of this to be initialized.
         if not hasattr(args, Utils.get_first(info)) or args.info is False:
-            # Validate & parse ci-config.json
+            # Validate & parse figgy.json
             self._config = self._utils.get_ci_config(self._config_path)  # type: Dict
             self._shared_names = set(self._utils.get_config_key_safe(SHARED_KEY, self._config, default=[]))  # type: Set
             self._repl_conf = self._utils.get_config_key_safe(REPLICATION_KEY, self._config, default={})  # type: Dict
@@ -55,7 +55,7 @@ class Cleanup(ConfigCommand):
         """
         Prompts user for cleanup of orphaned ParameterStore names.
         Args:
-            config_keys: set() -> Set of parameters that are found as defined in the ci-config.json file for a svc
+            config_keys: set() -> Set of parameters that are found as defined in the figgy.json file for a svc
         """
 
         print(f"{self.c.fg_gr}Checking for orphaned config names.{self.c.rs}\r\n")
@@ -81,11 +81,11 @@ class Cleanup(ConfigCommand):
         """
         Cleans up orphaned replication and merge configurations.
         Args:
-            config_repl: The replication config dictionary as parsed from the ci-config.json file
-            shared_names: Expected parameters as defined in the ci-config.json
+            config_repl: The replication config dictionary as parsed from the figgy.json file
+            shared_names: Expected parameters as defined in the figgy.json
             config_merge: The merge config dict as defined
             run_env: RunEnv object
-            namespace: str -> /app/service-name as defined or parsed from the ci-config.json file.
+            namespace: str -> /app/service-name as defined or parsed from the figgy.json file.
         """
 
         print(f"{self.c.fg_gr}Checking for orphaned replication configs.{self.c.rs}")
@@ -98,14 +98,14 @@ class Cleanup(ConfigCommand):
                         and cfg.destination not in self._shared_names \
                         and cfg.destination not in list(self._merge_conf.keys()) \
                         and (isinstance(cfg.source, list) or cfg.source.startswith(shared_ns)
-                             or cfg.source.startswith(app_ns)):
+                             or cfg.source.startswith(self.context.defaults.service_ns)):
                     notify = False
                     selection = "unselected"
                     while selection.lower() != "y" and selection.lower() != "n":
                         selection = input(
                             f"Remote replication config with {self.c.fg_bl}{self._namespace}{self.c.rs} replication "
                             f"mapping of: {self.c.fg_bl}{cfg.source} -> {cfg.destination}{self.c.rs} does not "
-                            f"exist in your ci-config.json. Should this be removed? (y/N): ").lower()
+                            f"exist in your figgy.json. Should this be removed? (y/N): ").lower()
                         selection = selection if selection != '' else 'n'
                         if selection == "y":
                             self._config_dao.delete_config(cfg.destination, self.run_env)

@@ -41,6 +41,7 @@ class Configure(HelpCommand, ABC):
         assumable_roles: Maintains a mapping of accountId -> environment name -> role name so the we can authenticate
                          the user with the appropriate AWS accounts based on their returned SAML assertion.
         """
+        Utils.wipe_vaults() or Utils.wipe_defaults()
         defaults: CLIDefaults = self._setup.get_defaults()
         defaults = self._setup.configure_auth(defaults)
         self._setup.save_defaults(defaults)
@@ -48,6 +49,7 @@ class Configure(HelpCommand, ABC):
 
         defaults = self._setup.configure_roles(current_defaults=defaults)
         defaults = self._setup.configure_preferences(defaults)
+        defaults = self._setup.configure_figgy_defaults(defaults)
 
         self._setup.save_defaults(defaults)
         print(f"\n{self.c.fg_gr}Setup successful! Enjoy figgy!{self.c.rs}")

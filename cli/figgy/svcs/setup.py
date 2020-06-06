@@ -4,6 +4,7 @@ from typing import Callable, List, Dict
 from tabulate import tabulate
 
 from figgy.config import *
+from figgy.data.dao.ssm import SsmDao
 from figgy.input import Input
 from figgy.models.assumable_role import AssumableRole
 from figgy.models.defaults.defaults import CLIDefaults
@@ -15,6 +16,7 @@ from figgy.svcs.cache_manager import CacheManager
 from figgy.svcs.config_manager import ConfigManager
 from figgy.svcs.sso.provider.provider_factory import SessionProviderFactory
 from figgy.svcs.sso.provider.session_provider import SessionProvider
+from figgy.svcs.sso.session_manager import SessionManager
 from figgy.utils.secrets_manager import SecretsManager
 from figgy.utils.utils import Utils
 
@@ -29,8 +31,20 @@ class FiggySetup:
     # If we ever need to add params to this constructor we'll need to better handle dependencies and do a bit of
     # refactoring here.
     def __init__(self):
-        self._cache_mgr = CacheManager(DEFAULTS_FILE_CACHE_KEY)
+        self._cache_mgr = CacheManager(file_override=DEFAULTS_FILE_CACHE_PATH)
         self._config_mgr, self.c = ConfigManager.figgy(), Utils.default_colors()
+
+    def _get_session_manager(self, defaults: CLIDefaults) -> SessionManager:
+        if not self._session_manager:
+            self._session_manager = SessionManager(defaults, self.__get_session_provider(defaults))
+
+        return self._session_manager
+
+    def __get_session_provider(self, defaults: CLIDefaults):
+        if not self._session_provider:
+            self._session_provider = SessionProviderFactory(defaults).instance()
+
+        return self._session_provider
 
     def configure_auth(self, current_defaults: CLIDefaults, configure_provider=True) -> CLIDefaults:
         updated_defaults = current_defaults
@@ -117,6 +131,15 @@ class FiggySetup:
         self.save_defaults(updated_defaults)
         return updated_defaults
 
+    def configure_figgy_defaults(self, current_defaults: CLIDefaults):
+        updated_defaults = current_defaults
+        session = self._get_session_manager(current_defaults).get_session(current_defaults.assumable_roles[0])
+        ssm = SsmDao(session.client('ssm'))
+        default_service_ns = ssm.get_parameter(PS_FIGGY_DEFAULT_SERVICE_NS_PATH)
+        updated_defaults.service_ns = default_service_ns
+
+        return updated_defaults
+
     def basic_configure(self, configure_provider=True) -> CLIDefaults:
         defaults: CLIDefaults = self.get_defaults()
         if not defaults:
@@ -129,11 +152,11 @@ class FiggySetup:
         return defaults
 
     def save_defaults(self, defaults: CLIDefaults):
-        self._cache_mgr.write(DEFAULTS_FILE_CACHE_KEY, defaults)
+        self._cache_mgr.write(DEFAULTS_KEY, defaults)
 
     def get_defaults(self) -> CLIDefaults:
         try:
-            last_write, defaults = self._cache_mgr.get(DEFAULTS_FILE_CACHE_KEY)
+            last_write, defaults = self._cache_mgr.get(file_override=DEFAULTS_FILE_CACHE_PATH)
         except Exception:
             # If cache is corrupted or inaccessible, "fogetaboutit" (in italian accent)
             return CLIDefaults.unconfigured()
@@ -152,13 +175,13 @@ class FiggySetup:
         print(tabulate(
             [
                 [
-                    account_id,
+                    f'{account_id[0:5]} [REDACTED]',
                     printable_roles[account_id]['env'],
                     ', '.join(printable_roles[account_id]['roles'])
                 ]
                 for account_id in printable_roles.keys()
             ],
-            headers=['AccountId', 'Environment', 'Roles'],
+            headers=['Account #', 'Environment', 'Roles'],
             tablefmt="grid",
             numalign="center",
             stralign="left",

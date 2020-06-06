@@ -24,6 +24,10 @@ locals {
   # ** /shared is required by figgy, all otheres are optional
   root_namespaces = ["/shared", "/app", "/data", "/devops", "/sre", "/dba"]
 
+  # This namespace is where _all_ service specific configurations will be stored. Must be one of the above listed
+  # namespaces. I recommend keeping /app
+  service_namespace = "/app"
+
   # Configure access permissions by mapping your role_types to namespace access levels. Be careful to ensure you
   # don't have any typos here. These must match the above `role_types` and `root_namespaces` configurations
   # Format: Map[str:List[str]], or more specifically Map[role_type:List[namespace]]

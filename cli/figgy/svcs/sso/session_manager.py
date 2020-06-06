@@ -20,9 +20,9 @@ log = logging.getLogger(__name__)
 class SessionManager:
     _MAX_ATTEMPTS = 5
 
-    def __init__(self, colors_enabled: bool, defaults: CLIDefaults, session_provider: SessionProvider):
+    def __init__(self, defaults: CLIDefaults, session_provider: SessionProvider):
         self._sts = boto3.client('sts')
-        self._utils = Utils(colors_enabled)
+        self._utils = Utils(defaults.colors_enabled)
         self._defaults = defaults
         self.session_provider: SessionProvider = session_provider
 

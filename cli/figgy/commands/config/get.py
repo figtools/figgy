@@ -26,10 +26,9 @@ class Get(ConfigCommand):
         except ClientError as e:
             denied = "AccessDeniedException" == e.response['Error']['Code']
             if denied and "AWSKMS; Status Code: 400;" in e.response['Error']['Message']:
-                print(
-                    f"{self.c.fg_rd}You do not have access to decrypt the value of Name: {key}{self.c.rs}")
+                print(f"\n{self.c.fg_rd}You do not have access to decrypt the value of: {key}{self.c.rs}")
             elif denied:
-                print(f"{self.c.fg_rd}You do not have access to Parameter: {key}{self.c.rs}")
+                print(f"\n{self.c.fg_rd}You do not have access to Parameter: {key}{self.c.rs}")
             else:
                 raise
         return None, None

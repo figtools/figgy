@@ -39,9 +39,10 @@ class Share(ConfigCommand):
         while share_another:
             print()
             key = prompt(source_name_msg, completer=self._config_completer, style=FIGGY_STYLE)
-            if re.match(f"/app/.*", key):
+            if re.match(f"{self.context.defaults.service_ns}/.*", key):
                 print(
-                    f"{self.c.fg_rd}The SOURCE of replication may not be from within the /app/ namespace.{self.c.rs}\n")
+                    f"{self.c.fg_rd}The SOURCE of replication may not be from within the "
+                    f"{self.context.defaults.service_ns}/ namespace.{self.c.rs}\n")
                 continue
 
             dest = prompt(dest_name_msg, completer=self._config_completer, style=FIGGY_STYLE)

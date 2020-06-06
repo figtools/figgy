@@ -11,11 +11,11 @@ class KeyUtils(object):
         """
         From various sets of keys and configs, calculates all required PS Names (keys) this application requires.
         Args:
-            config_keys: set -> representing the app_parameters in the passed in ci-config.json file
-            shared_names: set -> representing the shared_parameters in the passed in ci-config.json file
-            merge_conf: dict -> representing the merged_parameters in the passed in ci-config.json file
-            repl_conf: dict -> representing the replication_config in the ci-config.json file
-            repl_from_conf: dict -> represents the `replicate_from` config block in the ci-config.json file
+            config_keys: set -> representing the app_parameters in the passed in figgy.json file
+            shared_names: set -> representing the shared_parameters in the passed in figgy.json file
+            merge_conf: dict -> representing the merged_parameters in the passed in figgy.json file
+            repl_conf: dict -> representing the replication_config in the figgy.json file
+            repl_from_conf: dict -> represents the `replicate_from` config block in the figgy.json file
             namespace: parsed, or calculated namespace for the application being synced. E.G. /app/demo-time/
 
         Returns: Set[str] -> All PS Names that have been defined as dependencies for this application's deployment
@@ -53,9 +53,9 @@ class KeyUtils(object):
         Parses the repl_from block and merges it into the standard 'replication' block. This simplifies
         configuring replication and detecting orphans.
         Args:
-            repl_conf: Dict representing the `replication_config` block in ci-config.json file
-            repl_from: Dict representing the `replicate_frorm` block in ci-config.json file
-            dest_namespace: namespace found in the `ci-config.json` file. Where replication is destined for.
+            repl_conf: Dict representing the `replication_config` block in figgy.json file
+            repl_from: Dict representing the `replicate_frorm` block in figgy.json file
+            dest_namespace: namespace found in the `figgy.json` file. Where replication is destined for.
 
         Returns: an updated repl_conf dictionary with repl_from figgy.configs merged into it.
         """

@@ -1,5 +1,5 @@
 from pathlib import Path
-from figgy.config.aws import *
+
 
 VERSION = '0.0.28a'
 CLI_NAME = 'figgy'
@@ -61,7 +61,7 @@ SSM_DELETE = 'DeleteParameter'
 # Other PS Config constants
 DEPLOY_GROUPS_PS_PREFIX = '/shared/deploy-groups/'
 
-# ci-config.json json keys
+# figgy.json json keys
 REPLICATION_KEY = 'replication_config'
 MERGE_KEY = 'merged_parameters'
 CONFIG_KEY = 'app_parameters'
@@ -77,13 +77,13 @@ PLUGIN_KEY = 'plugins'
 
 # Config paths
 PS_FIGGY_ACCOUNTS_PREFIX = '/figgy/accounts/'
+PS_FIGGY_DEFAULT_SERVICE_NS_PATH = '/figgy/defaults/service-namespace'
 
 # Replication Types:
 repl_types = [REPL_TYPE_APP, REPL_TYPE_MERGE]
 
 # File names / paths
 HOME = str(Path.home())
-DEFAULTS_FILE_CACHE_KEY = 'defaults'
 DECRYPTER_S3_PATH_PREFIX = f'figgy/decrypt/'
 AWS_CREDENTIALS_FILE_PATH = f'{HOME}/.aws/credentials'
 AWS_CONFIG_FILE_PATH = f'{HOME}/.aws/config'
@@ -91,8 +91,11 @@ CACHE_OTHER_DIR = f'{HOME}/.figgy/cache/other'
 DEFAULT_INSTALL_PATH = '/usr/local/bin/figgy'
 ERROR_LOG_DIR = f'{HOME}/.figgy/errors'
 CONFIG_OVERRIDE_FILE_PATH = f'{HOME}/.figgy/config'
+DEFAULTS_FILE_CACHE_PATH = f'{CACHE_OTHER_DIR}/defaults.json'
 STS_SESSION_CACHE_PATH = f"{HOME}/.figgy/vault/sts/sessions"
 SAML_SESSION_CACHE_PATH = f"{HOME}/.figgy/vault/sso/saml"
+OKTA_SESSION_CACHE_PATH = f"{HOME}/.figgy/cache/okta/session"
+GOOGLE_SESSION_CACHE_PATH = f"{HOME}/.figgy/cache/google/session"
 
 # Defaults file keys
 DEFAULTS_ROLE_KEY = 'role'
@@ -103,6 +106,7 @@ DEFAULTS_PROVIDER_KEY = 'provider'
 DEFAULTS_PROFILE_KEY = 'profile'
 DEFAULTS_REGION_KEY = 'region'
 MFA_SERIAL_KEY = 'mfa_serial'
+DEFAULTS_KEY = 'defaults'
 
 # Cache File keys
 OKTA_SESSION_TOKEN_CACHE_KEY = 'session_token'
@@ -123,3 +127,7 @@ SANDBOX_ROLES = ['dev', 'devops', 'sre', 'data', 'dba']
 GET_SANBOX_CREDS_URL = "https://q39v8f3u13.execute-api.us-east-1.amazonaws.com/sandbox-bastion/v1/get-credentials"
 FIGGY_SANDBOX_REGION = 'us-east-1'
 FIGGY_SANDBOX_PROFILE = 'figgy-sandbox'
+
+
+# Vault
+FIGGY_VAULT_FILES = [OKTA_SESSION_CACHE_PATH, GOOGLE_SESSION_CACHE_PATH, STS_SESSION_CACHE_PATH, SAML_SESSION_CACHE_PATH]

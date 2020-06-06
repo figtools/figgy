@@ -50,52 +50,49 @@ class Edit(ConfigCommand):
         self._config_view = config_view
         self._utils = Utils(colors_enabled)
         self._config_completer = config_completer
-        self._select_name = [
-            ('class:', 'Please input a PS Name: ')
-        ]
 
     def edit(self) -> None:
         """
         Allows a user to define a PS name and add or edit a parameter at that location. Uses NPYscreen editor.
         """
-
-        key = prompt(self._select_name, completer=self._config_completer)
-        self._utils.validate_ps_name(key)
-
-        value, desc = self._ssm.get_parameter_with_description(key)
-        edit_app = EditApp(key, value, desc)
-        edit_app.run()
-
-        value, desc = edit_app.value_box.value, edit_app.description_box.value
-        log.info(f"Edited value: {value} - description: {desc}")
-
-        is_secret = Input.is_secret()
-        parameter_type, kms_id = SSM_SECURE_STRING if is_secret else SSM_STRING, None
-        if is_secret:
-            valid_keys = self._config_view.get_authorized_kms_keys()
-            if len(valid_keys) > 1:
-                key_name = Input.select_kms_key(valid_keys)
-            else:
-                key_name = valid_keys[0]
-
-            kms_id = self._config_view.get_authorized_key_id(key_name)
-
-        if not self._utils.is_valid_input(key, f"Parameter name", True) \
-                or not self._utils.is_valid_input(value, key, True):
-            self._utils.error_exit("Invalid input detected, please resolve the issue and retry.")
+        key = Input.input('Please input a PS Name: ', completer=self._config_completer)
 
         try:
+            value, desc = self._ssm.get_parameter_with_description(key)
+            edit_app = EditApp(key, value, desc)
+            edit_app.run()
+
+            value, desc = edit_app.value_box.value, edit_app.description_box.value
+            log.info(f"Edited value: {value} - description: {desc}")
+
+            is_secret = Input.is_secret()
+            parameter_type, kms_id = SSM_SECURE_STRING if is_secret else SSM_STRING, None
+            if is_secret:
+                valid_keys = self._config_view.get_authorized_kms_keys()
+                if len(valid_keys) > 1:
+                    key_name = Input.select_kms_key(valid_keys)
+                else:
+                    key_name = valid_keys[0]
+
+                kms_id = self._config_view.get_authorized_key_id(key_name)
+
+            if not self._utils.is_valid_input(key, f"Parameter name", True) \
+                    or not self._utils.is_valid_input(value, key, True):
+                self._utils.error_exit("Invalid input detected, please resolve the issue and retry.")
+
             self._ssm.set_parameter(key, value, desc, parameter_type, key_id=kms_id)
+            print(f"{self.c.fg_gr}{key} saved successfully.{self.c.rs}")
         except ClientError as e:
             if "AccessDeniedException" == e.response['Error']['Code']:
-                print(
-                    f"\n\nYou do not have permissions to put a new config value at the path: {self.c.fg_bl}{key}{self.c.rs}")
-                print(
-                    f"Developers may add keys under the following namespaces: {self.c.fg_bl}{DEV_PS_WRITE_NS}{self.c.rs}")
-                print(f"{self.c.fg_rd}Error message: {e.response['Error']['Message']}{self.c.rs}")
+                denied = "AccessDeniedException" == e.response['Error']['Code']
+                if denied and "AWSKMS; Status Code: 400;" in e.response['Error']['Message']:
+                    print(f"\n{self.c.fg_rd}You do not have access to decrypt the value of: {key}{self.c.rs}")
+                elif denied:
+                    print(f"\n{self.c.fg_rd}You do not have access to Parameter: {key}{self.c.rs}")
+                else:
+                    raise
             else:
-                print(
-                    f"{self.c.fg_rd}Exception caught attempting to add config: {e}{self.c.rs}")
+                self._utils.error_exit(f"{self.c.fg_rd}Exception caught attempting to add config: {e}{self.c.rs}")
 
     @VersionTracker.notify_user
     @AnonymousUsageTracker.track_command_usage

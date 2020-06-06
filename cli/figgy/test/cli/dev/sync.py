@@ -42,9 +42,9 @@ class DevSync(FiggyTest):
 
     def sync_success(self):
         print(f"Testing: {CLI_NAME} config {Utils.get_first(sync)} --env {DEFAULT_ENV} "
-              f"--config figgy/test/assets/success/ci-config.json")
+              f"--config figgy/test/assets/success/figgy.json")
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(sync)} --env {DEFAULT_ENV} '
-                                    f'--config figgy/test/assets/success/ci-config.json --skip-upgrade',
+                                    f'--config figgy/test/assets/success/figgy.json --skip-upgrade',
                                     encoding='utf-8', timeout=10)
         missing_key = '/app/ci-test/v1/config12'
         child.expect(f'.*Please input a value for.*{missing_key}.*')
@@ -60,8 +60,8 @@ class DevSync(FiggyTest):
 
     def sync_with_orphans(self):
         print(f"Testing: {CLI_NAME} config {Utils.get_first(sync)} --env {DEFAULT_ENV} "
-              f"--config figgy/test/assets/error/ci-config.json")
+              f"--config figgy/test/assets/error/figgy.json")
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(sync)} --env {DEFAULT_ENV} '
-                                    f'--config figgy/test/assets/error/ci-config.json --skip-upgrade', timeout=10)
+                                    f'--config figgy/test/assets/error/figgy.json --skip-upgrade', timeout=10)
         child.expect('.*Unused Parameter:.*/app/ci-test/v1/config11.*Orphaned replication.*/shared/jordan/testrepl2.*')
         print("Sync with orphaned configs passed!")

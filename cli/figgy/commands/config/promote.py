@@ -27,7 +27,8 @@ class Promote(ConfigCommand):
         repeat = True
         parameters: List[Dict] = []
         while repeat:
-            namespace = prompt(f"Please input a namespace prefix to promote: (i.e. /app/foo/): ",
+            namespace = prompt(f"Please input a namespace prefix to promote:"
+                               f" (i.e. {self.context.defaults.service_ns}/foo/): ",
                                completer=self._config_completer)
             if not self._utils.is_valid_input(namespace, "namespace", notify=False):
                 continue

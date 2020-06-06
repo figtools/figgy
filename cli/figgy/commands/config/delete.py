@@ -114,7 +114,7 @@ class Delete(ConfigCommand):
                     print(f"\n\nYou do not have permissions to a new config value at the path: "
                           f"{self.c.fg_bl} {key} {self.c.rs}")
                     print(f"Developers may add keys under the following namespaces: "
-                          f"{self.c.fg_bl} {DEV_PS_WRITE_NS} {self.c.rs}")
+                          f"{self.c.fg_bl} {self.c.rs}")
                     print(f"Error message: {e.response['Error']['Message']}")
                 elif "ParameterNotFound" == error_code:
                     print(f"{self.c.fg_rd} The specified Name: {self.c.rs} {self.c.fg_bl} {key}{self.c.rs}"

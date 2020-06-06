@@ -73,9 +73,9 @@ class FiggyCLI:
         if skip:
             return CLIDefaults.unconfigured()
 
-        cache_mgr = CacheManager(DEFAULTS_FILE_CACHE_KEY)
+        cache_mgr = CacheManager(file_override=DEFAULTS_FILE_CACHE_PATH)
         try:
-            last_write, defaults = cache_mgr.get(DEFAULTS_FILE_CACHE_KEY)
+            last_write, defaults = cache_mgr.get(DEFAULTS_KEY)
 
             if not defaults:
                 Utils.stc_error_exit(f'{CLI_NAME} has not been configured. '
@@ -185,7 +185,7 @@ class FiggyCLI:
 
         if args.version is False and args.configure is False:
             if not hasattr(args, 'env') or args.env is None:
-                print(f"{EMPTY_ENV_HELP_TEXT}{self._run_env.env}")
+                print(f"{EMPTY_ENV_HELP_TEXT}{self._run_env.env}\n")
             else:
                 Utils.stc_validate(args.env in self._defaults.valid_envs,
                                    f'{ENV_HELP_TEXT} {self._defaults.valid_envs}. Provided: {args.env}')
@@ -204,23 +204,6 @@ class FiggyCLI:
 
         self._context = FiggyContext(self.get_colors_enabled(), found_resource, found_command,
                                      self._run_env, self._assumable_role, args)
-
-    def _get_session_manager(self):
-        """
-        Lazy load a hydrated session manager. This supports error reporting, auto-upgrade functionality, etc.
-        """
-        if not self._session_manager:
-            self._session_manager = SessionManager(self.get_colors_enabled(),
-                                                   self.get_defaults(skip=self._is_setup_command),
-                                                   self._get_session_provider())
-
-        return self._session_manager
-
-    def _get_session_provider(self):
-        if not self._session_provider:
-            self._session_provider = SessionProviderFactory(self.get_defaults(skip=self._is_setup_command)).instance()
-
-        return self._session_provider
 
     def get_command_factory(self) -> CommandFactory:
         if not self._command_factory:

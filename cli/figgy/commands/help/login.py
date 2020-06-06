@@ -49,9 +49,10 @@ class Login(HelpCommand, ABC):
     def login_sandbox(self):
         print(f"{self.c.fg_bl}Logging you into the Figgy Sandbox environment.{self.c.rs}")
         user = Input.input("Please input a user name: ")
+        colors = Input.select_enable_colors()
+        print()
 
         role = Input.select("Please select a role to impersonate: ", valid_options=SANDBOX_ROLES)
-        colors = Input.select_enable_colors()
         params = {'role': role, 'user': user}
         result = requests.get(GET_SANBOX_CREDS_URL, params=params)
 
@@ -71,6 +72,7 @@ class Login(HelpCommand, ABC):
         config_mgr = ConfigManager.figgy()
         config_mgr.set(Config.Section.Bastion.PROFILE, FIGGY_SANDBOX_PROFILE)
         defaults = self._setup.configure_roles(current_defaults=defaults, role=Role(role))
+        defaults = self._setup.configure_figgy_defaults(defaults)
         self._setup.save_defaults(defaults)
 
         print(f"\n{self.c.fg_gr}Login successful. Your sandbox session will last for{self.c.rs} "
@@ -87,4 +89,5 @@ class Login(HelpCommand, ABC):
         if self.context.command == login:
             self.login()
         elif self.context.command == sandbox:
+            Utils.wipe_vaults() or Utils.wipe_defaults()
             self.login_sandbox()

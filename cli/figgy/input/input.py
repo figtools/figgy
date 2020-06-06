@@ -203,7 +203,7 @@ class Input:
         msg = f'{message}\nOptions: {valid_options}\n -> ' if len(valid_options) < 10 else f'{message} -> '
         while not selection:
             if default:
-                selection = prompt(msg, completer=WordCompleter(words=valid_options), default=default)
+                selection = prompt(msg, completer=WordCompleter(words=valid_options, match_middle=True), default=default)
             else:
                 selection = prompt(msg, completer=WordCompleter(words=valid_options))
 

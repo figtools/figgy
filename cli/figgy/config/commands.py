@@ -250,8 +250,4 @@ REQ_OPTION_MAP = {
 
 # Permission mappings
 shared_ns = '/shared'
-app_ns = '/app'
-data_ns = '/data'
-devops_ns = '/devops'
 figgy_ns = '/figgy'
-DEV_PS_WRITE_NS = ['/shared', '/app']
