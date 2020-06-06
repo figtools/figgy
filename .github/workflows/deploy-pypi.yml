@@ -62,7 +62,6 @@ jobs:
       run: |
         echo "${PYPI_RC}" > ~/.pypirc
         cd cli
-#        ./scripts/deploy-pypi.sh
         VERSION=$(./scripts/get_version.sh)
         echo "Setting release version to $VERSION"
         export RELEASE_VERSION=$VERSION
