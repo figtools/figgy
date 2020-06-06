@@ -1,5 +1,11 @@
 Figgy Changelog:
 
+## 0.0.16a
+- Continued Testing of release process
+
+## 0.0.15a
+- Testing build/release
+
 ## 0.0.14a
 - Testing the build / release process
 

@@ -146,7 +146,7 @@ class BastionSessionProvider(SessionProvider):
         else:
             ROLE_PATH = f'/figgy/users/{self.__get_iam_user}/roles'
             user_roles = self.__get_ssm().get_parameter(ROLE_PATH)
-            self._utils.stc_validate(user_roles is not None and user_roles is not "[]",
+            self._utils.stc_validate(user_roles is not None and user_roles != "[]",
                                      "Something is wrong with your user's configuration with Figgy. "
                                      "Unable to find any eligible roles for your user. Please contact your"
                                      " administrator.")
