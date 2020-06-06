@@ -14,10 +14,10 @@ class DataLogin(FiggyTest):
     def run(self):
         self.expect('.*user name:.*')
         self.sendline('FiggyDataTester')
-        self.expect('.*Options.*devops.*')
-        self.sendline('data')
         self.expect('.*weirdness.*')
         self.sendline('n')
+        self.expect('.*Options.*devops.*')
+        self.sendline('data')
         self.expect('.*default account.*')
         self.sendline('stage')
         self.expect('.*Login successful.*')

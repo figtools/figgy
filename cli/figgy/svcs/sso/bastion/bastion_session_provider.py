@@ -26,7 +26,6 @@ import time
 log = logging.getLogger(__name__)
 
 
-# Todo: Implement support for ExternalId for added security.
 class BastionSessionProvider(SessionProvider):
     _MAX_ATTEMPTS = 5
 
@@ -114,13 +113,15 @@ class BastionSessionProvider(SessionProvider):
                         mfa = SecretsManager.generate_mfa(
                             self._defaults.user) if self._defaults.auto_mfa else Input.get_mfa()
                         response = self.__get_sts().assume_role(RoleArn=assumable_role.role_arn,
-                                                                RoleSessionName=Utils.sanitize_session_name(self._defaults.user),
+                                                                RoleSessionName=Utils.sanitize_session_name(
+                                                                    self._defaults.user),
                                                                 DurationSeconds=self._defaults.session_duration,
                                                                 SerialNumber=self._defaults.mfa_serial,
                                                                 TokenCode=mfa)
                     else:
                         response = self.__get_sts().assume_role(RoleArn=assumable_role.role_arn,
-                                                                RoleSessionName=Utils.sanitize_session_name(self._defaults.user),
+                                                                RoleSessionName=Utils.sanitize_session_name(
+                                                                    self._defaults.user),
                                                                 DurationSeconds=self._defaults.session_duration)
 
                     session = FiggyAWSSession.from_sts_response(response)
@@ -177,7 +178,6 @@ class BastionSessionProvider(SessionProvider):
         :return: bool - Is this session originating from a role?
         """
         creds = self.__bastion_session.get_credentials().get_frozen_credentials()
-        print(creds)
 
         return hasattr(creds, 'token') and creds.token is not None
 
