@@ -74,7 +74,10 @@ jobs:
         echo "Setting release version to $VERSION"
         export RELEASE_VERSION=$VERSION
         echo "::set-env name=RELEASE_VERSION::$VERSION"
-        echo "::set-output name=changelog::$(./scripts/parse_changelog.sh)"
+        CHANGELOG=$(./scripts/parse_changelog.sh)
+        echo "Got changelog: $CHANGELOG"
+        echo "::set-output name=changelog::$CHANGELOG"
+
     - name: Create Release
       id: create_release
       uses: actions/create-release@master
