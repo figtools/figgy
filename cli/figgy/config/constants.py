@@ -1,7 +1,7 @@
 from pathlib import Path
 from figgy.config.aws import *
 
-VERSION = '0.0.18a'
+VERSION = '0.0.19a'
 CLI_NAME = 'figgy'
 
 # Figgy Github

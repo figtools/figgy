@@ -10,35 +10,35 @@ on:
 
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    if: github.actor == github.event.repository.owner.login
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-      - name: Install dependencies
-        env:
-          FIGGY_TEST: true
-        run: |
-          sudo apt-get update \
-          && sudo apt-get install libusb-1.0-0-dev libxmu-dev libxmu-headers \
-          freeglut3-dev libxext-dev libxi-dev libudev1 libudev-dev
-
-      - name: Install figgy
-        run: |
-          cd cli
-          pip install -r requirements.txt
-          pip install -r requirements-linux.txt
-          scripts/install.sh
-      - name: Run E2E Test Suite
-        run: |
-          export TERM=linux
-          export TERMINFO=/etc/terminfo
-          cd cli
-          python run_tests.py
+#  test:
+#    runs-on: ubuntu-latest
+#    if: github.actor == github.event.repository.owner.login
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: Set up Python 3.8
+#        uses: actions/setup-python@v2
+#        with:
+#          python-version: 3.8
+#      - name: Install dependencies
+#        env:
+#          FIGGY_TEST: true
+#        run: |
+#          sudo apt-get update \
+#          && sudo apt-get install libusb-1.0-0-dev libxmu-dev libxmu-headers \
+#          freeglut3-dev libxext-dev libxi-dev libudev1 libudev-dev
+#
+#      - name: Install figgy
+#        run: |
+#          cd cli
+#          pip install -r requirements.txt
+#          pip install -r requirements-linux.txt
+#          scripts/install.sh
+#      - name: Run E2E Test Suite
+#        run: |
+#          export TERM=linux
+#          export TERMINFO=/etc/terminfo
+#          cd cli
+#          python run_tests.py
 
   release:
     if: github.ref == 'refs/heads/master'
@@ -74,7 +74,7 @@ jobs:
         echo "Setting release version to $VERSION"
         export RELEASE_VERSION=$VERSION
         echo "::set-env name=RELEASE_VERSION::$VERSION"
-        CHANGELOG=$(./scripts/parse_changelog.sh)
+        CHANGELOG=$(./scripts/parse_changelog.sh | tr '\n' '%0A')
         echo "::set-output name=changelog::$CHANGELOG"
     - name: Create Release
       id: create_release
