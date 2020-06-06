@@ -63,7 +63,8 @@ class ConfigFactory(Factory):
         elif command == share:
             return Share(self._ssm, self._config, self._config_completer, self._colors_enabled, self._config_context)
         elif command == list_com:
-            return FigList(self._ssm, self._config_completer, self._colors_enabled, self._config_context, self.get(get))
+            return FigList(self._config_view, self._config_completer, self._colors_enabled,
+                           self._config_context, self.get(get))
         elif command == browse:
             return Browse(self._ssm, self._colors_enabled, self._config_context, self.get(get),
                           self.get(delete), self._config_view)

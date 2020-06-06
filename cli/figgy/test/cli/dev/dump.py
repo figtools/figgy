@@ -25,7 +25,8 @@ class DevDump(FiggyTest):
             more = i < maximum - 1
             put.add_another(f'{param_1}-{i}', param_1_val, f'{param_1_desc}-{i}', add_more=more)
 
-        child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(dump)} --env {DEFAULT_ENV} --skip-upgrade', timeout=7)
+        child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(dump)} --env {DEFAULT_ENV} --skip-upgrade',
+                              encoding='utf-8', timeout=7)
 
         self.step(f"Testing `{CLI_NAME} config {Utils.get_first(dump)} --env {DEFAULT_ENV}`")
         child.expect('.*to dump from.*')

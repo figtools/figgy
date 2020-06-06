@@ -37,21 +37,19 @@ base_requirements = [
         "pyotp >= 2.3.0",
         "pydantic >= 1.5.1",
         "python-u2flib-host",
+        "pycryptodome>=3.9.7",
 ]
 
 windows_requirements = [
     "pyreadline>=2.1",
     "windows-curses>=2.1.0",
     "pywin32",
-    "pycryptodome>=3.9.7",
 ]
 
 linux_requirements = [
-    "pycrypto>=2.6.1"
 ]
 
 darwin_requriements = [
-    "pycrypto>=2.6.1"
 ]
 
 if platform.system() == WINDOWS:

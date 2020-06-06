@@ -44,7 +44,8 @@ class DevSync(FiggyTest):
         print(f"Testing: {CLI_NAME} config {Utils.get_first(sync)} --env {DEFAULT_ENV} "
               f"--config figgy/test/assets/success/ci-config.json")
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(sync)} --env {DEFAULT_ENV} '
-                                    f'--config figgy/test/assets/success/ci-config.json --skip-upgrade', timeout=10)
+                                    f'--config figgy/test/assets/success/ci-config.json --skip-upgrade',
+                                    encoding='utf-8', timeout=10)
         missing_key = '/app/ci-test/v1/config12'
         child.expect(f'.*Please input a value for.*{missing_key}.*')
         child.sendline(DELETE_ME_VALUE)

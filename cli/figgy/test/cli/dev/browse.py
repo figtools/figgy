@@ -44,7 +44,7 @@ class DevBrowse(FiggyTest):
         print(f"Getting {KEY_PATH} through browse...")
         # Get Value
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(browse)} --env {DEFAULT_ENV} --skip-upgrade',
-                              timeout=10)
+                              timeout=10, encoding='utf-8')
         child.send(KEY_DOWN)
         child.send(KEY_DOWN)
         child.send(KEY_DOWN)
@@ -62,7 +62,7 @@ class DevBrowse(FiggyTest):
         self.step("Get success. Deleting through browse.")
         # Delete Value
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(browse)} --env {DEFAULT_ENV} --skip-upgrade',
-                              timeout=10)
+                              timeout=10, encoding='utf-8')
         child.send(KEY_DOWN)
         child.send(KEY_DOWN)
         child.send(KEY_DOWN)

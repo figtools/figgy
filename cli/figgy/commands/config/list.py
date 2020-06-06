@@ -9,14 +9,15 @@ from figgy.data.dao.ssm import SsmDao
 from figgy.svcs.observability.anonymous_usage_tracker import AnonymousUsageTracker
 from figgy.svcs.observability.version_tracker import VersionTracker
 from figgy.utils.utils import *
+from figgy.views.rbac_limited_config import RBACLimitedConfigView
 
 
 class List(ConfigCommand):
 
-    def __init__(self, ssm_init: SsmDao, config_completer_init: WordCompleter,
+    def __init__(self, config_view: RBACLimitedConfigView, config_completer_init: WordCompleter,
                  colors_enabled: bool, config_context: ConfigContext, get: Get):
         super().__init__(list_com, colors_enabled, config_context)
-        self._ssm = ssm_init
+        self._view = config_view
         self._config_completer = config_completer_init
         self._get = get
         self._utils = Utils(colors_enabled)
@@ -44,16 +45,11 @@ class List(ConfigCommand):
             if not self._utils.is_valid_input(namespace, "namespace", notify=False):
                 continue
 
-            try:
-                parameters = self._ssm.get_all_parameters([namespace])
-            except ClientError as e:
-                print(f"{self.c.fg_rd}ERROR: >> {e.response['Error']['Message']}{self.c.rs}")
-                continue
-
+            parameters = self._view.get_config_names(prefix=namespace)
             names = [['Selector', 'Name']]
             count = 1
             for param in parameters:
-                names.append([f'{self.c.fg_rd}{count}{self.c.rs}', param['Name']])
+                names.append([f'{self.c.fg_rd}{count}{self.c.rs}', param])
                 count = count + 1
 
             # Pretty print out with columns for selection.

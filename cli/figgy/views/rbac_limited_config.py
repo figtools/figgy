@@ -79,15 +79,16 @@ class RBACLimitedConfigView:
         return key_id
 
     @Utils.trace
-    def get_config_names(self, prefix=None, one_level=False) -> List[str]:
+    def get_config_names(self, prefix: str = None, one_level: bool = False) -> List[str]:
         all_names = sorted(self._config_svc.get_parameter_names())
         authed_nses = self.get_authorized_namespaces()
+        print(authed_nses)
         new_names = []
 
         if prefix:
             is_child = False
             for ns in authed_nses:
-                if ns.startswith(prefix):
+                if prefix.startswith(ns):
                     is_child = True
 
             if not is_child:

@@ -35,7 +35,7 @@ class FiggyVersionDetails:
 
 
 class VersionTracker:
-    _UPGRADE_CHECK_PERCENTAGE = 10  # % chance any decorated method execution will check for an upgrade
+    _UPGRADE_CHECK_PERCENTAGE = 5  # % chance any decorated method execution will check for an upgrade
 
     def __init__(self, cli_defaults: CLIDefaults):
         self._cli_defaults = cli_defaults

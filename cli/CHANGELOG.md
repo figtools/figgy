@@ -1,13 +1,12 @@
 Figgy Changelog:
 
-## 0.0.3
-- Third version!
-- Third version. This is a sentence. This is a sentence. This is a sentence. This is a sentence.
-This is a sentence. This is a sentence. This is a sentence. This is a sentence. This is a sentence.
-This is a sentence. This is a sentence. This is a sentence. This is a sentence. This is a sentence.
+## 0.0.28a
+- Making `config list` command leverage RBAC limited config view for improved performance.
 
-## 0.0.2
-- Second version
+## 0.0.27a
+- Continued Testing of release process
+- Plus some other stuff!
+- And some other stuff!
 
 ## 0.0.1a
 - First version!
