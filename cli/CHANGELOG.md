@@ -1,5 +1,8 @@
 Figgy Changelog:
 
+## 0.0.28a
+- Making `config list` command leverage RBAC limited config view for improved performance.
+
 ## 0.0.27a
 - Continued Testing of release process
 - Plus some other stuff!
