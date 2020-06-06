@@ -200,6 +200,18 @@ data "aws_iam_policy_document" "get_figgy_configs" {
        "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter/figgy/*"
     ]
   }
+
+  statement {
+    sid = "DenySpecialConfigs"
+    effect = "Deny"
+    actions = [
+      "ssm:GetParameter",
+      "ssm:GetParameters"
+    ]
+    resources = [
+       "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter/figgy/integrations/*"
+    ]
+  }
 }
 
 # We cannot scope these to just the `/figgy` namespace or else we would. Unfortunately AWS does not allow
