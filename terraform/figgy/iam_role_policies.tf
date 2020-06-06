@@ -97,7 +97,8 @@ data "aws_iam_policy_document" "dynamic_policy" {
       "ssm:GetParameters"
     ]
     resources = [
-       "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter/figgy/integrations/*"
+       "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter/figgy/integrations/*",
+       "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter/admin/*"
     ]
   }
 
