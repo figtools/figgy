@@ -12,7 +12,6 @@ on:
 jobs:
 #  test:
 #    runs-on: ubuntu-latest
-#    if: github.actor == github.event.repository.owner.login
 #    steps:
 #      - uses: actions/checkout@v2
 #      - name: Set up Python 3.8
