@@ -59,6 +59,11 @@ jobs:
           pip install -r requirements-linux.txt
           scripts/install.sh
       - name: Run E2E Test Suite
+        env:
+          GOOGLE_IDP_ID: ${{ secrets.GOOGLE_IDP_ID }}
+          GOOGLE_SP_ID: ${{ secrets.GOOGLE_SP_ID }}
+          GOOGLE_SSO_PASSWORD: ${{ secrets.GOOGLE_SSO_PASSWORD }}
+          GOOGLE_SSO_USER: ${{ secrets.GOOGLE_SSO_USER }}
         run: |
           export TERM=linux
           export TERMINFO=/etc/terminfo
