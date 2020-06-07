@@ -44,13 +44,15 @@ def print_test(test: str):
     print(f"{c.fg_yl} Starting test: {test}{c.rs}")
     print(f"{c.fg_bl}-----------------------------------------{c.rs}")
 
-
-def main():
+def clear_cache():
     delete_cache(f'{CACHE_DIR}/other')
     delete_cache(f'{CACHE_DIR}/okta')
     delete_cache(f'{VAULT_DIR}/sso')
     delete_cache(f'{VAULT_DIR}/sts')
     delete_file(CONFIG_FILE)
+
+def main():
+    clear_cache()
 
     auth_type = sys.argv[1] if len(sys.argv) > 1 else "none"
     if auth_type.lower() not in AUTH_TYPES:
@@ -62,6 +64,8 @@ def main():
         ConfigureGoogle('dev').run()
         dev_tests()
 
+        clear_cache()
+
         # Login to data role
         print_test("Data Login")
         ConfigureGoogle('data').run()
@@ -72,6 +76,7 @@ def main():
         DevLogin().run()
         dev_tests()
 
+        clear_cache()
         # Login to data role
         print_test("Data Login")
         DataLogin().run()
