@@ -13,7 +13,7 @@ KEY_DOWN = 'j'
 KEY_PATH = '/shared/aaa/aa'
 
 
-class DevBrowse(FiggyTest):
+class DevOpsBrowse(FiggyTest):
 
     def __init__(self):
         super().__init__(None)
@@ -39,12 +39,15 @@ class DevBrowse(FiggyTest):
     ## Get through browse, then delete
     def browse(self):
         self._setup()
-        self.step("Sleeping for 60 to ensure the cache gets populated with the new /shared value")
-        time.sleep(60)
+        self.step("Sleeping for 15 to ensure the cache gets populated with the new /shared value")
+        time.sleep(15)
         print(f"Getting {KEY_PATH} through browse...")
         # Get Value
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(browse)} --env {DEFAULT_ENV} --skip-upgrade',
                               timeout=10, encoding='utf-8')
+        child.send(KEY_DOWN)
+        child.send(KEY_DOWN)
+        child.send(KEY_DOWN)
         child.send(KEY_DOWN)
         child.send('e')
         child.send(KEY_DOWN)
@@ -60,6 +63,9 @@ class DevBrowse(FiggyTest):
         # Delete Value
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(browse)} --env {DEFAULT_ENV} --skip-upgrade',
                               timeout=10, encoding='utf-8')
+        child.send(KEY_DOWN)
+        child.send(KEY_DOWN)
+        child.send(KEY_DOWN)
         child.send(KEY_DOWN)
         child.send('e')
         child.send(KEY_DOWN)

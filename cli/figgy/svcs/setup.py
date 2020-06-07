@@ -135,12 +135,12 @@ class FiggySetup:
                                                                          Input.select_enable_colors)
         updated_defaults.report_errors = self._config_mgr.get_or_prompt(Config.Section.Figgy.REPORT_ERRORS,
                                                                         Input.select_report_errors)
-        self.save_defaults(updated_defaults)
         return updated_defaults
 
     def configure_figgy_defaults(self, current_defaults: CLIDefaults):
         updated_defaults = current_defaults
-        session = self._get_session_manager(current_defaults).get_session(current_defaults.assumable_roles[0], prompt=True)
+        session = self._get_session_manager(current_defaults).get_session(current_defaults.assumable_roles[0],
+                                                                          prompt=True)
         ssm = SsmDao(session.client('ssm'))
         default_service_ns = ssm.get_parameter(PS_FIGGY_DEFAULT_SERVICE_NS_PATH)
         updated_defaults.service_ns = default_service_ns
@@ -155,7 +155,6 @@ class FiggySetup:
         else:
             defaults = self.configure_auth(defaults, configure_provider=configure_provider)
 
-        self.save_defaults(defaults)
         return defaults
 
     def save_defaults(self, defaults: CLIDefaults):

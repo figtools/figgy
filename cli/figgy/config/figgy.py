@@ -35,7 +35,11 @@ class Config:
             AWS_REGION = 'aws_region'
 
 
-EMPTY_CONFIG = """
+FAKE_GOOGLE_IDP_ID = 'N0tre9le3'
+FAKE_GOOGLE_SP_ID = '12345678010'
+FAKE_OKTA_APP_LINK = 'https://your-domain.okta.com/home/amazon_aws/0oaaqxeiciFzAVassP4x6/123'
+
+EMPTY_CONFIG = f"""
 [FIGGY]
 mfa_enabled = false
 auto_mfa = false
@@ -44,12 +48,12 @@ report_errors = true
 aws_region = us-east-1
 
 [OKTA]
-app_link = https://your-domain.okta.com/home/amazon_aws/0oaaqxeiciFzAVassP4x6/123
+app_link = {FAKE_OKTA_APP_LINK}
 factor_type = GOOGLE
 
 [GOOGLE]
-identity_provider_id = N0tre9le3
-service_provider_id = 12345678010
+identity_provider_id = {FAKE_GOOGLE_IDP_ID}
+service_provider_id = {FAKE_GOOGLE_SP_ID}
 
 [BASTION]
 profile = default

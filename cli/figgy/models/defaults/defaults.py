@@ -45,7 +45,7 @@ class CLIDefaults:
                            run_env=RunEnv("unconfigured"),
                            provider=Provider.UNSELECTED,
                            session_duration=DEFAULT_SESSION_DURATION,
-                           region="unconfigured",
+                           region="us-east-1",
                            mfa_enabled=False,
                            mfa_serial=None,
                            provider_config=None,

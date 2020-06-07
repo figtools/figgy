@@ -7,7 +7,7 @@ on:
     branches: [develop, master]
 
 jobs:
-  test:
+  test_bastion:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -34,11 +34,40 @@ jobs:
           export TERM=linux
           export TERMINFO=/etc/terminfo
           cd cli
-          python run_tests.py
+          python run_tests.py bastion
+
+  test_google:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        env:
+          FIGGY_TEST: true
+        run: |
+          sudo apt-get update \
+          && sudo apt-get install libusb-1.0-0-dev libxmu-dev libxmu-headers \
+          freeglut3-dev libxext-dev libxi-dev libudev1 libudev-dev
+
+      - name: Install figgy
+        run: |
+          cd cli
+          pip install -r requirements.txt
+          pip install -r requirements-linux.txt
+          scripts/install.sh
+      - name: Run E2E Test Suite
+        run: |
+          export TERM=linux
+          export TERMINFO=/etc/terminfo
+          cd cli
+          python run_tests.py google
 
   release:
     if: github.ref == 'refs/heads/master'
-    needs: test
+    needs: [test_bastion, test_google]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2

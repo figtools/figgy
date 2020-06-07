@@ -1,4 +1,5 @@
 from abc import ABC
+import sys
 from typing import List, Dict
 
 from tabulate import tabulate
@@ -50,7 +51,6 @@ class Configure(HelpCommand, ABC):
         defaults = self._setup.configure_roles(current_defaults=defaults)
         defaults = self._setup.configure_preferences(defaults)
         defaults = self._setup.configure_figgy_defaults(defaults)
-
         self._setup.save_defaults(defaults)
         print(f"\n{self.c.fg_gr}Setup successful! Enjoy figgy!{self.c.rs}")
         return defaults

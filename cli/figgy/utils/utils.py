@@ -49,6 +49,7 @@ class Utils:
                 try:
                     return function(self, *args, **kwargs)
                 except (botocore.exceptions.EndpointConnectionError, urllib3.exceptions.NewConnectionError) as e:
+                    print(e)
                     if retries > MAX_RETRIES:
                         raise e
 

@@ -27,9 +27,20 @@ class FiggyVersionDetails:
 
     @staticmethod
     def from_api_response(response: Dict) -> "FiggyVersionDetails":
+        notify_chance, version, changelog = \
+            response.get('notify_chance'), response.get('version'), response.get('changelog')
+
+        if not notify_chance or notify_chance == 'None':
+            notify_chance = 0
+
+        if not version:
+            raise ValueError('No valid version found.')
+        elif not changelog:
+            raise ValueError('No valid changelog found.')
+
         return FiggyVersionDetails(
-            version=response.get('version'),
-            notify_chance=int(response.get('notify_chance'), 0),
+            version=version,
+            notify_chance=int(notify_chance),
             changelog=response.get('changelog')
         )
 
