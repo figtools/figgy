@@ -32,6 +32,8 @@ class ConfigureGoogle(FiggyTest):
             self._child.sendline('y')
         elif result == 1:
             self._child.sendline('foobar')
+            self._child.expect('.*confirm.*')
+            self._child.sendline('foobar')
             self._child.expect('.*mfa_enabled.*')
             self._child.sendline('y')
 
