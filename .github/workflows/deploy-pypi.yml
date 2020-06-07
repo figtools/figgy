@@ -60,6 +60,7 @@ jobs:
           scripts/install.sh
       - name: Run E2E Test Suite
         env:
+          OVERRIDE_KEYRING: true
           GOOGLE_IDP_ID: ${{ secrets.GOOGLE_IDP_ID }}
           GOOGLE_SP_ID: ${{ secrets.GOOGLE_SP_ID }}
           GOOGLE_SSO_PASSWORD: ${{ secrets.GOOGLE_SSO_PASSWORD }}

@@ -27,16 +27,8 @@ class ConfigureGoogle(FiggyTest):
         self._child.sendline(user_name)
         self._child.expect('.*GOOGLE password.*')
         self._child.sendline(password)
-        result = self._child.expect(['.*mfa_enabled.*', '.*set a password.*'])
-        if result == 0:
-            self._child.sendline('y')
-        elif result == 1:
-            self._child.sendline('foobar')
-            self._child.expect('.*confirm.*')
-            self._child.sendline('foobar')
-            self._child.expect('.*mfa_enabled.*')
-            self._child.sendline('y')
-
+        self._child.expect('.*mfa_enabled.*')
+        self._child.sendline('y')
         self._child.expect('.*Google Account.*')
         self._child.sendline(idp_id)
         self._child.expect('.*Please input.*Provider ID.*')
