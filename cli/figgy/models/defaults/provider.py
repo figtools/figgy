@@ -5,14 +5,14 @@ from typing import List
 class Provider(Enum):
     OKTA = "okta"
     GOOGLE = "google"
-    MICROSOFT = "microsoft"
-    GENERIC_SAML = "saml"
+    # MICROSOFT = "microsoft"
+    # GENERIC_SAML = "saml"
     AWS_BASTION = "bastion"
     UNSELECTED = 0
 
     @staticmethod
     def sso_providers() -> List["Provider"]:
-        return [Provider.OKTA, Provider.GOOGLE, Provider.MICROSOFT, Provider.GENERIC_SAML]
+        return [Provider.OKTA, Provider.GOOGLE]
 
     @staticmethod
     def names():

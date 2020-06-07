@@ -458,7 +458,7 @@ class Utils:
     @staticmethod
     def parse_bool(value: Union[str, bool]) -> bool:
         if isinstance(value, bool):
-            return bool
+            return bool(value)
 
         value = value.replace("'", '').replace('"', '').strip()
         if value.lower() == "true":

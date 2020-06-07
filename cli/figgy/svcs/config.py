@@ -73,7 +73,6 @@ class ConfigService:
             log.debug(f"Cached: {deleted_names}")
             log.debug(f"Cached: {added_names}")
 
-
             all_parameters = set(cached_contents) - deleted_names | added_names
 
         return all_parameters

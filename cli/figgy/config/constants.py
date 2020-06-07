@@ -8,12 +8,12 @@ CLI_NAME = 'figgy'
 FIGGY_GITHUB = "https://github.com/mancej/figgy"
 
 # Todo: Update to prod before release.
-FIGGY_OBS_API_BASE_URL = "https://96zdpxzc37.execute-api.us-east-1.amazonaws.com/dev/v1"
+FIGGY_OBS_API_BASE_URL = "https://api.figgy.dev"
 
 # Paths
-FIGGY_ERROR_REPORTING_URL = f"{FIGGY_OBS_API_BASE_URL}/log-error"
-FIGGY_GET_VERSION_URL = f"{FIGGY_OBS_API_BASE_URL}/version"
-FIGGY_LOG_METRICS_URL = f"{FIGGY_OBS_API_BASE_URL}/log-metrics"
+FIGGY_ERROR_REPORTING_URL = f"{FIGGY_OBS_API_BASE_URL}/v1/log-error"
+FIGGY_GET_VERSION_URL = f"{FIGGY_OBS_API_BASE_URL}/v1/version"
+FIGGY_LOG_METRICS_URL = f"{FIGGY_OBS_API_BASE_URL}/v1/log-metrics"
 
 # Role names are assumed to be prefixed with `figgy-` - Users may override by setting the below ENV variable.
 FIGGY_ROLE_NAME_PREFIX = 'figgy-'

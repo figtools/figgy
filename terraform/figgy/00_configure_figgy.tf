@@ -50,7 +50,7 @@ locals {
   }
 
   # SSO Type: Options are okta/google
-  sso_type = "okta"
+  sso_type = "google"
 
   # Bastion account #. Set to your bastion account # if you are leveraging bastion based authentication. Otherwise ignore.
   # If `enable_sso = true` then ignore this.

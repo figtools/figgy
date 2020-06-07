@@ -7,6 +7,9 @@ import boto3
 
 from json import JSONDecodeError
 from typing import Optional, List
+
+from figgy.svcs.setup import FiggySetup
+
 from figgy.config import *
 from figgy.input.input import Input
 from figgy.models.assumable_role import AssumableRole
@@ -126,8 +129,9 @@ class FiggyCLI:
         if defaults is not None and not prompt:
             return defaults.role
         else:
-            #Todo this BROKE
-            return Input.select_role()
+            roles = self.__setup().get_assumable_roles()
+            role_names = list(set([x.role.role for x in roles]))
+            return Input.select_role(role_names)
 
     def get_colors_enabled(self) -> bool:
         """
@@ -160,6 +164,12 @@ class FiggyCLI:
 
         return matching_role
 
+    def __setup(self) -> FiggySetup:
+        if not self._setup:
+            self._setup = FiggySetup()
+
+        return self._setup
+
     @staticmethod
     def is_setup_command(args):
         return Utils.is_set_true(configure, args) or Utils.command_set(sandbox, args)
@@ -174,6 +184,7 @@ class FiggyCLI:
         self._mgmt_ssm = None
         self._profile = None
         self._command_factory = None
+        self._setup = None
         self._session_manager = None
         self._is_setup_command: bool = FiggyCLI.is_setup_command(args)
         self._utils = Utils(self.get_colors_enabled())

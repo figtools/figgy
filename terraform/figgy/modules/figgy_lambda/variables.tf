@@ -34,3 +34,8 @@ variable "concurrent_executions" {
 variable "layers" {
   description = "Layers to attach to this lambda."
 }
+
+variable "cw_lambda_log_retention" {
+  description = "# of days to keep figgy lambda logs in cloudwatch"
+  default = 30
+}
