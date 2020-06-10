@@ -28,7 +28,7 @@ class ProviderConfigFactory:
             return OktaProviderConfig.configure(mfa_enabled)
         elif provider is Provider.GOOGLE:
             return GoogleProviderConfig.configure(mfa_enabled)
-        elif provider is Provider.BASTION:
+        elif provider is Provider.AWS_BASTION:
             return BastionProviderConfig.configure(mfa_enabled)
 
 
@@ -37,17 +37,15 @@ class BastionProviderConfig(ProviderConfig):
     profile_name: str
 
     @staticmethod
+    def get_profile():
+        profile = input('Please input your aws profile linked to your credentials in your `bastion` account: ')
+        Utils.stc_validate(profile != '', "You must input a valid profile name.")
+        return profile
+
+    @staticmethod
     def configure(mfa_enabled: bool = False) -> "BastionProviderConfig":
         config, c = ConfigManager(CONFIG_OVERRIDE_FILE_PATH), Utils.default_colors()
-
-        profile = config.get_property(Config.Section.Bastion.PROFILE)
-        if profile:
-            print(f"\n\n{c.fg_bl}Default AWS Provider found in: {CONFIG_OVERRIDE_FILE_PATH}.{c.rs}")
-            print(f"Value found: {profile}\n")
-        else:
-            profile = input('Please input your aws profile linked to your credentials in your `bastion` account: ')
-            Utils.stc_validate(profile != '', "You must input a valid profile name.")
-
+        profile = config.get_or_prompt(Config.Section.Bastion.PROFILE, BastionProviderConfig.get_profile)
         return BastionProviderConfig(profile_name=profile)
 
     @property

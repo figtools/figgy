@@ -85,7 +85,6 @@ class ConfigManager:
                           f"\nTo: {c.fg_gr}{val}{c.rs}"
                           f"\nIn file {c.fg_bl}{self.config_file}{c.rs}")
 
-                    print(f"TRYING TO SET KEY: {key} to val: {val}")
                     self.set(key, val)
 
         else:

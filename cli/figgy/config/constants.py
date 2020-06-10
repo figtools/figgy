@@ -1,7 +1,6 @@
 from pathlib import Path
 
-
-VERSION = '0.0.28a'
+VERSION = '0.0.29a'
 CLI_NAME = 'figgy'
 
 # Figgy Github
