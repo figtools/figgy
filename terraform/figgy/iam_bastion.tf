@@ -33,11 +33,13 @@ data "aws_iam_policy_document" "bastion_role_policy" {
               replace(principal, "%%ROLE%%", "figgy-${local.role_types[count.index]}")
       ]
     }
-
-    condition {
-      test     = "Bool"
-      values   = [local.mfa_enabled]
-      variable = "aws:MultiFactorAuthPresent"
+    dynamic "condition" {
+      for_each = local.mfa_enabled ? [true] : []
+      content {
+        test = "Bool"
+        values = [local.mfa_enabled]
+        variable = "aws:MultiFactorAuthPresent"
+        }
     }
   }
 }
