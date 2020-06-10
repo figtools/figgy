@@ -56,6 +56,5 @@ identity_provider_id = {FAKE_GOOGLE_IDP_ID}
 service_provider_id = {FAKE_GOOGLE_SP_ID}
 
 [BASTION]
-profile = default
-
+profile = bastion
 """

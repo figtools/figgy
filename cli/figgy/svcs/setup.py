@@ -89,6 +89,7 @@ class FiggySetup:
             SecretsManager.set_mfa_secret(updated_defaults.user, mfa_secret)
 
         if configure_provider:
+
             provider_config = ProviderConfigFactory().instance(provider, mfa_enabled=updated_defaults.mfa_enabled)
             updated_defaults.provider_config = provider_config
 
