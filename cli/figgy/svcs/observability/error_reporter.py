@@ -80,7 +80,7 @@ class FiggyErrorReporter:
         Utils.stc_validate(result.status_code == 200, "Unable to report this error to Figgy. Please consider "
                                                       f"opening a ticket on the figgy github repo: {FIGGY_GITHUB}")
 
-        print(f"\nWe are so sorry you experienced this error! This error has been anonymously reported to the Figgy "
+        print(f"We are so sorry you experienced this error! This error has been anonymously reported to the Figgy "
               f"development team. \n\nIf you don't want to be prompted to report errors, you can disable the error "
               f"reporting by running `{CLI_NAME} --configure`.")
         print(f"\n\n{self.c.fg_bl}--------------------------------------------------------{self.c.rs}\n\n")

@@ -31,7 +31,6 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
         vault = FiggyVault(SecretsManager.get_password(defaults.user))
         self._cache_manager: CacheManager = CacheManager(file_override=OKTA_SESSION_CACHE_PATH, vault=vault)
         self._saml_cache: CacheManager = CacheManager(file_override=SAML_SESSION_CACHE_PATH, vault=vault)
-        # self._setup: FiggySetup = FiggySetup()
 
     def _write_okta_session_to_cache(self, session: OktaSession) -> None:
         self._cache_manager.write(self._SESSION_CACHE_KEY, session)
@@ -76,7 +75,7 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
                     prompt = True
                     log.error(f"Caught error when authing with OKTA & caching session: {e}. ")
                     if count > 3:
-                        Utils.error_exit("Unable to autheticate with OKTA with your provided credentials. Perhaps your"
+                        Utils.stc_error_exit("Unable to autheticate with OKTA with your provided credentials. Perhaps your"
                                          f"user, password, or MFA changed? Try reunning `{CLI_NAME} --configure` again.")
                     # self._defaults = self._setup.basic_configure(configure_provider=self._defaults.provider_config is None)
 
@@ -126,6 +125,9 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
                 return assertion
 
     def get_assumable_roles(self) -> List[AssumableRole]:
+        return self._cache_manager.get_val_or_refresh('assumable_roles', refresher=self.__lookup_roles)
+
+    def __lookup_roles(self) -> List[AssumableRole]:
         assertion = self.get_saml_assertion(prompt=False)
         root = ET.fromstring(assertion)
         prefix_map = {"saml2": "urn:oasis:names:tc:SAML:2.0:assertion"}

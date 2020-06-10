@@ -24,7 +24,9 @@ provider "aws" {
   version = ">= 2.0.0"
   region = var.region
 
-    assume_role {
+  assume_role {
+    ## Todo: You're going to have to update this to your own role, or remove this block and provide credentials to
+    ## Terraform some other way.
     role_arn     = "arn:aws:iam::${var.aws_account_id}:role/figgy-admin"
   }
 }

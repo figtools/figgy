@@ -9,8 +9,8 @@ locals {
   # with the appropriate deployment bucket name variable. This bucket is used to store figgy deployment artifacts.
   create_deploy_bucket = true
 
-  # If you dot not already have cloudtrail logging enabled, it is required by figgy. We can turn it on for you, or
-  # you can enable it on your own.
+  # Cloudtrail logging is required by Figgy we can turn it on for you, or you can enable it on your own.
+  # If you don't have it enabled, or want to enable it yourself, set this to false.
   configure_cloudtrail = true
 
   # How many unique roles will figgy users need? Each of these types should map to a particular figgy user story.

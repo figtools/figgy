@@ -6,6 +6,7 @@ from figgy.config import CONFIG_OVERRIDE_FILE_PATH, Config, EMPTY_CONFIG
 from figgy.config.style.terminal_factory import TerminalFactory
 from figgy.input import Input
 from figgy.utils.utils import Utils
+from threading import Lock
 from os import path
 
 
@@ -20,6 +21,11 @@ class ConfigManager:
         :param config_file: /path/to/config_file
         """
         self.config_file = config_file
+        self.config = None
+        self._lock = Lock()
+        self._load()
+
+    def _load(self):
         self.config = ConfigParser()
         with open(self.config_file, 'r') as file:
             self.config.read_file(file)
@@ -31,6 +37,10 @@ class ConfigManager:
         :param key: Key to set in the file.
         :param val: Value to set.
         """
+        # Update in case file changed on FS.
+        with self._lock:
+            self._load()
+
         if isinstance(val, bool):
             val = str(val).lower()
         else:
@@ -41,7 +51,7 @@ class ConfigManager:
         with open(self.config_file, "w") as file:
             self.config.write(file)
 
-    def get_or_prompt(self, key: Enum, get_it: Callable, colors_enabled=Utils.is_mac()) -> str:
+    def get_or_prompt(self, key: Enum, get_it: Callable, colors_enabled=Utils.is_mac(), force_prompt=False) -> str:
         """
         Retrieves a value from the config_file based on the provided ENUM's value.
         If the value is unset, executes the get_it() method provided to retrieve the value, then returns it.
@@ -54,15 +64,18 @@ class ConfigManager:
         """
         c = TerminalFactory(colors_enabled).instance().get_colors()
         val = self.get_property(key)
+        selection = None
 
-        if val:
-            print(f"\n\n{c.fg_bl}Default value found:{c.rs}")
-            print(f"Key: {c.fg_gr}{key.value}{c.rs}")
-            print(f"Value: {c.fg_gr}{val}{c.rs}")
-            print(f"Values found in file: {c.fg_bl}{self.config_file}{c.rs}\n\n")
+        if val or force_prompt:
+            if not force_prompt:
+                print(f"\n\n{c.fg_bl}Default value found:{c.rs}")
+                print(f"Key: {c.fg_gr}{key.value}{c.rs}")
+                print(f"Value: {c.fg_gr}{val}{c.rs}")
+                print(f"Values found in file: {c.fg_bl}{self.config_file}{c.rs}\n\n")
 
-            selection = Input.y_n_input("Continue with this value? ", default_yes=True)
-            if not selection:
+                selection = Input.y_n_input(f"Continue with `{val}`? ", default_yes=True)
+
+            if not selection or force_prompt:
                 original_val = val
                 val = get_it()
                 if val != original_val:
@@ -71,6 +84,8 @@ class ConfigManager:
                           f"\nFrom: {c.fg_yl}{original_val}{c.rs}"
                           f"\nTo: {c.fg_gr}{val}{c.rs}"
                           f"\nIn file {c.fg_bl}{self.config_file}{c.rs}")
+
+                    print(f"TRYING TO SET KEY: {key} to val: {val}")
                     self.set(key, val)
 
         else:

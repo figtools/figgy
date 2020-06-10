@@ -27,9 +27,20 @@ class FiggyVersionDetails:
 
     @staticmethod
     def from_api_response(response: Dict) -> "FiggyVersionDetails":
+        notify_chance, version, changelog = \
+            response.get('notify_chance'), response.get('version'), response.get('changelog')
+
+        if not notify_chance or notify_chance == 'None':
+            notify_chance = 0
+
+        if not version:
+            raise ValueError('No valid version found.')
+        elif not changelog:
+            raise ValueError('No valid changelog found.')
+
         return FiggyVersionDetails(
-            version=response.get('version'),
-            notify_chance=int(response.get('notify_chance'), 0),
+            version=version,
+            notify_chance=int(notify_chance),
             changelog=response.get('changelog')
         )
 
@@ -81,14 +92,35 @@ class VersionTracker:
 
     @staticmethod
     def print_new_version_msg(c: Color, new_details: FiggyVersionDetails):
-        print(f'\n{c.fg_bl}------------------------------------------{c.rs}')
-        print(f'A new version of figgy is available!')
-        print(f"Current Version: {c.fg_yl}{VERSION}{c.rs}")
-        print(f"New Version: {c.fg_bl}{new_details.version}{c.rs}")
-        print(f"To see what the new version has in store for you, run `{CLI_NAME} --version`")
-        print(f"To upgrade, run `pip install figgy-cli --upgrade`")
-        print(f'{c.fg_bl}------------------------------------------{c.rs}')
-        
+        if not VersionTracker.is_rollback(VERSION, new_details.version):
+            print(f'\n{c.fg_bl}------------------------------------------{c.rs}')
+            print(f'A new version of figgy is available!')
+            print(f"Current Version: {c.fg_yl}{VERSION}{c.rs}")
+            print(f"New Version: {c.fg_bl}{new_details.version}{c.rs}")
+            print(f"To see what the new version has in store for you, run `{CLI_NAME} --version`")
+            print(f"To upgrade, run `brew upgrade figgy` or `pip install figgy-cli --upgrade`")
+            print(f'{c.fg_bl}------------------------------------------{c.rs}')
+        else:
+            print(f'\n{c.fg_bl}------------------------------------------{c.rs}')
+            print(f'Figgy was rolled back due to a major issue and you\'re on a bad version!')
+            print(f"Current Version: {c.fg_yl}{VERSION}{c.rs}")
+            print(f"Recommended Version: {c.fg_bl}{new_details.version}{c.rs}")
+            print(f"To roll-back, run `brew upgrade figgy` or `pip install figgy-cli --upgrade`")
+            print(f'{c.fg_bl}------------------------------------------{c.rs}')
+
+
+    @staticmethod
+    def is_rollback(current_version: str, new_version: str):
+        try:
+            cu_major = current_version.split('.')[0]
+            cu_minor = current_version.split('.')[1]
+            cu_patch = current_version.split('.')[2].strip('ab')
+            new_major = new_version.split('.')[0]
+            new_minor = new_version.split('.')[1]
+            new_patch = new_version.split('.')[2].strip('ab')
+            return new_major <= cu_major and new_minor <= cu_minor and cu_patch <= new_patch
+        except IndentationError:
+            pass
 
     @staticmethod
     def notify_user(function):

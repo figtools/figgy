@@ -23,3 +23,8 @@ resource "aws_s3_bucket_object" "figgy_deploy" {
   source = var.zip_path
   etag = filemd5(var.zip_path)
 }
+
+resource "aws_cloudwatch_log_group" "lambda_log_group" {
+  name = "/aws/lambda/${var.lambda_name}"
+  retention_in_days = var.cw_lambda_log_retention
+}

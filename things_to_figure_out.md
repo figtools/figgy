@@ -1,7 +1,11 @@
 These are problems I intend to solve, once I figure out the best way to do it.
 
 ## Todo:
-- Test & Fix role swapping
+- Test release rollback
+- Add version to anonymous tracking
+- Implement validate command
+- `figgy config get --role dev` fails with sandbox login.
+- Double check. Deletes don't seem to be showing up in slack webhook
 
 ## Ideas:
 - Add support for "ExternalId" verification for cross-account role assumption from Bastion.

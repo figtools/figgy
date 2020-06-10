@@ -29,7 +29,7 @@ def remove_old_deleted_items():
     deleted_items: List[ConfigItem] = cache_dao.get_deleted_configs()
     for item in deleted_items:
         if int(time.time() * 1000) - item.last_updated > MAX_DELETED_AGE:
-            log.info(f"Item: {item.name} is older than {MAX_DELETED_AGE/1000}"
+            log.info(f"Item: {item.name} is older than {MAX_DELETED_AGE / 1000}"
                      f" seconds and is marked deleted. Removing from cache...")
             cache_dao.delete(item)
 
@@ -45,9 +45,8 @@ def handle(event, context):
 
         for param in missing_params:
             log.info(f"Storing in cache: {param}")
-            cache_dao.put_in_cache(param)
-
             items: Set[ConfigItem] = cache_dao.get_items(param)
+            cache_dao.put_in_cache(param)
             [cache_dao.delete(item) for item in items]  # If any dupes exist, get rid of em
 
         for param in to_delete:
@@ -56,7 +55,6 @@ def handle(event, context):
             sorted_items = sorted(items)
             [cache_dao.delete(item) for item in sorted_items[:-1]]  # Delete all but the most recent item.
             cache_dao.mark_deleted(sorted_items[-1])
-
 
         remove_old_deleted_items()
 

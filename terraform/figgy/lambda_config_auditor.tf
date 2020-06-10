@@ -8,6 +8,7 @@ module "config_auditor" {
   policies = [aws_iam_policy.config_auditor.arn, aws_iam_policy.lambda_default.arn, aws_iam_policy.lambda_read_configs.arn]
   zip_path = data.archive_file.figgy.output_path
   layers = [local.aws_sdk_layer_map[var.region]]
+  cw_lambda_log_retention = var.figgy_cw_log_retention
 }
 
 module "config_auditor_trigger" {

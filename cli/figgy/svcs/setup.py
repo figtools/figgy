@@ -33,12 +33,26 @@ class FiggySetup:
     def __init__(self):
         self._cache_mgr = CacheManager(file_override=DEFAULTS_FILE_CACHE_PATH)
         self._config_mgr, self.c = ConfigManager.figgy(), Utils.default_colors()
+        self._session_mgr = None
+        self._session_provider = None
+
+    def get_assumable_roles(self, defaults: CLIDefaults = None) -> List[AssumableRole]:
+        if not defaults:
+            defaults = self.get_defaults()
+
+        return self._get_session_provider(defaults).get_assumable_roles()
 
     def _get_session_manager(self, defaults: CLIDefaults) -> SessionManager:
-        return SessionManager(defaults, self.__get_session_provider(defaults))
+        if not self._session_mgr:
+            self._session_mgr = SessionManager(defaults, self._get_session_provider(defaults))
 
-    def __get_session_provider(self, defaults: CLIDefaults):
-        return SessionProviderFactory(defaults).instance()
+        return self._session_mgr
+
+    def _get_session_provider(self, defaults: CLIDefaults):
+        if not self._session_provider:
+            self._session_provider = SessionProviderFactory(defaults).instance()
+
+        return self._session_provider
 
     def configure_auth(self, current_defaults: CLIDefaults, configure_provider=True) -> CLIDefaults:
         updated_defaults = current_defaults
@@ -57,7 +71,6 @@ class FiggySetup:
         try:
             mfa_enabled = Utils.parse_bool(self._config_mgr.get_or_prompt(Config.Section.Figgy.MFA_ENABLED,
                                                                           Input.select_mfa_enabled))
-
             if mfa_enabled:
                 auto_mfa = Utils.parse_bool(self._config_mgr.get_or_prompt(Config.Section.Figgy.AUTO_MFA,
                                                                            Input.select_auto_mfa))
@@ -122,12 +135,12 @@ class FiggySetup:
                                                                          Input.select_enable_colors)
         updated_defaults.report_errors = self._config_mgr.get_or_prompt(Config.Section.Figgy.REPORT_ERRORS,
                                                                         Input.select_report_errors)
-        self.save_defaults(updated_defaults)
         return updated_defaults
 
     def configure_figgy_defaults(self, current_defaults: CLIDefaults):
         updated_defaults = current_defaults
-        session = self._get_session_manager(current_defaults).get_session(current_defaults.assumable_roles[0], prompt=True)
+        session = self._get_session_manager(current_defaults).get_session(current_defaults.assumable_roles[0],
+                                                                          prompt=True)
         ssm = SsmDao(session.client('ssm'))
         default_service_ns = ssm.get_parameter(PS_FIGGY_DEFAULT_SERVICE_NS_PATH)
         updated_defaults.service_ns = default_service_ns
@@ -142,7 +155,6 @@ class FiggySetup:
         else:
             defaults = self.configure_auth(defaults, configure_provider=configure_provider)
 
-        self.save_defaults(defaults)
         return defaults
 
     def save_defaults(self, defaults: CLIDefaults):
@@ -150,8 +162,8 @@ class FiggySetup:
 
     def get_defaults(self) -> CLIDefaults:
         try:
-            last_write, defaults = self._cache_mgr.get(file_override=DEFAULTS_FILE_CACHE_PATH)
-        except Exception:
+            last_write, defaults = self._cache_mgr.get(DEFAULTS_KEY)
+        except Exception as e:
             # If cache is corrupted or inaccessible, "fogetaboutit" (in italian accent)
             return CLIDefaults.unconfigured()
 

@@ -2,14 +2,14 @@ import re
 import xml.etree.ElementTree as ET
 
 from figgy.config.sso import *
-from figgy.config.constants import SAML_SESSION_CACHE_PATH
+from figgy.config.constants import GOOGLE_SESSION_CACHE_PATH
 from dataclasses import dataclass
 from typing import Optional, Any, List
 
 from figgy.models.assumable_role import AssumableRole
 from figgy.models.role import Role
 from figgy.models.run_env import RunEnv
-from figgy.svcs.sso.google.google import Google
+from figgy.svcs.sso.google.google import Google, ExpectedGoogleException
 
 from figgy.models.defaults.defaults import CLIDefaults
 from figgy.svcs.cache_manager import CacheManager
@@ -36,7 +36,7 @@ class GoogleSessionProvider(SSOSessionProvider):
     def __init__(self, defaults: CLIDefaults):
         super().__init__(defaults)
         vault = FiggyVault(SecretsManager.get_password(defaults.user))
-        self._cache_manager: CacheManager = CacheManager(file_override=SAML_SESSION_CACHE_PATH, vault=vault)
+        self._cache_manager: CacheManager = CacheManager(file_override=GOOGLE_SESSION_CACHE_PATH, vault=vault)
         config = GoogleConfig(
             username=defaults.user,
             password=SecretsManager.get_password(defaults.user),
@@ -50,36 +50,45 @@ class GoogleSessionProvider(SSOSessionProvider):
     def _write_google_session_to_cache(self, session: Any):
         self._cache_manager.write(self._SESSION_CACHE_KEY, session)
 
-    def get_assumable_roles(self):
-        saml = self._google.parse_saml()
-        decoded_assertion = saml.decode('utf-8')
-        root = ET.fromstring(decoded_assertion)
-        prefix_map = {"saml2": "urn:oasis:names:tc:SAML:2.0:assertion"}
-        role_attribute = root.find(".//saml2:Attribute[@Name='https://aws.amazon.com/SAML/Attributes/Role']",
-                                   prefix_map)
+    def get_assumable_roles(self) -> List[AssumableRole]:
+        return self._cache_manager.get_val_or_refresh('assumable_roles', refresher=self.__lookup_roles)
 
-        # SAML arns should look something like this:
-        # arn:aws:iam::9999999999:role/figgy-dev-devops,arn:aws:iam::9999999999:saml-provider/google
-        pattern = r'^arn:aws:iam::([0-9]+):role/(\w+-(\w+)-(\w+)),.*saml-provider/(\w+)'
-        assumable_roles: List[AssumableRole] = []
-        for value in role_attribute.findall('.//saml2:AttributeValue', prefix_map):
-            result = re.search(pattern, value.text)
-            unparsable_msg = f'{value.text} is of an invalid pattern, it must match: {pattern} for figgy to ' \
-                             f'dynamically map account_id -> run_env -> role for OKTA users.'
-            if not result:
-                Utils.stc_error_exit(unparsable_msg)
+    def __lookup_roles(self) -> List[AssumableRole]:
+        try:
+            saml = self._google.parse_saml()
+        except ExpectedGoogleException as e:
+            self._utils.error_exit(e)
+        else:
+            decoded_assertion = saml.decode('utf-8')
+            root = ET.fromstring(decoded_assertion)
 
-            result.groups()
-            account_id, role_name, run_env, role, provider_name = result.groups()
+            prefix_map = {"saml2": "urn:oasis:names:tc:SAML:2.0:assertion"}
+            role_attribute = root.find(".//saml2:Attribute[@Name='https://aws.amazon.com/SAML/Attributes/Role']",
+                                       prefix_map)
 
-            if not account_id or not run_env or not role_name or not role:
-                Utils.stc_error_exit(unparsable_msg)
-            else:
-                assumable_roles.append(AssumableRole(account_id=account_id,
-                                                     role=Role(role, full_name=role_name),
-                                                     run_env=RunEnv(run_env),
-                                                     provider_name=provider_name))
-        return assumable_roles
+            # SAML arns should look something like this:
+            # arn:aws:iam::9999999999:role/figgy-dev-devops,arn:aws:iam::9999999999:saml-provider/google
+            pattern = r'^arn:aws:iam::([0-9]+):role/(\w+-(\w+)-(\w+)),.*saml-provider/(\w+)'
+            assumable_roles: List[AssumableRole] = []
+            for value in role_attribute.findall('.//saml2:AttributeValue', prefix_map):
+                result = re.search(pattern, value.text)
+                unparsable_msg = f'{value.text} is of an invalid pattern, it must match: {pattern} for figgy to ' \
+                                 f'dynamically map account_id -> run_env -> role for OKTA users.'
+                if not result:
+                    Utils.stc_error_exit(unparsable_msg)
+
+                result.groups()
+                account_id, role_name, run_env, role, provider_name = result.groups()
+
+                if not account_id or not run_env or not role_name or not role:
+                    Utils.stc_error_exit(unparsable_msg)
+                else:
+                    assumable_roles.append(AssumableRole(account_id=account_id,
+                                                         role=Role(role, full_name=role_name),
+                                                         run_env=RunEnv(run_env),
+                                                         provider_name=provider_name))
+
+            return assumable_roles
 
     def _get_decoded_saml(self) -> str:
         self._google.do_login()

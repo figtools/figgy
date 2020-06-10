@@ -247,7 +247,3 @@ REQ_OPTION_MAP = {
     edit: [],
     generate: [ci_path]
 }
-
-# Permission mappings
-shared_ns = '/shared'
-figgy_ns = '/figgy'

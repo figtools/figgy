@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 
-from figgy.config import Config, CONFIG_OVERRIDE_FILE_PATH, SUPPORTED_OKTA_FACTOR_TYPES
+from figgy.config import Config, CONFIG_OVERRIDE_FILE_PATH, SUPPORTED_OKTA_FACTOR_TYPES, FAKE_GOOGLE_IDP_ID, FAKE_GOOGLE_SP_ID, FAKE_OKTA_APP_LINK
 from figgy.input.input import Input, List
 from figgy.svcs.config_manager import ConfigManager
 from figgy.utils.utils import Utils, Color
@@ -66,25 +66,34 @@ class GoogleProviderConfig(ProviderConfig):
     sp_id: str
 
     @staticmethod
+    def get_idp_id():
+        idp_id = input('Please input the Identity Provider ID associated with your Google Account: ')
+        Utils.stc_is_valid_input(idp_id, "Identity Provider Id", True)
+        return idp_id
+
+    @staticmethod
+    def get_sp_id():
+        sp_id = input('Please input the Service Provider ID associated with your Google SAML configuration (this is a '
+            'number lke 123456789) : ')
+        Utils.stc_is_valid_input(sp_id, "Service Provider Id", True)
+        return sp_id
+
+    @staticmethod
     def configure(mfa_enabled: bool = False) -> "GoogleProviderConfig":
         config, c = ConfigManager(CONFIG_OVERRIDE_FILE_PATH), Utils.default_colors()
-        idp_id = config.get_property(Config.Section.Google.IDP_ID)
-        if idp_id:
-            print(f"\n\n{c.fg_bl}Identity Provider Id found in: {CONFIG_OVERRIDE_FILE_PATH}.{c.rs}")
-            print(f"Value found: {idp_id}\n")
-        else:
-            idp_id = input('Please input the Identity Provider ID associated with your Google Account: ')
-            Utils.stc_is_valid_input(idp_id, "Identity Provider Id", True)
 
+        idp_id = config.get_property(Config.Section.Google.IDP_ID)
         sp_id = config.get_property(Config.Section.Google.SP_ID)
-        if sp_id:
-            print(f"\n\n{c.fg_bl}Service Provider Id found in: {CONFIG_OVERRIDE_FILE_PATH}.{c.rs}")
-            print(f"Value found: {sp_id}\n")
+
+        if idp_id and idp_id != FAKE_GOOGLE_IDP_ID:
+            idp_id = config.get_or_prompt(Config.Section.Google.IDP_ID, GoogleProviderConfig.get_idp_id)
         else:
-            sp_id = input(
-                'Please input the Service Provider ID associated with your Google SAML configuration (this is a '
-                'number lke 123456789) : ')
-            Utils.stc_is_valid_input(idp_id, "Service Provider Id", True)
+            idp_id = config.get_or_prompt(Config.Section.Google.IDP_ID, GoogleProviderConfig.get_idp_id, force_prompt=True)
+
+        if sp_id and sp_id != FAKE_GOOGLE_SP_ID:
+            sp_id = config.get_or_prompt(Config.Section.Google.SP_ID, GoogleProviderConfig.get_sp_id)
+        else:
+            sp_id = config.get_or_prompt(Config.Section.Google.SP_ID, GoogleProviderConfig.get_sp_id, force_prompt=True)
 
         return GoogleProviderConfig(idp_id=idp_id, sp_id=sp_id)
 
@@ -108,7 +117,7 @@ class OktaProviderConfig(ProviderConfig):
                                  f"sure this link is valid?")
 
     @staticmethod
-    def get_embed_link() -> str:
+    def get_app_link() -> str:
         app_link = input("Please input your OKTA AWS Application Embed Link. It's usually something like "
                          "'https://your-company.okta.com/home/amazon_aws/ASDF12351fg1/234': ")
         Utils.stc_is_valid_input(app_link, "OKTA AWS Application URL", True)
@@ -126,7 +135,11 @@ class OktaProviderConfig(ProviderConfig):
     @staticmethod
     def configure(mfa_enabled: bool = False) -> "OktaProviderConfig":
         config, c = ConfigManager(CONFIG_OVERRIDE_FILE_PATH), Utils.default_colors()
-        app_link = config.get_or_prompt(Config.Section.Okta.APP_LINK, OktaProviderConfig.get_embed_link)
+        app_link = config.get_property(Config.Section.Google.IDP_ID)
+        if app_link and app_link != FAKE_OKTA_APP_LINK:
+            app_link = config.get_or_prompt(Config.Section.Okta.APP_LINK, OktaProviderConfig.get_app_link)
+        else:
+            app_link = config.get_or_prompt(Config.Section.Okta.APP_LINK, OktaProviderConfig.get_app_link, force_prompt=True)
 
         if mfa_enabled:
             factor_type = config.get_or_prompt(Config.Section.Okta.FACTOR_TYPE, OktaProviderConfig.get_factor_type)
