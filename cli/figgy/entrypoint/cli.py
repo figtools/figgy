@@ -172,7 +172,7 @@ class FiggyCLI:
 
     @staticmethod
     def is_setup_command(args):
-        return Utils.is_set_true(configure, args) or Utils.command_set(sandbox, args)
+        return Utils.is_set_true(configure, args) or Utils.command_set(sandbox, args) or Utils.is_set_true(version, args)
 
     def __init__(self, args):
         """

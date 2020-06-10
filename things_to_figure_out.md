@@ -2,7 +2,9 @@ These are problems I intend to solve, once I figure out the best way to do it.
 
 ## Todo:
 - Test release rollback
-- Check skip-upgrade
+- Add version to anonymous tracking
+- Implement validate command
+- `figgy config get --role dev` fails with sandbox login.
 
 ## Ideas:
 - Add support for "ExternalId" verification for cross-account role assumption from Bastion.

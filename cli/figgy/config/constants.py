@@ -128,6 +128,12 @@ GET_SANBOX_CREDS_URL = "https://q39v8f3u13.execute-api.us-east-1.amazonaws.com/s
 FIGGY_SANDBOX_REGION = 'us-east-1'
 FIGGY_SANDBOX_PROFILE = 'figgy-sandbox'
 
+# Guaranteed Namespaces
+shared_ns = '/shared'
+figgy_ns = '/figgy'
+
+# PS PATHS:
+ACCOUNT_ID_PATH = f'{figgy_ns}/account_id'
 
 # Vault
 FIGGY_VAULT_FILES = [OKTA_SESSION_CACHE_PATH, GOOGLE_SESSION_CACHE_PATH, STS_SESSION_CACHE_PATH, SAML_SESSION_CACHE_PATH]

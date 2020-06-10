@@ -63,7 +63,7 @@ class Promote(ConfigCommand):
                 print(f"Skipping param: {self.c.fg_bl}{param['Name']}{self.c.rs}. "
                       f"It is encrypted and cannot be migrated.")
             else:
-                promote_it = Input.y_n_input(f"Would you like to promote {self.c.fg_bl}{param['Name']}{self.c.rs}?",
+                promote_it = Input.y_n_input(f"Would you like to promote: {param['Name']}?",
                                              default_yes=True)
 
                 if promote_it:

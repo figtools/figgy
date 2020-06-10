@@ -56,14 +56,9 @@ class Restore(ConfigCommand):
             )
 
     def get_parameter_arn(self, parameter_name: str):
-        account_ids = {
-            dev: DEV_ACCOUNT_ID,
-            qa: QA_ACCOUNT_ID,
-            stage: STAGE_ACCOUNT_ID,
-            prod: PROD_ACCOUNT_ID,
-        }
+        account_id = self._ssm.get_parameter(ACCOUNT_ID_PATH)
 
-        return f"arn:aws:ssm:us-east-1:{account_ids[self._config_context.run_env.env]}:parameter{parameter_name}"
+        return f"arn:aws:ssm:us-east-1:{account_id}:parameter{parameter_name}"
 
     def _restore_param(self) -> None:
         """
@@ -221,7 +216,7 @@ class Restore(ConfigCommand):
                         for cfg in cfgs_before:
                             decrypted_value = self._decrypt_if_applicable(cfg)
                             print(f"Restoring: {cfg.ps_name} as value: {decrypted_value} with description: "
-                                  f"{cfg.ps_description} and key: {cfg.ps_key_id}")
+                                  f"{cfg.ps_description} and key: {cfg.ps_key_id if cfg.ps_key_id else 'Parameter was unencrypted'}")
                             print(f"Replaying version: {cfg.ps_version} of {cfg.ps_name}")
 
                             self._ssm.set_parameter(cfg.ps_name, decrypted_value, cfg.ps_description, cfg.ps_type,

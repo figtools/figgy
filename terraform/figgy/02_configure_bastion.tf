@@ -8,7 +8,7 @@ locals {
     "qa" :  "713117490776",
     "stage": "750075891372",
     "prod" : "816636370623",
-    "mgmt" : "816219277933"
+    "bastion" : "816219277933"
   })
 
   # Here, do a mapping of each user and their specified role(s)
