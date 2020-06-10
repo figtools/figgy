@@ -44,7 +44,7 @@ class BastionSessionProvider(SessionProvider):
         self._role_name_prefix = os.getenv(FIGGY_ROLE_PREFIX_OVERRIDE_ENV, FIGGY_ROLE_NAME_PREFIX)
 
     def __get_iam_user(self):
-        self._defaults.user = self._iam.CurrentUser().user_name
+        self._defaults.user = self.__get_iam_resource().CurrentUser().user_name
         return self._defaults.user
 
     def __get_iam_resource(self):
@@ -142,10 +142,10 @@ class BastionSessionProvider(SessionProvider):
                     raise e
 
     def get_assumable_roles(self):
-        if self.is_role_session:
+        if self.is_role_session():
             user_roles = [self._defaults.role.role]
         else:
-            ROLE_PATH = f'/figgy/users/{self.__get_iam_user}/roles'
+            ROLE_PATH = f'/figgy/users/{self.__get_iam_user()}/roles'
             user_roles = self.__get_ssm().get_parameter(ROLE_PATH)
             self._utils.stc_validate(user_roles is not None and user_roles != "[]",
                                      "Something is wrong with your user's configuration with Figgy. "
@@ -158,6 +158,7 @@ class BastionSessionProvider(SessionProvider):
         names: List[str] = [env.get('Name') for env in environments]
         parameters = self.__get_ssm().get_parameter_values(names)
         assumable_roles: List[AssumableRole] = []
+
         for param in parameters:
             env_name = param.get('Name').split('/')[-1]
             account_id = param.get('Value')
