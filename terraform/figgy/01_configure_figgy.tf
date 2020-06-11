@@ -56,6 +56,7 @@ locals {
   # If `enable_sso = true` then ignore this.
   bastion_account_number = "816219277933"
 
+
   # MFA Enabled - "true/false" - Require MFA for authentication for bastion based auth? For SSO users MFA
   # is managed by your SSO provider. This is only for `bastion` MFA enforcement. The CLI supports MFA for SSO / Bastion auth types.
   mfa_enabled = true

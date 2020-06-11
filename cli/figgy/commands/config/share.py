@@ -1,4 +1,5 @@
 from botocore.exceptions import ClientError
+from prompt_toolkit import prompt
 
 from figgy.commands.config_context import ConfigContext
 from figgy.commands.types.config import ConfigCommand

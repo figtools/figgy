@@ -8,6 +8,9 @@ These are problems I intend to solve, once I figure out the best way to do it.
 - Double check. Deletes don't seem to be showing up in slack webhook
 
 ## Ideas:
+- Remove need for users to have allow 'Python'
+
+
 - Add support for "ExternalId" verification for cross-account role assumption from Bastion.
 - Param finder
 - Figgy Experimental

@@ -65,13 +65,13 @@ class GoogleProviderConfig(ProviderConfig):
 
     @staticmethod
     def get_idp_id():
-        idp_id = input('Please input the Identity Provider ID associated with your Google Account: ')
+        idp_id = input('\nPlease input the Identity Provider ID associated with your Google Account: ')
         Utils.stc_is_valid_input(idp_id, "Identity Provider Id", True)
         return idp_id
 
     @staticmethod
     def get_sp_id():
-        sp_id = input('Please input the Service Provider ID associated with your Google SAML configuration (this is a '
+        sp_id = input('\nPlease input the Service Provider ID associated with your Google SAML configuration (this is a '
             'number lke 123456789) : ')
         Utils.stc_is_valid_input(sp_id, "Service Provider Id", True)
         return sp_id
@@ -116,14 +116,14 @@ class OktaProviderConfig(ProviderConfig):
 
     @staticmethod
     def get_app_link() -> str:
-        app_link = input("Please input your OKTA AWS Application Embed Link. It's usually something like "
+        app_link = input("\nPlease input your OKTA AWS Application Embed Link. It's usually something like "
                          "'https://your-company.okta.com/home/amazon_aws/ASDF12351fg1/234': ")
         Utils.stc_is_valid_input(app_link, "OKTA AWS Application URL", True)
         return app_link
 
     @staticmethod
     def get_factor_type() -> str:
-        factor_type = prompt(f"Please select your OKTA MFA Factor type. Supported Types are "
+        factor_type = prompt(f"\nPlease select your OKTA MFA Factor type. Supported Types are "
                              f"{SUPPORTED_OKTA_FACTOR_TYPES}: ",
                              completer=WordCompleter(SUPPORTED_OKTA_FACTOR_TYPES))
         Utils.stc_validate(OktaProviderConfig.factor_type in SUPPORTED_OKTA_FACTOR_TYPES,

@@ -1,30 +1,21 @@
-from figgy.config import *
-import argparse
-import logging
 import json
-import re
+import logging
 import os
-import time
-import re
-
-from figgy.config.style.color import Color
-from figgy.config.style.terminal_factory import TerminalFactory
-from figgy.models.role import Role
-from figgy.models.run_env import RunEnv
-from sys import exit
-import glob
-from typing import Dict, List, Type, Union
-from prompt_toolkit.shortcuts import prompt
-from prompt_toolkit.completion import WordCompleter
-from collections import OrderedDict
-from pathlib import Path
 import platform
-import botocore
+import re
+import time
+from collections import OrderedDict
 from json.decoder import JSONDecodeError
-import subprocess
+from pathlib import Path
+from sys import exit
+from typing import Dict, List, Union
+
+import botocore
 import urllib3
 
-from requests.exceptions import ConnectionError, ConnectTimeout
+from figgy.config import *
+from figgy.config.style.color import Color
+from figgy.config.style.terminal_factory import TerminalFactory
 
 log = logging.getLogger(__name__)
 
@@ -141,6 +132,13 @@ class Utils:
     def wipe_defaults():
         try:
             os.remove(DEFAULTS_FILE_CACHE_PATH)
+        except OSError:
+            pass
+
+    @staticmethod
+    def wipe_config_cache():
+        try:
+            os.remove(CONFIG_CACHE_FILE_PATH)
         except OSError:
             pass
 
@@ -320,6 +318,11 @@ class Utils:
     def stc_error_exit(error_msg: str):
         print(f"ERROR: >> {error_msg}")
         exit(1)
+
+    @staticmethod
+    def write_error(file_name: str, error_message: str):
+        with open(f'{ERROR_LOG_DIR}/{file_name}', "w+") as log:
+            log.write(error_message)
 
     @staticmethod
     def stc_validate(boolean: bool, error_msg: str):

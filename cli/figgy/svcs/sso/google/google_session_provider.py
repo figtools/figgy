@@ -17,7 +17,7 @@ from figgy.svcs.sso.provider.sso_session_provider import SSOSessionProvider
 from figgy.svcs.vault import FiggyVault
 from figgy.utils.secrets_manager import SecretsManager
 from figgy.utils.utils import Utils
-
+from figgy.config.constants import ERROR_LOG_DIR
 
 @dataclass
 class GoogleConfig:
@@ -73,14 +73,18 @@ class GoogleSessionProvider(SSOSessionProvider):
             for value in role_attribute.findall('.//saml2:AttributeValue', prefix_map):
                 result = re.search(pattern, value.text)
                 unparsable_msg = f'{value.text} is of an invalid pattern, it must match: {pattern} for figgy to ' \
-                                 f'dynamically map account_id -> run_env -> role for OKTA users.'
+                                 f'dynamically map account_id -> run_env -> role for Google users. Are you sure that' \
+                                 f'you mapped your SAML Attributes correctly in Google Admin Console? The decoded SAML ' \
+                                 f'assertion that caused the error has been saved here: {ERROR_LOG_DIR}/saml-error.xml'
                 if not result:
+                    Utils.write_error('saml-error.xml', unparsable_msg)
                     Utils.stc_error_exit(unparsable_msg)
 
                 result.groups()
                 account_id, role_name, run_env, role, provider_name = result.groups()
 
                 if not account_id or not run_env or not role_name or not role:
+                    Utils.write_error('saml-error.xml', decoded_assertion)
                     Utils.stc_error_exit(unparsable_msg)
                 else:
                     assumable_roles.append(AssumableRole(account_id=account_id,

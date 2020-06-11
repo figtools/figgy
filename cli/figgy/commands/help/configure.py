@@ -42,7 +42,7 @@ class Configure(HelpCommand, ABC):
         assumable_roles: Maintains a mapping of accountId -> environment name -> role name so the we can authenticate
                          the user with the appropriate AWS accounts based on their returned SAML assertion.
         """
-        Utils.wipe_vaults() or Utils.wipe_defaults()
+        Utils.wipe_vaults() or Utils.wipe_defaults() or Utils.wipe_config_cache()
         defaults: CLIDefaults = self._setup.get_defaults()
         defaults = self._setup.configure_auth(defaults)
         self._setup.save_defaults(defaults)

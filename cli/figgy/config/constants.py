@@ -91,6 +91,7 @@ DEFAULT_INSTALL_PATH = '/usr/local/bin/figgy'
 ERROR_LOG_DIR = f'{HOME}/.figgy/errors'
 CONFIG_OVERRIDE_FILE_PATH = f'{HOME}/.figgy/config'
 DEFAULTS_FILE_CACHE_PATH = f'{CACHE_OTHER_DIR}/defaults.json'
+CONFIG_CACHE_FILE_PATH = f'{CACHE_OTHER_DIR}/config-cache.json'
 STS_SESSION_CACHE_PATH = f"{HOME}/.figgy/vault/sts/sessions"
 SAML_SESSION_CACHE_PATH = f"{HOME}/.figgy/vault/sso/saml"
 OKTA_SESSION_CACHE_PATH = f"{HOME}/.figgy/cache/okta/session"

@@ -1,3 +1,6 @@
+from prompt_toolkit import prompt
+from prompt_toolkit.completion import WordCompleter
+
 from figgy.commands.config_context import ConfigContext
 from figgy.commands.types.config import ConfigCommand
 from figgy.data.dao.config import ConfigDao
