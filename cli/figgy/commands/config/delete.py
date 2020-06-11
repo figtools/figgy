@@ -1,4 +1,6 @@
 from botocore.exceptions import ClientError
+from prompt_toolkit import prompt
+from prompt_toolkit.completion import WordCompleter
 
 from figgy.config.style.style import FIGGY_STYLE
 from figgy.svcs.observability.anonymous_usage_tracker import AnonymousUsageTracker

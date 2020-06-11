@@ -30,7 +30,7 @@ class Sync(ConfigCommand):
         self._replication_only = context.replication_only
         self._errors_detected = False
         self.example = f"{self.c.fg_bl}{CLI_NAME} config {self.command_printable} " \
-            f"--env dev --config /path/to/config{self.c.rs}"
+                       f"--env dev --config /path/to/config{self.c.rs}"
         self._get: Get = get
         self._put: Put = put
         self._FILE_PREFIX = "file://"
@@ -134,7 +134,7 @@ class Sync(ConfigCommand):
                         #       f"{self.c.rs} {key}")
                 except ClientError:
                     self._utils.validate(False, f"Error detected when attempting to store replication config "
-                    f"for {l_cfg.destination}")
+                                                f"for {l_cfg.destination}")
                     self._errors_detected = True
             else:
                 print(f"{self.c.fg_bl}Replication Validated:{self.c.rs} {l_cfg.source} -> {l_cfg.destination}")
@@ -189,7 +189,8 @@ class Sync(ConfigCommand):
                         and cfg.destination not in list(config_repl.values()) \
                         and cfg.destination not in expected_destinations \
                         and (isinstance(cfg.source, list)
-                             or cfg.source.startswith(shared_ns) or cfg.source.startswith(self.context.defaults.service_ns)):
+                             or cfg.source.startswith(shared_ns) or cfg.source.startswith(
+                            self.context.defaults.service_ns)):
                     print(f"{self.c.fg_rd}Orphaned replication mapping detected: {self.c.rs}"
                           f" {self.c.fg_bl}{cfg.source} -> {cfg.destination}{self.c.rs}.")
                     notify = False
@@ -398,7 +399,6 @@ class Sync(ConfigCommand):
         self._validate_replication_config(repl_conf, app_conf=False)
         self._sync_repl_configs(repl_conf)
         self._notify_of_data_repl_orphans(repl_conf)
-
 
     @VersionTracker.notify_user
     @AnonymousUsageTracker.track_command_usage

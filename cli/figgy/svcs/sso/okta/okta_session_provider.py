@@ -64,7 +64,9 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
                 try:
                     password = SecretsManager.get_password(self._defaults.user)
                     if self._defaults.mfa_enabled:
-                        mfa = SecretsManager.generate_mfa(self._defaults.user) if self._defaults.auto_mfa else Input.get_mfa()
+                        color = Utils.default_colors() if self._defaults.colors_enabled else None
+                        mfa = SecretsManager.generate_mfa(self._defaults.user) if self._defaults.auto_mfa else\
+                                Input.get_mfa(display_hint=True, color=color)
                     else:
                         mfa = None
                     primary_auth = OktaPrimaryAuth(self._defaults, password, mfa)
@@ -105,7 +107,9 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
                 password = self._get_password(user, prompt=prompt, save=True)
 
                 if self._defaults.mfa_enabled:
-                    mfa = SecretsManager.generate_mfa(user) if self._defaults.auto_mfa else Input.get_mfa()
+                    color = Utils.default_colors() if self._defaults.colors_enabled else None
+                    mfa = SecretsManager.generate_mfa(user) if self._defaults.auto_mfa else \
+                        Input.get_mfa(display_hint=True, color=color)
                 else:
                     mfa = None
 

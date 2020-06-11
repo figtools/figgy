@@ -1,6 +1,8 @@
 from os import getcwd
 from typing import Tuple
 
+from prompt_toolkit import prompt
+
 from figgy.commands.config_context import ConfigContext
 from figgy.commands.types.config import ConfigCommand
 from figgy.svcs.observability.anonymous_usage_tracker import AnonymousUsageTracker

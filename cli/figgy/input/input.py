@@ -1,10 +1,15 @@
 from typing import Optional
 
+from figgy.models.role import Role
+from figgy.models.run_env import RunEnv
+from prompt_toolkit import prompt
+from prompt_toolkit.completion import WordCompleter
+
 from figgy.models.defaults.provider import Provider
 from figgy.utils.utils import *
 from figgy.config import *
+import random
 import getpass
-import configparser
 
 
 class Input:
@@ -124,7 +129,14 @@ class Input:
         return selection
 
     @staticmethod
-    def get_mfa() -> str:
+    def get_mfa(display_hint: bool = False, color: Optional[Color] = None) -> str:
+        if display_hint and random.randint(0, 1) >= 0:
+            blue = color.fg_bl if color else ''
+            rs = color.rs if color else ''
+            print(f"{blue}Hint:{rs} Tired of typing in your MFA? Consider saving your MFA secret to your keychain and "
+                  f"let {CLI_NAME} securely auto-generate tokens for you. \n"
+                  f"{blue}More info:{rs} http://figgy.dev/docs/getting-started/install.html\n\n")
+
         mfa = input('Please input the MFA associated with your user: ')
         Utils.stc_validate(mfa != '', "You must input a valid mfa")
 

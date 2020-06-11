@@ -86,6 +86,7 @@ class BastionSessionProvider(SessionProvider):
                     raise InvalidSessionError("Forcing new session due to prompt.")
 
                 creds: FiggyAWSSession = self._sts_cache.get_val(assumable_role.role.full_name)
+
                 if creds:
                     session = boto3.Session(
                         aws_access_key_id=creds.access_key,
@@ -110,8 +111,10 @@ class BastionSessionProvider(SessionProvider):
                 try:
                     if self._defaults.mfa_enabled:
                         self._defaults.mfa_serial = self.get_mfa_serial()
-                        mfa = SecretsManager.generate_mfa(
-                            self._defaults.user) if self._defaults.auto_mfa else Input.get_mfa()
+                        color = Utils.default_colors() if self._defaults.colors_enabled else None
+                        mfa = SecretsManager.generate_mfa(self._defaults.user) if self._defaults.auto_mfa else \
+                                                            Input.get_mfa(display_hint=True, color=color)
+
                         response = self.__get_sts().assume_role(RoleArn=assumable_role.role_arn,
                                                                 RoleSessionName=Utils.sanitize_session_name(
                                                                     self._defaults.user),

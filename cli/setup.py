@@ -33,7 +33,7 @@ base_requirements = [
         "keyrings.alt >= 3.4.0",
         "tabulate >= 0.8.7",
         "jsonpickle >= 1.4.1",
-        "urllib3 >= 1.25.9",
+        "urllib3 >= 1.25.7",
         "pyotp >= 2.3.0",
         "pydantic >= 1.5.1",
         "python-u2flib-host",

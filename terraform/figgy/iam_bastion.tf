@@ -7,10 +7,7 @@ locals {
   principals = var.sandbox_deploy ? local.sandbox_principals : local.bastion_principal
 }
 
-# Be careful if you change this name, it is used by bastion integrations. When we retrieve the SAML assertion from our SSO provider,
-# the role ARNs provide us the accountId -> run_env -> role mapping that is necessary for Figgy to operate properly.
-# The name format MUST be something-${var.run_env}-${role_type} - you MAY replace 'figgy' with anything else you like.
-# But you will need to update the data.aws_iam_policy_document below and updated `FIGGY_ROLE_NAME_PREFIX` in your figgy build
+
 resource "aws_iam_role" "bastion_user_role" {
   count = local.enable_sso == false ? length(local.role_types) : 0
   name                 = "figgy-${var.run_env}-${local.role_types[count.index]}"
@@ -33,6 +30,7 @@ data "aws_iam_policy_document" "bastion_role_policy" {
               replace(principal, "%%ROLE%%", "figgy-${local.role_types[count.index]}")
       ]
     }
+
     dynamic "condition" {
       for_each = local.mfa_enabled ? [true] : []
       content {
@@ -91,7 +89,10 @@ data "aws_iam_policy_document" "manage_self" {
       "iam:CreateVirtualMFADevice",
       "iam:DeleteVirtualMFADevice"
     ]
-    resources = [ aws_iam_user.users[count.index].arn ]
+    resources = [
+      aws_iam_user.users[count.index].arn,
+      "arn:aws:iam::${var.aws_account_id}:mfa/${aws_iam_user.users[count.index].name}",
+    ]
   }
 
   statement {
