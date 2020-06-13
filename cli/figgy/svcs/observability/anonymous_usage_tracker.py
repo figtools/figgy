@@ -35,7 +35,6 @@ class AnonymousUsageTracker:
     _CACHE_NAME = 'usage-metrics'
     _METRICS_KEY = 'metrics'
     _USER_KEY = 'user_id'
-    # REPORT_FREQUENCY = 1000 * 60  # Report every minute
     REPORT_FREQUENCY = 1000 * 60 * 60 * 24  # Report daily
 
     @staticmethod
