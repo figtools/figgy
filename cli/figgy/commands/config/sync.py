@@ -96,7 +96,7 @@ class Sync(ConfigCommand):
 
     def _sync_repl_configs(self, config_repl: Dict, namespace: str = None) -> None:
         """
-        Syncs replication configs from a defined "replication_config" block parsed from either the figgy.json file
+        Syncs replication configs from a defined "replicate_figs" block parsed from either the figgy.json file
         or the data replication config json file.
         Args:
             config_repl: Dict of KV Pairs for a repl config. Source -> Dest
