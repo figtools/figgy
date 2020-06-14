@@ -1,11 +1,11 @@
 {
-    "namespace": "/app/figgy-demo-repl",
-    "app_parameters": [
+    "twig": "/app/figgy-demo-repl",
+    "app_figs": [
       "api_key",
       "logging/level",
       "logging/format"
     ],
-    "replication_config": {
+    "replicate_figs": {
         "/shared/service-map/foo/hostname": "/app/figgy-demo-repl/foo.hostname",
         "/shared/service-map/foo/port": "/app/figgy-demo-repl/foo.port"
     }

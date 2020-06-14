@@ -11,9 +11,9 @@ class KeyUtils(object):
         """
         From various sets of keys and configs, calculates all required PS Names (keys) this application requires.
         Args:
-            config_keys: set -> representing the app_parameters in the passed in figgy.json file
-            shared_names: set -> representing the shared_parameters in the passed in figgy.json file
-            merge_conf: dict -> representing the merged_parameters in the passed in figgy.json file
+            config_keys: set -> representing the app_figs in the passed in figgy.json file
+            shared_names: set -> representing the shared_figs in the passed in figgy.json file
+            merge_conf: dict -> representing the merged_figs in the passed in figgy.json file
             repl_conf: dict -> representing the replication_config in the figgy.json file
             repl_from_conf: dict -> represents the `replicate_from` config block in the figgy.json file
             namespace: parsed, or calculated namespace for the application being synced. E.G. /app/demo-time/

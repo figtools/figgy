@@ -211,11 +211,11 @@ class Utils:
                                                                    import_path)
 
                 namespace = self.get_namespace(ci_config)
-                app_parameters = self.get_config_key_safe(CONFIG_KEY, ci_config, default=[])
-                dupes = self.find_dupes(app_parameters)
+                app_figs = self.get_config_key_safe(CONFIG_KEY, ci_config, default=[])
+                dupes = self.find_dupes(app_figs)
                 self.validate(not dupes, f"Your configuration has duplicate keys: {self.c.fg_rd}{dupes}{self.c.rs}")
 
-                ns_app_params = self.standardize_parameters(namespace, app_parameters)
+                ns_app_params = self.standardize_parameters(namespace, app_figs)
                 ci_config[CONFIG_KEY] = ns_app_params
 
                 ns_shared_params = self.standardize_parameters(namespace,
@@ -301,7 +301,7 @@ class Utils:
             val = get_ns.match(app_key)
             ns = val.group(1)
         except (AttributeError, TypeError) as e:
-            print(f"Unable to parse namespace from {app_key}. If your app_parameters block values do not begin with "
+            print(f"Unable to parse namespace from {app_key}. If your app_figs block values do not begin with "
                   f"the prefix /app/your-service-name , you must include the 'namespace' property in your figgy.json "
                   f"with value /app/your-service-name/")
 

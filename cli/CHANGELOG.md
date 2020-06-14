@@ -1,5 +1,8 @@
 Figgy Changelog:
 
+## 0.0.30a
+- Naming figgy.json properties to their new 'figgy'names.
+
 ## 0.0.29a
 - Fixing a bug with `figgy --configure` when configuring a bastion account for the first time.
 

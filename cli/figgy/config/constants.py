@@ -1,12 +1,10 @@
 from pathlib import Path
 
-VERSION = '0.0.29a'
+VERSION = '0.0.30a'
 CLI_NAME = 'figgy'
 
-# Figgy Github
+# Figgy URLS
 FIGGY_GITHUB = "https://github.com/mancej/figgy"
-
-# Todo: Update to prod before release.
 FIGGY_OBS_API_BASE_URL = "https://api.figgy.dev"
 
 # Paths
@@ -61,13 +59,13 @@ SSM_DELETE = 'DeleteParameter'
 DEPLOY_GROUPS_PS_PREFIX = '/shared/deploy-groups/'
 
 # figgy.json json keys
-REPLICATION_KEY = 'replication_config'
-MERGE_KEY = 'merged_parameters'
-CONFIG_KEY = 'app_parameters'
-SHARED_KEY = 'shared_parameters'
+REPLICATION_KEY = 'replicate_figs'
+MERGE_KEY = 'merged_figs'
+CONFIG_KEY = 'app_figs'
+SHARED_KEY = 'shared_figs'
 REPOSITORY_KEY = "repositories"
 IMPORTS_KEY = 'import'
-OPTIONAL_NAMESPACE = 'namespace'
+OPTIONAL_NAMESPACE = 'twig'
 REPL_FROM_KEY = 'replicate_from'
 SOURCE_NS_KEY = 'source_namespace'
 PARAMETERS_KEY = 'parameters'

@@ -1,4 +1,4 @@
-The `shared_parameters` block is how you define parameters that must existing your application's namespace but 
+The `shared_figs` block is how you define parameters that must existing your application's namespace but 
 you don't have control over. 
 
 For instance, suppose you need a DB Password and DB user but you don't have access to that user or password? You can 

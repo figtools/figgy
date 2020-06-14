@@ -4,8 +4,8 @@ If you run `figgy config sync --config figgy-simple.json` you will be prompted t
 missing parameters can be detected at build-time validation using `figgy config validate`. 
 
 ```{
-    "namespace": "/app/figgy-demo-simple",
-    "app_parameters": [
+    "twig": "/app/figgy-demo-simple",
+    "app_figs": [
       "api_key",
       "logging/level",
       "logging/format"
