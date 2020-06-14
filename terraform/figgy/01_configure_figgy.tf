@@ -49,7 +49,7 @@ locals {
     "dev" = [ "app"]
   }
 
-  # SSO Type: Options are okta/google/bastion
+  # Options: "okta", "google", "bastion"
   sso_type = "okta"
 
   # Bastion account #. Set to your bastion account # if you are leveraging bastion based authentication. Otherwise ignore.

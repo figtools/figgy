@@ -1,5 +1,6 @@
 from typing import Dict, Set
 
+from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 
 from figgy.commands.config.delete import Delete

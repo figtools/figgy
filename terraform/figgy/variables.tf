@@ -33,3 +33,8 @@ variable "figgy_cw_log_retention" {
   description = "Number of days to keep figgy CW logs around. Must be 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653"
   default = 14
 }
+
+variable "extra_sso_types" {
+  description = "This is used for enabling multiple SSO types. Ignore this for 99.9% of use cases. This is primarily used for automated tests."
+  default = []
+}

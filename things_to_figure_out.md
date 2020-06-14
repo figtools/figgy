@@ -7,7 +7,6 @@ These are problems I intend to solve, once I figure out the best way to do it.
 - Implement validate command
 - `figgy config get --role dev` fails with sandbox login.
 - Double check. Deletes don't seem to be showing up in slack webhook
-- Encrypted event batching & backup to s3
 - CW alarms for lambdas
 - Create sample application that shows CICD validation.
 - Verify `replication_config` enforces shared namespace
@@ -26,3 +25,4 @@ These are problems I intend to solve, once I figure out the best way to do it.
 - Figgy Experimental
 - Unused parameter recommender
 - 1 time password share-er
+- Encrypted event batching & backup to s3
