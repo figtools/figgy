@@ -38,13 +38,13 @@ class Login(HelpCommand, ABC):
                              f"You cannot login until you've configured Figgy. Please run `{CLI_NAME}` --configure")
         provider = SessionProviderFactory(self._defaults).instance()
         assumable_roles: List[AssumableRole] = provider.get_assumable_roles()
-        print(f"{self.c.bl}Found {len(assumable_roles)} possible logins. Logging in...{self.c.rs}")
+        print(f"{self.c.fg_bl}Found {len(assumable_roles)} possible logins. Logging in...{self.c.rs}")
 
         for role in assumable_roles:
             print(f"Login successful for {role.role} in environment: {role.run_env}")
             provider.get_session_and_role(role, False)
 
-        print(f"{self.c.gr}Login successful. All sessions are cached.{self.c.rs}")
+        print(f"{self.c.fg_gr}Login successful. All sessions are cached.{self.c.rs}")
 
     def login_sandbox(self):
         print(f"{self.c.fg_bl}Logging you into the Figgy Sandbox environment.{self.c.rs}")

@@ -11,6 +11,7 @@ from figgy.models.defaults.defaults import CLIDefaults
 
 log = logging.getLogger(__name__)
 
+
 @dataclass
 class FiggyVersionDetails:
     version: str
@@ -61,7 +62,6 @@ class VersionTracker:
         else:
             raise ValueError("Unable to fetch figgy version details.")
 
-
     @staticmethod
     def check_version(c: Color) -> None:
         try:
@@ -78,9 +78,6 @@ class VersionTracker:
             log.warning("Unable to fetch version information from remote endpoint.")
             print(f"Version: {VERSION}")
 
-
-
-
     @staticmethod
     def print_changes(c: Color, new_details: FiggyVersionDetails) -> None:
         if new_details.version != VERSION:
@@ -88,7 +85,6 @@ class VersionTracker:
             print(f'{c.fg_bl}------------------------------------------{c.rs}')
             print(new_details.changes_from(VERSION))
             print(f'{c.fg_bl}------------------------------------------{c.rs}')
-
 
     @staticmethod
     def print_new_version_msg(c: Color, new_details: FiggyVersionDetails):
@@ -108,7 +104,6 @@ class VersionTracker:
             print(f"To roll-back, run `brew upgrade figgy` or `pip install figgy-cli --upgrade`")
             print(f'{c.fg_bl}------------------------------------------{c.rs}')
 
-
     @staticmethod
     def is_rollback(current_version: str, new_version: str):
         try:
@@ -118,7 +113,15 @@ class VersionTracker:
             new_major = new_version.split('.')[0]
             new_minor = new_version.split('.')[1]
             new_patch = new_version.split('.')[2].strip('ab')
-            return new_major <= cu_major and new_minor <= cu_minor and cu_patch <= new_patch
+
+            if new_major < cu_major:
+                return True
+            elif new_major <= cu_major and new_minor < cu_minor:
+                return True
+            elif new_major <= cu_major and new_minor <= cu_minor and new_patch < cu_patch:
+                return True
+            else:
+                return False
         except IndentationError:
             pass
 

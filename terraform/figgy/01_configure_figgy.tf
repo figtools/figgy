@@ -17,7 +17,7 @@ locals {
   role_types = ["devops", "data", "dba", "sre", "dev"]
 
   # Encryption keys to allow certain roles to use to encrypt and decrypt secrets stored with figgy. You will map access below
-  encryption_keys = ["devops", "data", "app"]
+  encryption_keys = ["app", "devops", "data"]
 
   # List of namespaces at the root level of your parameter store namespace. Figgy (and its users)
   # will ONLY have access to _AT MOST_ configs under these namespaces.
@@ -49,7 +49,7 @@ locals {
     "dev" = [ "app"]
   }
 
-  # SSO Type: Options are okta/google/bastion
+  # Options: "okta", "google", "bastion"
   sso_type = "bastion"
 
   # Bastion account #. Set to your bastion account # if you are leveraging bastion based authentication. Otherwise ignore.

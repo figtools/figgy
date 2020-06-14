@@ -173,7 +173,7 @@ class Sync(ConfigCommand):
         Args:
             config_repl: Dict of KV Pairs for a repl config. Source -> Dest
             expected_destinations: expected replication destinations, as defined in merge key sources,
-             or shared_parameters
+             or shared_figs
             namespace: Namespace to sync replication configs to. E.g. /app/demo-time/
         """
 
@@ -317,10 +317,10 @@ class Sync(ConfigCommand):
                                  f"The DESTINATION of your replication configs must always begin with "
                                  f"`{self.context.defaults.service_ns}/`")
 
-    def _find_missing_shared_parameters(self, namespace: str, config_repl: Dict, shared_names: set, merge_conf: Dict):
+    def _find_missing_shared_figs(self, namespace: str, config_repl: Dict, shared_names: set, merge_conf: Dict):
         """
             Notifies the user if there is a parameter that has been shared into their namespace by an outside party
-            but they have not added it to the `shared_parameters` block of their figgy.json
+            but they have not added it to the `shared_figs` block of their figgy.json
         """
         all_repl_cfgs = self._config.get_all_configs(self.run_env, namespace)
         for cfg in all_repl_cfgs:
@@ -373,7 +373,7 @@ class Sync(ConfigCommand):
         self._sync_keys(namespace, all_keys)
 
         print()
-        self._find_missing_shared_parameters(namespace, repl_conf, shared_names, merge_conf)
+        self._find_missing_shared_figs(namespace, repl_conf, shared_names, merge_conf)
 
         # Disabling requirement (for now) of replication to be in /replicated path
         # print()

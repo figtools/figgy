@@ -35,7 +35,6 @@ resource "aws_dynamodb_table" "config_auditor" {
   range_key      = "time"
   billing_mode = "PAY_PER_REQUEST"
 
-
   point_in_time_recovery {
     enabled = true
   }

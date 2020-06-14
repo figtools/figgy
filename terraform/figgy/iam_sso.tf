@@ -1,9 +1,9 @@
 # Only necessary if you are planning to use Figgy's SSO integration
 # Todo - Change this back to just metadata.xml for simplicity sake.
 resource "aws_iam_saml_provider" "provider" {
-  count = local.enable_sso == true ? 1 : 0
-  name                   = local.sso_type
-  saml_metadata_document = file("saml/metadata-${local.sso_type}.xml")
+  count = local.enable_sso == true ? length(local.sso_types) : 0
+  name                   = local.sso_types[count.index]
+  saml_metadata_document = file("saml/metadata-${local.sso_types[count.index]}.xml")
 }
 
 # Be careful if you change this name, it is used by SSO integrations. When we retrieve the SAML assertion from our SSO provider,
@@ -23,7 +23,7 @@ data "aws_iam_policy_document" "sso_role_policy" {
     effect = "Allow"
 
     principals {
-      identifiers = [ aws_iam_saml_provider.provider[0].arn ]
+      identifiers = aws_iam_saml_provider.provider.*.arn
       type        = "Federated"
     }
 

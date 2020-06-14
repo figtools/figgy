@@ -72,16 +72,15 @@ class FiggyCLI:
         :param skip - Boolean, if this is true, exit and return none.
         :return: hydrated CLIDefaults object of default values stored in cache file or None if no cache found
         """
-
-        if skip:
-            return CLIDefaults.unconfigured()
-
         cache_mgr = CacheManager(file_override=DEFAULTS_FILE_CACHE_PATH)
         try:
             last_write, defaults = cache_mgr.get(DEFAULTS_KEY)
 
             if not defaults:
-                Utils.stc_error_exit(f'{CLI_NAME} has not been configured. '
+                if skip:
+                    return CLIDefaults.unconfigured()
+                else:
+                    Utils.stc_error_exit(f'{CLI_NAME} has not been configured. '
                                      f'Please run {CLI_NAME} --{Utils.get_first(configure)}')
 
             return defaults

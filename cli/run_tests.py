@@ -22,6 +22,7 @@ from figgy.test.cli.dev.sync import DevSync
 from figgy.test.cli.dev.login import DevLogin
 from figgy.test.cli.sso.google.configure import ConfigureGoogle
 from figgy.utils.utils import Utils
+from figgy.test.cli.sso.okta.configure import ConfigureOkta
 
 CACHE_DIR = f'{HOME}/.figgy/cache'
 VAULT_DIR = f'{HOME}/.figgy/vault'
@@ -83,7 +84,16 @@ def main():
         data_tests()
 
     elif auth_type.lower() == 'okta':
-        print_test("OKTA TESTS NOT YET IMPLEMENTED")
+        print_test("OKTA DEV Login")
+        ConfigureOkta('dev').run()
+        dev_tests()
+
+        clear_cache()
+
+        # Login to data role
+        print_test("Data Login")
+        ConfigureOkta('data').run()
+        data_tests()
 
 
 def dev_tests():

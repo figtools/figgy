@@ -1,11 +1,11 @@
 {
-    "namespace": "/app/figgy-demo-merge",
-    "app_parameters": [
+    "twig": "/app/figgy-demo-merge",
+    "app_figs": [
       "api_key",
       "logging/level",
       "logging/format"
     ],
-    "merged_parameters": {
+    "merged_figs": {
       "/app/figgy-demo-merge/replicated/sql/sql-conn-string": [
           "jdbc:mysql://",
           "${/app/figgy-demo-merge/replicated/sql/db/user_name:uri}",
