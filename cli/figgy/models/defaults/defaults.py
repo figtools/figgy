@@ -24,6 +24,7 @@ class CLIDefaults:
     service_ns: str
     provider: Provider
     session_duration: int
+    usage_tracking: bool
     report_errors: Optional[bool]
     auto_mfa: Optional[bool]
     provider_config: Optional[Any]
@@ -52,7 +53,8 @@ class CLIDefaults:
                            report_errors=False,
                            auto_mfa=False,
                            user_id=str(uuid.uuid4()),
-                           service_ns="/app")
+                           service_ns="/app",
+                           usage_tracking=False)
 
     @staticmethod
     def sandbox(user: str, role: str, colors: bool):
@@ -69,7 +71,8 @@ class CLIDefaults:
                            report_errors=False,
                            auto_mfa=False,
                            user_id=str(uuid.uuid4()),
-                           service_ns="/app")
+                           service_ns="/app",
+                           usage_tracking=True)
 
     def __str__(self) -> str:
         return jsonpickle.encode(self)

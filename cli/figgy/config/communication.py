@@ -66,10 +66,18 @@ GENERATE_HELP_TEXT = "Generate a new figgy.json file from an existing figgy.json
                      "configurations."
 FROM_HELP_TEXT = "/path/to/figgy.json file to use as the source template file to generate from. Your generated file" \
                  " will automatically have all of the configurations from the source-file configured to replicate to it."
-LOGIN_HELP_TEXT = "Logs you in to all viable AWS accounts and caches session locally. This will prevent you from having" \
-                  "to input your MFA every time you swap into a new account or role."
+LOGIN_HELP_TEXT = "Logs you in to all viable AWS accounts and caches session locally. This will prevent you from " \
+                  "having to input your MFA every time you swap into a new account or role. \n\nAlternate Use:" \
+                  "`figgy login sandbox` will log you into the Figgy sandbox playground for hassle-free " \
+                  "experimentation."
+VALIDATE_HELP_TEXT = "Validates a `figgy.json` file and ensures all required configurations exist in ParameterStore. " \
+           "Exits with an error code if any defined configuration is missing."
 LOGIN_SANDBOX_HELP_TEXT = "Get a temporary session from the free figgy sandbox and have fun, experiment, do whatever" \
                           "you want!"
+
+MISSING_PS_NAME_MESSAGE = "Your application is missing at least one ParameterStore name that it expects to exist as " \
+                          "defined in your figgy.json file. To resolve this issue, first try running your `figgy` " \
+                          " `sync` command to validate and synchronize your expected configs."
 
 # Point in time (--point-in-time)
 POINT_IN_TIME = "Restore all parameters to a point in time."
@@ -115,6 +123,7 @@ HELP_TEXT_MAP = {
     from_path: FROM_HELP_TEXT,
     login: LOGIN_HELP_TEXT,
     sandbox: LOGIN_SANDBOX_HELP_TEXT,
+    validate: VALIDATE_HELP_TEXT
 }
 
 # Other

@@ -33,6 +33,7 @@ class Config:
             COLORS_ENABLED = 'colors_enabled'
             REPORT_ERRORS = 'report_errors'
             AWS_REGION = 'aws_region'
+            USAGE_TRACKING = 'anonymous_metrics_enabled'
 
 
 FAKE_GOOGLE_IDP_ID = 'N0tre9le3'
@@ -45,6 +46,7 @@ mfa_enabled = false
 auto_mfa = false
 colors_enabled = true
 report_errors = true
+anonymous_metrics_enabled = true
 aws_region = us-east-1
 
 [OKTA]

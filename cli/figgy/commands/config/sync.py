@@ -373,6 +373,7 @@ class Sync(ConfigCommand):
         self._sync_keys(namespace, all_keys)
 
         print()
+
         self._find_missing_shared_figs(namespace, repl_conf, shared_names, merge_conf)
 
         # Disabling requirement (for now) of replication to be in /replicated path

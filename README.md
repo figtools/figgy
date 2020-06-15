@@ -1,13 +1,14 @@
 # figgy
+
+[Figgy Website](https://www.figgy.dev)
+
+[Figgy Docs](https://www.figgy.dev/docs/)
+
+### Figgy is not ready yet, it's still under active development :)
+
 Cloud native config management.
 
-Figgy is currently under active development and will be released as soon as it's ready! :)
-
-
-# Figgy is not ready yet, it's still under active development :)
-
-
-# **What's Figgy?**
+## **What's Figgy?**
 
 
 Figgy is a **_free_** and **_opensource_** serverless application config framework designed to bring simplicity, security, and resilience to 
@@ -35,32 +36,6 @@ Figgy supports SAML based SSO integrations with multi-factor authentication. Sim
 > **Feature rich CLI to speed-up your development workflow.**
 ![Figgy Get Browse]({{ "/assets/img/animations/home/get-browse.gif"| relative_url }})
 
-<a name="concepts"></a>
-<br/>
-## **Figgy Concepts**:
-
-- **Fig Orchard** - All con**fig**urations under all figgy-managed namespaces. 
-    - **These are examples. You select your own namespaces.**
-  - `/app/*`
-  - `/shared/*`
-  - `/dba/*`
-  - `/devops/*`
-  - `/sre/*`
-
-
-- **Fig Tree** - A hierarchy of  under a high-level figgy-managed namespace.
-    - e.g. - `/app/*`    
-    
-    
-- **Twig** - A single hierarchy of configs under a **Fig Tree**
-    - e.g. - `/app/hello-world/*`
-    - Write your service IAM policies to ONLY access the *twig* namespace
-    
-    
-- **Fig** - A single con**fig**uration stored `/under/a/named/path` and on a **Twig**
-    - e.g. - `/app/hello-world/log/level`
-  
-> **These namespaces are all examples. You can name or Figs / Twigs / Trees, and Orchards however you like!**
 
 <br/>
 ## **Why Figgy?**

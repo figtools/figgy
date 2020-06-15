@@ -113,7 +113,15 @@ class Input:
     def select_report_errors() -> bool:
         selection = ''
         while selection.lower() != 'y' and selection.lower() != 'n':
-            selection = input(f'Would you like to turn on anonymous & automatic error reporting?  Y/n?: ')
+            selection = input(f'Help make Figgy better. turn on anonymous error reporting?  Y/n?: ')
+            selection = selection.lower() if selection != '' else 'y'
+        return selection == 'y'
+
+    @staticmethod
+    def select_usage_tracking() -> bool:
+        selection = ''
+        while selection.lower() != 'y' and selection.lower() != 'n':
+            selection = input(f'Help make Figgy better. Turn on 100% anonymous usage reporting Y/n?: ')
             selection = selection.lower() if selection != '' else 'y'
         return selection == 'y'
 

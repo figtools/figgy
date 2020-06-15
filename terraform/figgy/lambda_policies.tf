@@ -150,7 +150,8 @@ data "aws_iam_policy_document" "config_replication_document" {
     "ssm:GetParameters",
     "ssm:GetParameterHistory",
     "ssm:GetParametersByPath",
-    "ssm:PutParameter"
+    "ssm:PutParameter",
+    "ssm:AddTagsToResource"
   ]
     resources = distinct(concat(
       [

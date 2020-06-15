@@ -1,5 +1,5 @@
 import logging
-from typing import Callable, List, Dict
+from typing import Callable, List, Dict, Optional
 
 from tabulate import tabulate
 
@@ -19,6 +19,7 @@ from figgy.svcs.sso.provider.session_provider import SessionProvider
 from figgy.svcs.sso.session_manager import SessionManager
 from figgy.utils.secrets_manager import SecretsManager
 from figgy.utils.utils import Utils
+from json import JSONDecodeError
 
 log = logging.getLogger(__name__)
 
@@ -89,7 +90,6 @@ class FiggySetup:
             SecretsManager.set_mfa_secret(updated_defaults.user, mfa_secret)
 
         if configure_provider:
-
             provider_config = ProviderConfigFactory().instance(provider, mfa_enabled=updated_defaults.mfa_enabled)
             updated_defaults.provider_config = provider_config
 
@@ -134,8 +134,12 @@ class FiggySetup:
         updated_defaults.region = self._config_mgr.get_or_prompt(Config.Section.Figgy.AWS_REGION, Input.select_region)
         updated_defaults.colors_enabled = self._config_mgr.get_or_prompt(Config.Section.Figgy.COLORS_ENABLED,
                                                                          Input.select_enable_colors)
-        updated_defaults.report_errors = self._config_mgr.get_or_prompt(Config.Section.Figgy.REPORT_ERRORS,
-                                                                        Input.select_report_errors)
+
+        # Defaulting to True, users will always be prompted to report or not report an error.
+        updated_defaults.report_errors = True
+
+        updated_defaults.usage_tracking = self._config_mgr.get_or_prompt(Config.Section.Figgy.USAGE_TRACKING,
+                                                                         Input.select_usage_tracking)
         return updated_defaults
 
     def configure_figgy_defaults(self, current_defaults: CLIDefaults):
@@ -169,6 +173,27 @@ class FiggySetup:
             return CLIDefaults.unconfigured()
 
         return defaults if defaults else CLIDefaults.unconfigured()
+
+    @staticmethod
+    def stc_get_defaults(skip: bool = False) -> Optional[CLIDefaults]:
+        """Lookup a user's defaults as configured by --configure option.
+        :param skip - Boolean, if this is true, exit and return none.
+        :return: hydrated CLIDefaults object of default values stored in cache file or None if no cache found
+        """
+        cache_mgr = CacheManager(file_override=DEFAULTS_FILE_CACHE_PATH)
+        try:
+            last_write, defaults = cache_mgr.get(DEFAULTS_KEY)
+
+            if not defaults:
+                if skip:
+                    return CLIDefaults.unconfigured()
+                else:
+                    Utils.stc_error_exit(f'{CLI_NAME} has not been configured. '
+                                     f'Please run {CLI_NAME} --{Utils.get_first(configure)}')
+
+            return defaults
+        except JSONDecodeError:
+            return None
 
     @staticmethod
     def print_role_table(roles: List[AssumableRole]):

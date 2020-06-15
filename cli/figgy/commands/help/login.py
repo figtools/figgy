@@ -32,6 +32,10 @@ class Login(HelpCommand, ABC):
         self._setup = figgy_setup
         self._defaults: CLIDefaults = figgy_setup.get_defaults()
         self._utils = Utils(self._defaults.colors_enabled)
+        self.example = f"\n\n{self.c.fg_bl}{CLI_NAME} {Utils.get_first(login)} \n" \
+                       f"{self.c.rs}{self.c.fg_yl}  --or--{self.c.rs}\n" \
+                       f"{self.c.fg_bl}{CLI_NAME} {Utils.get_first(login)} {Utils.get_first(sandbox)}{self.c.rs}"
+
 
     def login(self):
         self._utils.validate(self._defaults.provider.name in Provider.names(),

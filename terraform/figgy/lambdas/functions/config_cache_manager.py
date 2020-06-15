@@ -33,7 +33,7 @@ def handle(event, context):
         detail = event["detail"]
         action = detail["eventName"]
         params = detail.get('requestParameters', {})
-        ps_name = params.get('name')
+        ps_name = params.get('name') if params else None
 
         if not ps_name:
             log.info(f"Received an event missing parameterStore path: {event}")
@@ -54,7 +54,7 @@ def handle(event, context):
             log.info(f"Unsupported action type found! --> {action}")
     except Exception as e:
         log.error(e)
-        slack.send_error(title="Figgy experienced an irrecoverable error!",
+        slack.send_error(title=f"Figgy experienced an irrecoverable error! In account: {ACCOUNT_ID[0:5]}[REDACTED]",
                          message=f"The following error occurred in an the figgy-config-cache-manager lambda. "
                                  f"If this appears to be a bug with figgy, please tell us by submitting a GitHub issue!"
                                  f" \n\n{Utils.printable_exception(e)}")

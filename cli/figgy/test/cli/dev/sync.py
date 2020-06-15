@@ -46,6 +46,7 @@ class DevSync(FiggyTest):
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(sync)} --env {DEFAULT_ENV} '
                                     f'--config figgy/test/assets/success/figgy.json --skip-upgrade',
                                     encoding='utf-8', timeout=10)
+        child.logfile = sys.stdout
         missing_key = '/app/ci-test/v1/config12'
         child.expect(f'.*Please input a value for.*{missing_key}.*')
         child.sendline(DELETE_ME_VALUE)
@@ -54,11 +55,13 @@ class DevSync(FiggyTest):
         child.expect('.*value a secret.*')
         child.sendline('n')
         child.expect('.*Sync completed with no errors!')
+
+
+    def sync_with_orphans(self):
         delete = DevDelete()
         delete.delete(self.missing_key)
         print("Successful sync + cleanup passed!")
 
-    def sync_with_orphans(self):
         print(f"Testing: {CLI_NAME} config {Utils.get_first(sync)} --env {DEFAULT_ENV} "
               f"--config figgy/test/assets/error/figgy.json")
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(sync)} --env {DEFAULT_ENV} '

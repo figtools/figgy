@@ -6,6 +6,7 @@ from typing import List, Dict
 
 from figgy.models.defaults.defaults import CLIDefaults
 from figgy.svcs.cache_manager import CacheManager
+from figgy.svcs.setup import FiggySetup
 from figgy.utils.utils import Utils
 from concurrent.futures import ThreadPoolExecutor
 from figgy.config import *
@@ -35,6 +36,8 @@ class AnonymousUsageTracker:
     _CACHE_NAME = 'usage-metrics'
     _METRICS_KEY = 'metrics'
     _USER_KEY = 'user_id'
+    _VERSION_KEY = 'version'
+    # REPORT_FREQUENCY = 60  # Report daily
     REPORT_FREQUENCY = 1000 * 60 * 60 * 24  # Report daily
 
     @staticmethod
@@ -42,6 +45,8 @@ class AnonymousUsageTracker:
         metrics_json = {AnonymousUsageTracker._METRICS_KEY: {}, AnonymousUsageTracker._USER_KEY: metrics.user_id}
         for key, val in metrics.metrics.items():
             metrics_json[AnonymousUsageTracker._METRICS_KEY][key] = val.get(FiggyMetrics.COUNT_KEY, 0)
+
+        metrics_json[AnonymousUsageTracker._VERSION_KEY] = VERSION
 
         requests.post(url=FIGGY_LOG_METRICS_URL, json=metrics_json)
 
@@ -68,11 +73,13 @@ class AnonymousUsageTracker:
                 last_write, metrics = cache.get(AnonymousUsageTracker._METRICS_KEY, default=FiggyMetrics(user_id=user_id))
                 metrics.increment_count(command)
                 if Utils.millis_since_epoch() - metrics.last_report > AnonymousUsageTracker.REPORT_FREQUENCY:
-                    # Ship it async. If it don't worky, oh well :shruggie:
-                    with ThreadPoolExecutor(max_workers=1) as pool:
-                        pool.submit(AnonymousUsageTracker.report_usage, metrics)
-                        cache.write(AnonymousUsageTracker._METRICS_KEY, FiggyMetrics(user_id=user_id))
-                        return function(self, *args, **kwargs)
+                    defaults = FiggySetup.stc_get_defaults(skip=True)
+                    if defaults and defaults.usage_tracking:
+                        # Ship it async. If it don't worky, oh well :shruggie:
+                        with ThreadPoolExecutor(max_workers=1) as pool:
+                            pool.submit(AnonymousUsageTracker.report_usage, metrics)
+                            cache.write(AnonymousUsageTracker._METRICS_KEY, FiggyMetrics(user_id=user_id))
+                            return function(self, *args, **kwargs)
                 else:
                     cache.write(AnonymousUsageTracker._METRICS_KEY, metrics)
 
