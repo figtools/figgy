@@ -16,6 +16,7 @@ locals {
   # How many unique roles will figgy users need? Each of these types should map to a particular figgy user story.
   role_types = ["devops", "data", "dba", "sre", "dev"]
 
+  # Todo: Reorder these and rebuild everything?
   # Encryption keys to allow certain roles to use to encrypt and decrypt secrets stored with figgy. You will map access below
   encryption_keys = ["app", "devops", "data"]
 

@@ -2,11 +2,12 @@ import random
 import boto3
 import logging
 from config.constants import *
+from lib.models.replication_config import ReplicationConfig
 from lib.data.dynamo.audit_dao import AuditDao
 from lib.data.ssm import SsmDao
+from lib.models.slack import SlackMessage, SlackColor
 from lib.svcs.slack import SlackService
 from lib.utils.utils import Utils
-
 
 log = Utils.get_logger(__name__, logging.INFO)
 
@@ -18,6 +19,19 @@ webhook_url = ssm.get_parameter_value(FIGGY_WEBHOOK_URL_PATH)
 slack: SlackService = SlackService(webhook_url=webhook_url)
 
 ACCOUNT_ID = ssm.get_parameter_value(ACCOUNT_ID_PS_PATH)
+ACCOUNT_ENV = ssm.get_parameter_value(ACCOUNT_ENV_PS_PATH)
+NOTIFY_DELETES = ssm.get_parameter_value(NOTIFY_DELETES_PS_PATH)
+NOTIFY_DELETES = NOTIFY_DELETES.lower() == "true" if NOTIFY_DELETES else False
+
+def notify_delete(ps_name: str, user: str):
+    if NOTIFY_DELETES:
+        message = SlackMessage(
+            color=SlackColor.ORANGE,
+            title="Figgy Event: Fig Deleted.",
+            message=f"Fig: {ps_name} was deleted by: {user} in account: {ACCOUNT_ENV}"
+        )
+
+        slack.send_message(message)
 
 
 def handle(event, context):
@@ -43,6 +57,7 @@ def handle(event, context):
         if ps_name:
             if action == DELETE_PARAM_ACTION or action == DELETE_PARAMS_ACTION:
                 audit.put_delete_log(user, action, ps_name)
+                notify_delete(ps_name, user)
             elif action == PUT_PARAM_ACTION:
                 ps_value = (
                     detail["requestParameters"]["value"]

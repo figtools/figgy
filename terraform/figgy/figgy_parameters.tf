@@ -83,20 +83,34 @@ resource "aws_ssm_parameter" "account_mappings" {
 }
 
 
-# This is only used for figgy-sandbox stuff. You can delete if you want but it's harmless.
 resource "aws_ssm_parameter" "account_id" {
   name  = "/figgy/account_id"
   type  = "String"
   value = data.aws_caller_identity.current.account_id
+  description = "AWS AccountID associated with this account."
   overwrite = true
 }
 
+resource "aws_ssm_parameter" "run_env" {
+  name  = "/figgy/run_env"
+  type  = "String"
+  value = var.run_env
+  description = "This is the Figgy Run Environment associated with this account."
+  overwrite = true
+}
 
-# These are used by the Figgy CLI to know what accounts exist and which ones a user can assume into
-# for permission management.
+## Slack Configurations
+resource "aws_ssm_parameter" "notify_deletes" {
+  name  = "/figgy/integrations/slack/notify-deletes"
+  type  = "String"
+  value = local.slack_webhook_url != "unconfigured" ? var.notify_deletes : "false"
+  description = "Set this to 'false' for environments where you do not want to receive slack notifications on delete"
+  overwrite = true
+}
+
 resource "aws_ssm_parameter" "slack_webhook" {
   count = local.slack_webhook_url != "unconfigured" ? 1 : 0
-  name  = "/figgy/integrations/slack/webhook_url"
+  name  = "/figgy/integrations/slack/webhook-url"
   type  = "String"
   value = local.slack_webhook_url
 }
