@@ -52,7 +52,7 @@ class ConfigureOkta(FiggyTest):
         self._child.sendline('n')
         self._child.expect('.*weirdness.*')
         self._child.sendline('n')
-        self._child.expect('.*report_errors.*')
+        self._child.expect('.*anonymous_metrics_enabled.*')
         self._child.sendline('n')
         self._child.expect('.*anonymou.*')
         self._child.sendline('n')

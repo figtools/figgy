@@ -42,9 +42,10 @@ def handle(event, context):
         if action == DELETE_PARAM_ACTION or action == DELETE_PARAMS_ACTION:
             log.info(f"Deleting from cache: {ps_name}")
             items: Set[ConfigItem] = cache_dao.get_items(ps_name)
-            sorted_items = sorted(items)
-            [cache_dao.delete(item) for item in sorted_items[:-1]]  # Delete all but the most recent item.
-            cache_dao.mark_deleted(sorted_items[-1])
+            if items:
+                sorted_items = sorted(items)
+                [cache_dao.delete(item) for item in sorted_items[:-1]]  # Delete all but the most recent item.
+                cache_dao.mark_deleted(sorted_items[-1])
         elif action == PUT_PARAM_ACTION:
             items: Set[ConfigItem] = cache_dao.get_items(ps_name)
             [cache_dao.delete(item) for item in items]  # If any stragglers exist, get rid of em

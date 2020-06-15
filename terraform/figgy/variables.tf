@@ -38,3 +38,8 @@ variable "extra_sso_types" {
   description = "This is used for enabling multiple SSO types. Ignore this for 99.9% of use cases. This is primarily used for automated tests."
   default = []
 }
+
+variable "notify_deletes" {
+  description = "Set to 'true' if you want to receive slack notifications when parameters are deleted in this environment."
+  default = "true"
+}
