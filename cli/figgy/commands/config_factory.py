@@ -12,6 +12,7 @@ from figgy.commands.config.promote import Promote
 from figgy.commands.config.restore import Restore
 from figgy.commands.config.share import *
 from figgy.commands.config.sync import *
+from figgy.commands.config.validate import Validate
 from figgy.commands.config_context import ConfigContext
 from figgy.commands.factory import Factory
 from figgy.svcs.kms import KmsSvc
@@ -82,7 +83,8 @@ class ConfigFactory(Factory):
             return Edit(self._ssm, self._colors_enabled, self._config_context, self._config_view, self._config_completer)
         elif command == generate:
             return Generate(self._colors_enabled, self._config_context)
-
+        elif command == validate:
+            return Validate(self._ssm, self._colors_enabled, self._config_context)
         else:
             self._utils.error_exit(f"{Utils.get_first(command)} is not a valid command. You must select from: "
                                    f"[{CollectionUtils.printable_set(config_commands)}]. Try using --help for more info.")

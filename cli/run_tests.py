@@ -8,6 +8,7 @@ from figgy.test.cli.data.put import DataPut
 from figgy.test.cli.data.share import DataShare
 from figgy.test.cli.data.sync import DataSync
 from figgy.test.cli.dev.audit import DevAudit
+from figgy.test.cli.dev.validate import DevValidate
 from figgy.test.cli.dev.browse import DevBrowse
 from figgy.test.cli.dev.cleanup import DevCleanup
 from figgy.test.cli.dev.delete import DevDelete
@@ -121,6 +122,8 @@ def dev_tests():
     DevExport().run()
     print_test("Dev Edit")
     DevEdit().run()
+    print_test("Dev Validate")
+    DevValidate().run()
 
 
 def data_tests():

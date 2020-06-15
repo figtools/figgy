@@ -54,7 +54,8 @@ data "aws_iam_policy_document" "dynamic_policy" {
       "ssm:GetParameters",
       "ssm:GetParameterHistory",
       "ssm:GetParametersByPath",
-      "ssm:PutParameter"
+      "ssm:PutParameter",
+      "ssm:AddTagsToResource"
     ]
 
     # EVERYONE gets access to /shared, it is our global namespace.

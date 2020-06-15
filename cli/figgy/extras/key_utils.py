@@ -14,7 +14,7 @@ class KeyUtils(object):
             config_keys: set -> representing the app_figs in the passed in figgy.json file
             shared_names: set -> representing the shared_figs in the passed in figgy.json file
             merge_conf: dict -> representing the merged_figs in the passed in figgy.json file
-            repl_conf: dict -> representing the replication_config in the figgy.json file
+            repl_conf: dict -> representing the replicate_figs in the figgy.json file
             repl_from_conf: dict -> represents the `replicate_from` config block in the figgy.json file
             namespace: parsed, or calculated namespace for the application being synced. E.G. /app/demo-time/
 
@@ -53,7 +53,7 @@ class KeyUtils(object):
         Parses the repl_from block and merges it into the standard 'replication' block. This simplifies
         configuring replication and detecting orphans.
         Args:
-            repl_conf: Dict representing the `replication_config` block in figgy.json file
+            repl_conf: Dict representing the `replicate_figs` block in figgy.json file
             repl_from: Dict representing the `replicate_frorm` block in figgy.json file
             dest_namespace: namespace found in the `figgy.json` file. Where replication is destined for.
 

@@ -285,7 +285,7 @@ class SsmDao:
                 raise
 
     @Utils.retry
-    def set_parameter(self, key, value, desc, type, key_id=None) -> None:
+    def set_parameter(self, key, value, desc, type, tags=[], key_id=None) -> None:
         """
         Sets a parameter in PS.
         Args:
@@ -295,7 +295,13 @@ class SsmDao:
             type: SecureString or String
             key_id: KMS Key Id to use for encryption if SecureString
         """
-        # print(f"Inputting parameter {key} with value: {value} and DESC {desc} and type {type}")
+        # Doesn't belong in DAO. Move to SVC layer when that refactor happens.
+        # tags = tags + [{
+        #     'Key': 'managed_by',
+        #     'Value': PROJECT_NAME
+        #     },
+        # ]
+
         if key_id:
             self._ssm.put_parameter(
                 Name=key,
@@ -303,7 +309,8 @@ class SsmDao:
                 Value=value,
                 Overwrite=True,
                 Type=type,
-                KeyId=key_id
+                KeyId=key_id,
+                # Tags=tags
             )
         else:
             self._ssm.put_parameter(
@@ -311,5 +318,6 @@ class SsmDao:
                 Description=desc,
                 Value=value,
                 Overwrite=True,
-                Type=type
+                Type=type,
+                # Tags=tags
             )

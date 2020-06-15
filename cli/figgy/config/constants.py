@@ -2,6 +2,7 @@ from pathlib import Path
 
 VERSION = '0.0.30a'
 CLI_NAME = 'figgy'
+PROJECT_NAME = 'figgy'
 
 # Figgy URLS
 FIGGY_GITHUB = "https://github.com/mancej/figgy"

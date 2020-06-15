@@ -66,27 +66,6 @@ class FiggyCLI:
 
         return parser.parse_args()
 
-    @staticmethod
-    def get_defaults(skip: bool = False) -> Optional[CLIDefaults]:
-        """Lookup a user's defaults as configured by --configure option.
-        :param skip - Boolean, if this is true, exit and return none.
-        :return: hydrated CLIDefaults object of default values stored in cache file or None if no cache found
-        """
-        cache_mgr = CacheManager(file_override=DEFAULTS_FILE_CACHE_PATH)
-        try:
-            last_write, defaults = cache_mgr.get(DEFAULTS_KEY)
-
-            if not defaults:
-                if skip:
-                    return CLIDefaults.unconfigured()
-                else:
-                    Utils.stc_error_exit(f'{CLI_NAME} has not been configured. '
-                                     f'Please run {CLI_NAME} --{Utils.get_first(configure)}')
-
-            return defaults
-        except JSONDecodeError:
-            return None
-
     def get_profile(self, prompt: bool) -> str:
         """Returns the user's profile.
 
@@ -102,7 +81,7 @@ class FiggyCLI:
         if BASTION_PROFILE_ENV_NAME in os.environ and not prompt:
             return os.environ.get(BASTION_PROFILE_ENV_NAME)
         else:
-            defaults: CLIDefaults = self.get_defaults(self._is_setup_command)
+            defaults: CLIDefaults = FiggySetup.stc_get_defaults(self._is_setup_command)
             if defaults is not None and not prompt:
                 return defaults.provider_config.profile
             else:
@@ -120,12 +99,19 @@ class FiggyCLI:
         :return: str: name of the selected role.
         """
 
-        if role_override:
-            print(f'Role override selected: {role_override}\n')
-            return Role(role_override)
-
-        defaults = self.get_defaults(self._is_setup_command)
+        defaults = FiggySetup.stc_get_defaults(self._is_setup_command)
         if defaults is not None and not prompt:
+
+            if role_override:
+                if role_override in [role.role.role for role in defaults.assumable_roles]:
+                    print(f'Role override selected: {role_override}\n')
+                    return Role(role_override)
+                else:
+                    self._utils.error_exit(f"Invalid role override provided of: {role_override}. "
+                                           f"You do not have permissions to assume this role. Contact your system "
+                                           f"administrator to receive permissions then rerun `{CLI_NAME} "
+                                           f"--{Utils.get_first(configure)}`.")
+
             return defaults.role
         else:
             roles = self.__setup().get_assumable_roles()
@@ -138,7 +124,8 @@ class FiggyCLI:
         Returns: True/False
 
         """
-        defaults = self.get_defaults(skip=self._is_setup_command)
+
+        defaults = FiggySetup.stc_get_defaults(skip=self._is_setup_command)
         if defaults is not None:
             return defaults.colors_enabled
         else:
@@ -154,7 +141,7 @@ class FiggyCLI:
         return self.get_command_factory().instance()
 
     def find_assumable_role(self, env: RunEnv, role: Role, skip: bool = False) -> AssumableRole:
-        assumable_roles: List[AssumableRole] = self.get_defaults(skip=skip).assumable_roles
+        assumable_roles: List[AssumableRole] = FiggySetup.stc_get_defaults(skip=skip).assumable_roles
         matching_role = [ar for ar in assumable_roles if ar.role == role and ar.run_env == env]
         if matching_role:
             matching_role = matching_role.pop()
@@ -188,12 +175,13 @@ class FiggyCLI:
         self._is_setup_command: bool = FiggyCLI.is_setup_command(args)
         self._utils = Utils(self.get_colors_enabled())
         self._sts = boto3.client('sts')
-        self._defaults: CLIDefaults = FiggyCLI.get_defaults(skip=self._is_setup_command)
+
+        self._defaults: CLIDefaults = FiggySetup.stc_get_defaults(skip=self._is_setup_command)
         self._run_env = self._defaults.run_env
         role_override = Utils.attr_if_exists(role, args)
         self._role: Role = self.get_role(args.prompt, role_override=role_override)
 
-        if args.version is False and args.configure is False:
+        if not self._is_setup_command:
             if not hasattr(args, 'env') or args.env is None:
                 print(f"{EMPTY_ENV_HELP_TEXT}{self._run_env.env}\n")
             else:
@@ -217,7 +205,7 @@ class FiggyCLI:
 
     def get_command_factory(self) -> CommandFactory:
         if not self._command_factory:
-            self._command_factory = CommandFactory(self._context, self.get_defaults(skip=self._is_setup_command))
+            self._command_factory = CommandFactory(self._context, FiggySetup.stc_get_defaults(skip=self._is_setup_command))
 
         return self._command_factory
 
@@ -231,7 +219,6 @@ def main():
     arguments = sys.argv
     user = getpass.getuser()
     Utils.stc_validate(user != ROOT_USER, f"Hey! Stop trying to run {CLI_NAME} as {ROOT_USER}. That's bad!")
-
     original_command = ' '.join(arguments)
     sys.argv = arguments
     try:
@@ -253,7 +240,7 @@ def main():
         Utils.stc_error_exit(e.args[0])
     except Exception as e:
         try:
-            error_reporter = FiggyErrorReporter(FiggyCLI.get_defaults())
+            error_reporter = FiggyErrorReporter(FiggySetup.stc_get_defaults(skip=True))
             error_reporter.log_error(original_command, e)
         except Exception as e:
             print(e)

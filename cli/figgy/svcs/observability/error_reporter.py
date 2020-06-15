@@ -108,6 +108,6 @@ class FiggyErrorReporter:
             if ship_it:
                 self.report_error(command, e)
             else:
-                print(f"Error was not reported. Please consider reporting  this error on our Github: "
+                print(f"Error was not reported. Please consider reporting this error on our Github: "
                       f"{FIGGY_GITHUB}. Error details have been logged to this file: "
                       f"{self.c.fg_bl}{log_file_name}{self.c.rs}. Farewell! \n")

@@ -44,6 +44,7 @@ debug = frozenset({'debug'})
 copy_from = frozenset({'copy-from'})
 generate = frozenset({'generate'})
 from_path = frozenset({'from'})
+validate = frozenset({'validate'})
 
 # IAM sub commands
 export = frozenset({'export'})
@@ -178,6 +179,14 @@ arg_options = {
             skip_upgrade: {action: store_true, required: False},
             debug: {action: store_true, required: False}
         },
+        validate: {
+            info: {action: store_true, required: False},
+            prompt_com: {action: store_true, required: False},
+            env: {action: None, required: False},
+            config: {action: None, required: False},
+            skip_upgrade: {action: store_true, required: False},
+            debug: {action: store_true, required: False},
+        },
     },
     iam: {
         export: {
@@ -210,7 +219,7 @@ merge_suffixes = [merge_uri_suffix, empty_uri_suffix]
 
 # Supported commands by resource
 config_commands = [sync, put, edit, delete, cleanup, get, share, generate,
-                   list_com, browse, audit, dump, restore, promote]
+                   list_com, browse, audit, dump, restore, promote, validate]
 iam_commands = [export]
 help_commands = [configure, version, login, sandbox]
 

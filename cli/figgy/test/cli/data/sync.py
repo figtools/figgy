@@ -22,7 +22,7 @@ class DataSync(FiggyTest):
                               f'--skip-upgrade --replication-only', timeout=10, encoding='utf-8')
         time.sleep(2)
         with open('figgy/test/assets/data_repl_conf.json', 'r') as file:
-            content = json.loads(file.read()).get('replication_config')
+            content = json.loads(file.read()).get('replicate_figs')
 
         self.step("Running replication-only sync and adding values.")
         sources = list(content.keys())
@@ -50,7 +50,7 @@ class DataSync(FiggyTest):
 
     def prep(self):
         with open('figgy/test/assets/data_repl_conf.json', 'r') as file:
-            content = json.loads(file.read()).get('replication_config')
+            content = json.loads(file.read()).get('replicate_figs')
 
         delete = DataDelete()
         destinations = list(content.values())
