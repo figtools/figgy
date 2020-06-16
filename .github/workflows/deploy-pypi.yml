@@ -36,44 +36,44 @@ jobs:
           cd cli
           python run_tests.py bastion
 
-  test_google:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-      - name: Install dependencies
-        env:
-          FIGGY_TEST: true
-        run: |
-          sudo apt-get update \
-          && sudo apt-get install libusb-1.0-0-dev libxmu-dev libxmu-headers \
-          freeglut3-dev libxext-dev libxi-dev libudev1 libudev-dev
-
-      - name: Install figgy
-        run: |
-          cd cli
-          pip install -r requirements.txt
-          pip install -r requirements-linux.txt
-          scripts/install.sh
-      - name: Run E2E Test Suite
-        env:
-          OVERRIDE_KEYRING: true
-          GOOGLE_IDP_ID: ${{ secrets.GOOGLE_IDP_ID }}
-          GOOGLE_SP_ID: ${{ secrets.GOOGLE_SP_ID }}
-          GOOGLE_SSO_PASSWORD: ${{ secrets.GOOGLE_SSO_PASSWORD }}
-          GOOGLE_SSO_USER: ${{ secrets.GOOGLE_SSO_USER }}
-        run: |
-          export TERM=linux
-          export TERMINFO=/etc/terminfo
-          cd cli
-          python run_tests.py google
+#  test_google:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: Set up Python 3.8
+#        uses: actions/setup-python@v2
+#        with:
+#          python-version: 3.8
+#      - name: Install dependencies
+#        env:
+#          FIGGY_TEST: true
+#        run: |
+#          sudo apt-get update \
+#          && sudo apt-get install libusb-1.0-0-dev libxmu-dev libxmu-headers \
+#          freeglut3-dev libxext-dev libxi-dev libudev1 libudev-dev
+#
+#      - name: Install figgy
+#        run: |
+#          cd cli
+#          pip install -r requirements.txt
+#          pip install -r requirements-linux.txt
+#          scripts/install.sh
+#      - name: Run E2E Test Suite
+#        env:
+#          OVERRIDE_KEYRING: true
+#          GOOGLE_IDP_ID: ${{ secrets.GOOGLE_IDP_ID }}
+#          GOOGLE_SP_ID: ${{ secrets.GOOGLE_SP_ID }}
+#          GOOGLE_SSO_PASSWORD: ${{ secrets.GOOGLE_SSO_PASSWORD }}
+#          GOOGLE_SSO_USER: ${{ secrets.GOOGLE_SSO_USER }}
+#        run: |
+#          export TERM=linux
+#          export TERMINFO=/etc/terminfo
+#          cd cli
+#          python run_tests.py google
 
   test_okta:
     runs-on: ubuntu-latest
-    needs: [test_google]
+    needs: []
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3.8
