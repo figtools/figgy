@@ -190,10 +190,13 @@ class Utils:
         self.validate(ci_config_path.endswith('.json'),
                       "The figgy config file must end with the extension '.json'. A name of `figgy.json` is "
                       "recommended for most use cases..")
+
+        self.validate(os.path.exists(ci_config_path), f"Path {ci_config_path} is invalid. That file does not exist.")
+
         # Read & Validate figgy.json
         try:
             with open(ci_config_path, "r") as file:
-                base_matcher = re.search('^(.*)figgy|figgy.json$', ci_config_path)
+                base_matcher = re.search('^(.*[/]*).*.json$', ci_config_path)
                 base_path = base_matcher.group(1)
                 contents = file.read()
                 self.validate(contents != '',
@@ -202,7 +205,7 @@ class Utils:
 
                 if IMPORTS_KEY in ci_config:
                     for import_val in ci_config[IMPORTS_KEY]:
-                        import_path = f"{base_path}{import_val}"
+                        import_path = f"{base_path}/{import_val}"
                         print(f"Loading imported config: {import_path}")
                         with open(import_path) as import_file:
                             contents = import_file.read()

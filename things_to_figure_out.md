@@ -2,12 +2,9 @@ These are problems I intend to solve, once I figure out the best way to do it.
 
 ## Todo:
 - Test release rollback
-- Double check. Deletes don't seem to be showing up in slack webhook
-- CW alarms for lambdas
 - Create sample application that shows CICD validation.
 - Test sync with `/app/multi/level/twig/`
 - Add automated test with replicate from
-- Automated test with merge-params
 
 ## Ideas:
 - `figgy --reset` or `figgy reset`
