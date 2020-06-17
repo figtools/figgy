@@ -1,6 +1,10 @@
 These are problems I intend to solve, once I figure out the best way to do it.
 
 ## Todo:
+- Give configured lower environment(s) replication key access
+- Update to figlib to prevent name colissions?
+- Do python demo top-to-bottom
+
 - Test release rollback
 - Create sample application that shows CICD validation.
 - Add automated test with replicate from
