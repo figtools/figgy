@@ -3,8 +3,10 @@ These are problems I intend to solve, once I figure out the best way to do it.
 ## Todo:
 - Test release rollback
 - Create sample application that shows CICD validation.
-- Test sync with `/app/multi/level/twig/`
 - Add automated test with replicate from
+- Support for multi-profile
+- Make CLI used shared libs.
+- Pre-commit hook
 
 ## Ideas:
 - `figgy --reset` or `figgy reset`
@@ -18,3 +20,8 @@ These are problems I intend to solve, once I figure out the best way to do it.
 - Unused parameter recommender
 - 1 time password share-er
 - Encrypted event batching & backup to s3
+
+# Docs to write
+
+- Python Example Doc
+- Repo Guide

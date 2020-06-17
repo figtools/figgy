@@ -58,7 +58,7 @@ class Sync(ConfigCommand):
                 if not self._get.get(key):
                     print(f"Name {self.c.fg_bl}{key}{self.c.rs} does not exist in ParameterStore for the "
                           f"{self.c.fg_bl}{self.run_env}{self.c.rs} environment. It must be added before this "
-                          f"build can continue.")
+                          f"build can continue.\n")
                     self._put.put_param(key=key, display_hints=count == 0)
                     count = count + 1
                 else:
@@ -67,7 +67,7 @@ class Sync(ConfigCommand):
                 validate_msg(key)
 
         if count:
-            print(f"{self.c.fg_bl}{count} values added successfully{self.c.rs}")
+            print(f"{self.c.fg_bl}{count} {'value' if count == 1 else 'values'} added successfully{self.c.rs}")
 
     def _sync_keys(self, config_namespace: str, all_keys: Set):
         """
@@ -118,9 +118,13 @@ class Sync(ConfigCommand):
                 continue
 
             remote_cfg = self._config.get_config_repl(l_cfg.destination, self.run_env)
-            if not remote_cfg or remote_cfg != l_cfg:
+
+            # Should never happen, except when someone manually deletes source / destination without going through CLI
+            missing_from_ps = self._ssm.get_parameter_encrypted(l_cfg.source) is None
+
+            if not remote_cfg or remote_cfg != l_cfg or missing_from_ps:
                 try:
-                    if self._can_replicate_from(l_cfg.source) and not remote_cfg:
+                    if self._can_replicate_from(l_cfg.source) and not remote_cfg or missing_from_ps:
                         self._config.put_config_repl(l_cfg)
                         print(f"{self.c.fg_gr}Replication added:{self.c.rs} {l_cfg.source} -> {l_cfg.destination}")
                     elif self._can_replicate_from(l_cfg.source) and remote_cfg:
@@ -282,8 +286,8 @@ class Sync(ConfigCommand):
             if self._ssm.get_parameter_encrypted(source) is not None:
                 return True
             else:
-                print(f"{self.c.fg_rd}Replication source: {source} is missing from ParameterStore. "
-                      f"It must be added before config replication can be configured.{self.c.rs}")
+                print(f"{self.c.fg_yl}Replication source: {source} is missing from ParameterStore. "
+                      f"It must be added before config replication can be configured.{self.c.rs}\n")
                 self._input_config_values({source})
                 return True
         except ClientError as e:
@@ -404,6 +408,7 @@ class Sync(ConfigCommand):
     @VersionTracker.notify_user
     @AnonymousUsageTracker.track_command_usage
     def execute(self):
+        print()
         if self._replication_only:
             self.run_repl_sync()
         else:

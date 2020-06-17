@@ -165,11 +165,13 @@ class Input:
 
     @staticmethod
     def is_secret() -> bool:
-        return Input.y_n_input("Is this value a secret? ", default_yes=False)
+        return Input.y_n_input("Is this value a secret?", default_yes=False)
 
     @staticmethod
     def input(message: str, completer=None, default: str = None, optional: bool = False) -> str:
         loop = True
+        message = f'\n{message}\n  -> '
+
         while loop:
             if completer:
                 result = prompt(message, completer=completer)
@@ -198,7 +200,7 @@ class Input:
         selection = ''
         default_compare = 'y' if default_yes else 'n'
         default_prompt = '(Y/n)' if default_yes else '(y/N)'
-        prompt_msg = f'{message} {default_prompt}: -> ' if len(message) < 70 else f'{message} \n {default_prompt}: -> '
+        prompt_msg = f'\n{message} \n {default_prompt}: -> '
 
         while selection.lower() != 'y' and selection.lower() != 'n':
             selection = prompt(prompt_msg, completer=WordCompleter(['y', 'n'])).strip().lower()

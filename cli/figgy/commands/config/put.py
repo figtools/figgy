@@ -59,7 +59,7 @@ class Put(ConfigCommand):
 
         if display_hints:
             print(f"{self.c.fg_bl}Hint:{self.c.rs} To upload a file's contents, pass in `file:///path/to/your/file` "
-                  f"in the value prompt")
+                  f"in the value prompt.")
 
         while put_another:
             try:
