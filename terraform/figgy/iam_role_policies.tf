@@ -118,5 +118,18 @@ data "aws_iam_policy_document" "dynamic_policy" {
       aws_dynamodb_table.config_cache.arn
     ]
   }
-  
+
+  # Provide replication key access to appropriate environments
+  dynamic "statement" {
+    for_each = contains(local.replication_key_access_envs, var.run_env) ? [true] : []
+    content {
+      sid = "KmsReplicationKeyAccess"
+      actions = [
+        "kms:DescribeKey",
+        "kms:Decrypt"
+      ]
+      resources = [ aws_kms_key.replication_key.arn ]
+    }
+}
+
 }

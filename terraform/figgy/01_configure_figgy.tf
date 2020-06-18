@@ -58,6 +58,11 @@ locals {
   bastion_account_number = "513912394837"
 
 
+  # Environments with replication key access. This will give all user types access to the figgy replication key.
+  # This will enable users to run services locally and still decrypt secrets shard with their application. Ideal for
+  # local development. More details: https://www.figgy.dev/docs/advanced/confidentiality.html
+  replication_key_access_envs = ["dev"]
+
   # MFA Enabled - "true/false" - Require MFA for authentication for bastion based auth? For SSO users MFA
   # is managed by your SSO provider. This is only for `bastion` MFA enforcement. The CLI supports MFA for SSO / Bastion auth types.
   mfa_enabled = false

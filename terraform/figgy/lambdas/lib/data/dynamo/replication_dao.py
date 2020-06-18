@@ -22,7 +22,11 @@ class ReplicationDao:
 
     def get_all(self) -> List[ReplicationConfig]:
         result = self._table.scan()
-        all_configs = result['Items'] if result['Items'] else []
+        all_configs = result.get('Items', [])
+
+        if 'LastEvaluatedKey' in result:
+            result = self._table.scan(start_key=result['LastEvaluatedKey'])
+            all_configs = all_configs + result.get('Items', [])
 
         if all_configs:
             all_configs = [ReplicationConfig.from_item(item) for item in all_configs]
@@ -33,44 +37,32 @@ class ReplicationDao:
         filter_exp = Attr(REPL_SOURCE_ATTR_NAME).eq(source) & Attr(REPL_TYPE_ATTR_NAME).eq(REPL_TYPE_APP)
 
         result = self._table.scan(FilterExpression=filter_exp)
-        results: List[ReplicationConfig] = []
-
-        if "Items" in result and len(result["Items"]) > 0:
-            items = result["Items"]
-            for item in items:
-                config = ReplicationConfig(
-                    item[REPL_DEST_KEY_NAME],
-                    RunEnv(item[REPL_RUN_ENV_KEY_NAME]),
-                    item[REPL_NAMESPACE_ATTR_NAME],
-                    item[REPL_SOURCE_ATTR_NAME],
-                    ReplicationType(item[REPL_TYPE_ATTR_NAME]),
-                    user=item[REPL_USER_ATTR_NAME])
-                results.append(config)
-        return results
-
-    def get_configs_by_type(self, type: ReplicationType, start_key: str = None) -> List[ReplicationConfig]:
-        filter_exp = Attr(REPL_TYPE_ATTR_NAME).eq(type.type)
-        if start_key:
-            result = self._table.scan(FilterExpression=filter_exp, ExclusiveStartKey=start_key)
-        else:
-            result = self._table.scan(FilterExpression=filter_exp)
-
-        results: List[ReplicationConfig] = []
-
-        if "Items" in result and len(result["Items"]) > 0:
-            items = result["Items"]
-            for item in items:
-                config = ReplicationConfig(
-                    item[REPL_DEST_KEY_NAME],
-                    RunEnv(item[REPL_RUN_ENV_KEY_NAME]),
-                    item[REPL_NAMESPACE_ATTR_NAME],
-                    item[REPL_SOURCE_ATTR_NAME],
-                    ReplicationType(item[REPL_TYPE_ATTR_NAME]),
-                    user=item[REPL_USER_ATTR_NAME])
-                results.append(config)
+        items = result.get('Items', [])
 
         if 'LastEvaluatedKey' in result:
-            results = results + self.get_configs_by_type(type=type, start_key=result['LastEvaluatedKey'])
+            result = self._table.scan(start_key=result['LastEvaluatedKey'])
+            items = items + result.get('Items', [])
+
+        results: List[ReplicationConfig] = []
+
+        if items:
+            results = [ReplicationConfig.from_item(item) for item in items]
+
+        return results
+
+    def get_configs_by_type(self, type: ReplicationType) -> List[ReplicationConfig]:
+        filter_exp = Attr(REPL_TYPE_ATTR_NAME).eq(type.type)
+        result = self._table.scan(FilterExpression=filter_exp)
+        items = result.get('Items', [])
+
+        if 'LastEvaluatedKey' in result:
+            result = self._table.scan(FilterExpression=filter_exp, start_key=result['LastEvaluatedKey'])
+            items = items + result.get('Items', [])
+
+        results = []
+
+        if items:
+            results = [ReplicationConfig.from_item(item) for item in items]
 
         return results
 
