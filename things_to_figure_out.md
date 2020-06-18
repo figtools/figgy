@@ -1,8 +1,8 @@
 These are problems I intend to solve, once I figure out the best way to do it.
 
 ## Todo:
-- Give configured lower environment(s) replication key access
-- Fix declarative config reference in figgy-dba.json
+- Figgy Lib PyDocs
+
 - Update to figlib to prevent name colissions?
 - Do python demo top-to-bottom
 

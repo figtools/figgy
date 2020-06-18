@@ -10,7 +10,7 @@ SHORT_DESCRIPTION = "Figgy is a free and opensource serverless application confi
                     " AWS ParameterStore and leverages native AWS constructs such as AWS IAM, KMS, among other " \
                     "services to ensure a simple and elegant integration with your AWS environment."
 
-with open('figgy/config/constants.py') as file:
+with open('figcli/config/constants.py') as file:
     contents = file.read()
     VERSION = re.search(r'^VERSION\s*=\s*["\'](.*)["\']', contents, re.MULTILINE)
     GITHUB = re.search(r'^FIGGY_GITHUB\s*=\s*["\'](.*)["\']', contents, re.MULTILINE)
@@ -176,7 +176,7 @@ setup(
     name="figgy-cli",
     packages=find_packages(".", exclude=excludes),
     entry_points={
-        "console_scripts": ['figgy = figgy.entrypoint.cli:main']
+        "console_scripts": ['figgy = figcli.entrypoint.cli:main']
     },
     version=VERSION,
     description=SHORT_DESCRIPTION,

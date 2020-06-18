@@ -1,29 +1,29 @@
 import os
 import sys
-from figgy.config import *
-from figgy.test.cli.config import *
-from figgy.test.cli.data.configure import DataConfigure
-from figgy.test.cli.data.login import DataLogin
-from figgy.test.cli.data.put import DataPut
-from figgy.test.cli.data.share import DataShare
-from figgy.test.cli.data.sync import DataSync
-from figgy.test.cli.dev.audit import DevAudit
-from figgy.test.cli.dev.validate import DevValidate
-from figgy.test.cli.dev.browse import DevBrowse
-from figgy.test.cli.dev.cleanup import DevCleanup
-from figgy.test.cli.dev.delete import DevDelete
-from figgy.test.cli.dev.dump import DevDump
-from figgy.test.cli.dev.edit import DevEdit
-from figgy.test.cli.dev.export import DevExport
-from figgy.test.cli.dev.get import DevGet
-from figgy.test.cli.dev.list import DevList
-from figgy.test.cli.dev.put import DevPut
-from figgy.test.cli.dev.restore import DevRestore
-from figgy.test.cli.dev.sync import DevSync
-from figgy.test.cli.dev.login import DevLogin
-from figgy.test.cli.sso.google.configure import ConfigureGoogle
-from figgy.utils.utils import Utils
-from figgy.test.cli.sso.okta.configure import ConfigureOkta
+from figcli.config import *
+from figcli.test.cli.config import *
+from figcli.test.cli.data.configure import DataConfigure
+from figcli.test.cli.data.login import DataLogin
+from figcli.test.cli.data.put import DataPut
+from figcli.test.cli.data.share import DataShare
+from figcli.test.cli.data.sync import DataSync
+from figcli.test.cli.dev.audit import DevAudit
+from figcli.test.cli.dev.validate import DevValidate
+from figcli.test.cli.dev.browse import DevBrowse
+from figcli.test.cli.dev.cleanup import DevCleanup
+from figcli.test.cli.dev.delete import DevDelete
+from figcli.test.cli.dev.dump import DevDump
+from figcli.test.cli.dev.edit import DevEdit
+from figcli.test.cli.dev.export import DevExport
+from figcli.test.cli.dev.get import DevGet
+from figcli.test.cli.dev.list import DevList
+from figcli.test.cli.dev.put import DevPut
+from figcli.test.cli.dev.restore import DevRestore
+from figcli.test.cli.dev.sync import DevSync
+from figcli.test.cli.dev.login import DevLogin
+from figcli.test.cli.sso.google.configure import ConfigureGoogle
+from figcli.utils.utils import Utils
+from figcli.test.cli.sso.okta.configure import ConfigureOkta
 
 CACHE_DIR = f'{HOME}/.figgy/cache'
 VAULT_DIR = f'{HOME}/.figgy/vault'

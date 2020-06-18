@@ -1,5 +1,5 @@
 import re
-from figgy.config.constants import VERSION
+from figcli.config.constants import VERSION
 
 with open('CHANGELOG.md', 'r') as file:
     changelog = file.read()
