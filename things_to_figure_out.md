@@ -2,6 +2,7 @@ These are problems I intend to solve, once I figure out the best way to do it.
 
 ## Todo:
 - Give configured lower environment(s) replication key access
+- Fix declarative config reference in figgy-dba.json
 - Update to figlib to prevent name colissions?
 - Do python demo top-to-bottom
 
@@ -11,6 +12,8 @@ These are problems I intend to solve, once I figure out the best way to do it.
 - Support for multi-profile
 - Make CLI used shared libs.
 - Pre-commit hook
+- Fix "requests" dependency on legacy botocore layer thing
+- CW alarm email integration
 
 ## Ideas:
 - `figgy --reset` or `figgy reset`
