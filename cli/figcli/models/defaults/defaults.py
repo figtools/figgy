@@ -1,13 +1,16 @@
 import jsonpickle
 import uuid
+import os
 from figcli.models.assumable_role import AssumableRole
 from figcli.models.defaults.provider import Provider
 from figcli.models.defaults.provider_config import ProviderConfig, ProviderConfigFactory, BastionProviderConfig
 from figcli.models.role import Role
 from figcli.models.run_env import RunEnv
+from figcli.config.constants import APP_NS_OVERRIDE
 from figcli.config import *
 from typing import Dict, Optional, List, Any
 from dataclasses import dataclass, field
+from figcli.utils.utils import Utils
 
 
 @dataclass
@@ -72,6 +75,24 @@ class CLIDefaults:
                            auto_mfa=False,
                            user_id=str(uuid.uuid4()),
                            service_ns="/app",
+                           usage_tracking=True)
+
+    @staticmethod
+    def from_profile(profile):
+        return CLIDefaults(role=Role(profile),
+                           colors_enabled=Utils.not_windows(),
+                           user=profile,
+                           run_env=RunEnv(profile),
+                           provider=Provider.PROFILE,
+                           session_duration=DEFAULT_SESSION_DURATION,
+                           region="us-east-1",
+                           mfa_enabled=False,
+                           mfa_serial=None,
+                           provider_config=None,
+                           report_errors=False,
+                           auto_mfa=False,
+                           user_id=str(uuid.uuid4()),
+                           service_ns=os.environ.get(APP_NS_OVERRIDE) or "/app",
                            usage_tracking=True)
 
     def __str__(self) -> str:

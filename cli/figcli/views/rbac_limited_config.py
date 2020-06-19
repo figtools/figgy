@@ -1,4 +1,5 @@
 import json
+import logging
 from typing import List
 
 from prompt_toolkit.completion import WordCompleter
@@ -10,6 +11,7 @@ from figcli.svcs.cache_manager import CacheManager
 from figcli.svcs.config import ConfigService
 from figcli.utils.utils import Utils
 
+log = logging.getLogger(__name__)
 
 class RBACLimitedConfigView:
     """
@@ -30,6 +32,9 @@ class RBACLimitedConfigView:
         Looks up the user-defined namespaces that users of this type can access. This enables us to prevent the
         auto-complete from showing parameters the user doesn't actually have access to.
 
+        If the user's defined accessible namespaces are not available, then returns all root namespaces, regardless
+        of whether use is authorized to perform GET requests against those values.
+
         Leverages an expiring local cache to save ~200ms on each figgy bootstrap
         """
         cache_key = f'{self._role.role}-authed-nses'
@@ -37,7 +42,10 @@ class RBACLimitedConfigView:
         es, authed_nses = self._cache_mgr.get_or_refresh(cache_key, self._ssm.get_parameter, self.rbac_role_ns_path)
 
         if authed_nses:
-            authed_nses = json.loads(authed_nses)
+            if isinstance(authed_nses, str):
+                authed_nses = json.loads(authed_nses)
+        else:
+            es, authed_nses = self._cache_mgr.get_or_refresh(cache_key, self._config_svc.get_root_namespaces)
 
         if not isinstance(authed_nses, list):
             raise ValueError(f"Invalid value found at path: {self.rbac_role_ns_path}. It must be a valid json List[str]")
@@ -82,7 +90,7 @@ class RBACLimitedConfigView:
     def get_config_names(self, prefix: str = None, one_level: bool = False) -> List[str]:
         all_names = sorted(self._config_svc.get_parameter_names())
         authed_nses = self.get_authorized_namespaces()
-        new_names = []
+        new_names = [] if authed_nses or prefix else all_names
 
         if prefix:
             is_child = False
@@ -90,7 +98,7 @@ class RBACLimitedConfigView:
                 if prefix.startswith(ns):
                     is_child = True
 
-            if not is_child:
+            if not is_child and authed_nses:
                 raise ValueError(f"Provided prefix of {prefix} is not in a valid authorized namespace.")
 
             authed_nses = [prefix]

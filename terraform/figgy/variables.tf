@@ -21,7 +21,7 @@ variable "max_session_duration" {
 
 variable "webhook_url" {
   description = "Slack Webhook URL for figgy submit notifications such as parameter shares / critical figgy errors."
-  default = "unconfigured"  # don't change this unless you update the logic in the SSM parameter
+  default = "unconfigured"
 }
 
 variable "sandbox_deploy" {
@@ -34,7 +34,7 @@ variable "figgy_cw_log_retention" {
   default = 14
 }
 
-variable "extra_sso_types" {
+variable "extra_auth_types" {
   description = "This is used for enabling multiple SSO types. Ignore this for 99.9% of use cases. This is primarily used for automated tests."
   default = []
 }

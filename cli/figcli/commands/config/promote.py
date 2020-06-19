@@ -8,7 +8,7 @@ from figcli.data.dao.ssm import SsmDao
 from figcli.input import Input
 from figcli.svcs.observability.anonymous_usage_tracker import AnonymousUsageTracker
 from figcli.svcs.observability.version_tracker import VersionTracker
-from figcli.svcs.sso.session_manager import SessionManager
+from figcli.svcs.auth.session_manager import SessionManager
 from figcli.utils.utils import *
 
 

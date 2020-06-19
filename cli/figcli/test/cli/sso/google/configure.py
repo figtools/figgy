@@ -10,7 +10,7 @@ class ConfigureGoogle(FiggyTest):
         self._role_type = role_type
         super().__init__(None)
 
-        self._child = pexpect.spawn(f'{CLI_NAME} --{Utils.get_first(configure)} --skip-upgrade',
+        self._child = pexpect.spawn(f'{CLI_NAME} --{Utils.get_first(configure)} --skip-upgrade {self.extra_args}',
                               encoding='utf-8', timeout=5)
 
     def run(self):

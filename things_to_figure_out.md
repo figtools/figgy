@@ -1,13 +1,11 @@
 These are problems I intend to solve, once I figure out the best way to do it.
 
 ## Todo:
+- groups for people using --profile for everything?
 - Figgy Lib PyDocs
-
-- Update to figlib to prevent name colissions?
 - Do python demo top-to-bottom
 
 - Test release rollback
-- Create sample application that shows CICD validation.
 - Add automated test with replicate from
 - Support for multi-profile
 - Make CLI used shared libs.
@@ -32,3 +30,6 @@ These are problems I intend to solve, once I figure out the best way to do it.
 
 - Python Example Doc
 - Repo Guide
+
+# Maybe one day:
+- Usage metric tracking on `--profile session overrides`

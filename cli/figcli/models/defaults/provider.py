@@ -8,6 +8,7 @@ class Provider(Enum):
     # MICROSOFT = "microsoft"
     # GENERIC_SAML = "saml"
     AWS_BASTION = "bastion"
+    PROFILE = "profile"
     UNSELECTED = 0
 
     @staticmethod

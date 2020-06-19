@@ -36,9 +36,9 @@ class Config:
             USAGE_TRACKING = 'anonymous_metrics_enabled'
 
 
-FAKE_GOOGLE_IDP_ID = 'N0tre9le3'
+FAKE_GOOGLE_IDP_ID = 'N0tre4le3'
 FAKE_GOOGLE_SP_ID = '12345678010'
-FAKE_OKTA_APP_LINK = 'https://your-domain.okta.com/home/amazon_aws/0oaaqxeiciFzAVassP4x6/123'
+FAKE_OKTA_APP_LINK = 'https://your-domain.okta.com/home/amazon_aws/AsdF1afak123145faf1/123'
 
 EMPTY_CONFIG = f"""
 [FIGGY]

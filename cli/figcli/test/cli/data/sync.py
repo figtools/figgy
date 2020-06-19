@@ -10,18 +10,18 @@ from figcli.utils.utils import *
 
 class DataSync(FiggyTest):
 
-    def __init__(self):
-        super().__init__(None)
+    def __init__(self, extra_args=""):
+        super().__init__(None, extra_args=extra_args)
 
     def run(self):
         self.step("Prepping workspace, deleting any existing values.")
         self.prep()
 
         child = pexpect.spawn(f'{CLI_NAME} {Utils.get_first(config)} {Utils.get_first(sync)} '
-                              f'--env {DEFAULT_ENV} --config figgy/test/assets/data_repl_conf.json '
-                              f'--skip-upgrade --replication-only', timeout=10, encoding='utf-8')
+                              f'--env {DEFAULT_ENV} --config figcli/test/assets/data_repl_conf.json '
+                              f'--skip-upgrade --replication-only {self.extra_args}', timeout=10, encoding='utf-8')
         time.sleep(2)
-        with open('figgy/test/assets/data_repl_conf.json', 'r') as file:
+        with open('figcli/test/assets/data_repl_conf.json', 'r') as file:
             content = json.loads(file.read()).get('replicate_figs')
 
         self.step("Running replication-only sync and adding values.")
@@ -49,7 +49,7 @@ class DataSync(FiggyTest):
         self.prep()
 
     def prep(self):
-        with open('figgy/test/assets/data_repl_conf.json', 'r') as file:
+        with open('figcli/test/assets/data_repl_conf.json', 'r') as file:
             content = json.loads(file.read()).get('replicate_figs')
 
         delete = DataDelete()

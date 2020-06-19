@@ -15,21 +15,21 @@ import time
 AUDIT_PROPAGATION_TIME = 15
 
 class DevAudit(FiggyTest):
-    def __init__(self):
-        super().__init__(None)
+    def __init__(self, extra_args=""):
+        super().__init__(None, extra_args=extra_args)
 
     def run(self):
-        put = DevPut()
+        put = DevPut(extra_args=self.extra_args)
         guuid = uuid.uuid4().hex
         key = f"{param_test_prefix}{guuid}"
         put.add(key, DELETE_ME_VALUE, 'desc', add_more=False)
-        get = DevGet()
+        get = DevGet(extra_args=self.extra_args)
         get.get(key, DELETE_ME_VALUE, get_more=False)
         self.step(f"Sleeping {AUDIT_PROPAGATION_TIME} to allow for lambda -> dynamo audit log insert.")
         time.sleep(AUDIT_PROPAGATION_TIME)
         self.step(f"Looking up audit log for: {key}. If this fails, the lambda could be broken. ")
         self.audit(key)
-        delete = DevDelete()
+        delete = DevDelete(extra_args=self.extra_args)
         delete.delete(key)
 
         new_uuid = uuid.uuid4().hex
@@ -37,8 +37,8 @@ class DevAudit(FiggyTest):
         self.audit(f'/doesnt/exist/{new_uuid}', expect_results=False)
 
     def audit(self, name, audit_another=False, expect_results=True):
-        child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(audit)} --env {DEFAULT_ENV} --skip-upgrade',
-                              encoding='utf-8', timeout=5)
+        child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(audit)} --env {DEFAULT_ENV} --skip-upgrade'
+                              f' {self.extra_args}', encoding='utf-8', timeout=5)
         self.step(f"Auditing: {name}")
         child.expect('.*Please input a PS Name.*')
         child.sendline(name)

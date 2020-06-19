@@ -15,8 +15,8 @@ from figcli.models.defaults.defaults import CLIDefaults
 from figcli.models.role import Role
 from figcli.models.run_env import RunEnv
 from figcli.svcs.setup import FiggySetup
-from figcli.svcs.sso.provider.provider_factory import SessionProviderFactory
-from figcli.svcs.sso.provider.session_provider import SessionProvider
+from figcli.svcs.auth.provider.provider_factory import SessionProviderFactory
+from figcli.svcs.auth.provider.session_provider import SessionProvider
 
 
 class Configure(HelpCommand, ABC):

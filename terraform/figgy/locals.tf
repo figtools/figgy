@@ -1,7 +1,10 @@
 # You do not need to tweak anything in this file :)
 locals {
-  enable_sso = local.sso_type == "okta" || local.sso_type == "google"
-  sso_types = concat([local.sso_type], var.extra_sso_types)
+  enable_sso = local.auth_type == "okta" || local.auth_type == "google"
+  bastion_enabled = local.auth_type == "bastion"
+  standard_install = local.auth_type == "standard"
+
+  auth_types = concat([local.auth_type], var.extra_auth_types)
 
   # Todo: Later do an auto-pip install from local, then zip up dependencies, add as layer, then pass layer ARN into
   # Todo: the functions. (Wrap in a make command perhaps)

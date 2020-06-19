@@ -5,7 +5,7 @@ from figcli.commands.help_context import HelpContext
 from figcli.commands.help.configure import Configure
 from figcli.config import *
 from figcli.svcs.setup import FiggySetup
-from figcli.svcs.sso.session_manager import SessionManager
+from figcli.svcs.auth.session_manager import SessionManager
 from figcli.utils.utils import Utils, CollectionUtils
 
 

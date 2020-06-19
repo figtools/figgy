@@ -10,8 +10,8 @@ from json import JSONDecodeError
 from figcli.config import *
 from figcli.models.assumable_role import AssumableRole
 from figcli.models.defaults.defaults import CLIDefaults
-from figcli.svcs.sso.okta.okta import Okta
-from figcli.svcs.sso.provider.session_provider import SessionProvider
+from figcli.svcs.auth.okta.okta import Okta
+from figcli.svcs.auth.provider.session_provider import SessionProvider
 from figcli.utils.utils import Utils, InvalidSessionError
 
 log = logging.getLogger(__name__)

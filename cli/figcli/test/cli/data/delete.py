@@ -7,10 +7,11 @@ from figcli.utils.utils import *
 
 
 class DataDelete(FiggyTest):
-    def __init__(self):
+    def __init__(self, extra_args=""):
         print(f"Testing `{CLI_NAME} config {Utils.get_first(delete)} --env {DEFAULT_ENV}`")
-        super().__init__(pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(delete)} --env {DEFAULT_ENV} --skip-upgrade',
-                                    timeout=5, encoding='utf-8'))
+        super().__init__(pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(delete)} --env {DEFAULT_ENV}'
+                                       f' --skip-upgrade {extra_args}',
+                                    timeout=5, encoding='utf-8'), extra_args=extra_args)
 
     def run(self):
         self.step(f"Testing delete for param: {param_1}")
@@ -34,7 +35,7 @@ class DataDelete(FiggyTest):
         else:
             self.expect(f'.*deleted successfully.*Delete another.*')
             print("Validating delete success.")
-            get = DevGet()
+            get = DevGet(extra_args=self.extra_args)
             get.get(param_1, param_1_val, expect_missing=True)
 
         if delete_another:

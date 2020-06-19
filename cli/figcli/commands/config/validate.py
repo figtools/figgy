@@ -41,6 +41,7 @@ class Validate(ConfigCommand):
         for param in all_params:
             all_param_names.append(param['Name'])
 
+        print()
         for name in all_names:
             if name not in all_param_names:
                 print(f"Fig missing from {self.c.fg_yl}{self.run_env}{self.c.rs} environment"

@@ -50,13 +50,12 @@ locals {
     "dev" = [ "app"]
   }
 
-  # Options: "okta", "google", "bastion"
-  sso_type = "okta"
+  # Options: "okta", "google", "bastion", "standard"
+  auth_type = "okta"
 
   # Bastion account #. Set to your bastion account # if you are leveraging bastion based authentication. Otherwise ignore.
   # If `enable_sso = true` then ignore this.
   bastion_account_number = "816219277933"
-
 
   # Environments with replication key access. This will give all user types access to the figgy replication key.
   # This will enable users to run services locally and still decrypt secrets shard with their application. Ideal for

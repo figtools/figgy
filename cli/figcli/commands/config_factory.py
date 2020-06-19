@@ -16,7 +16,7 @@ from figcli.commands.config.validate import Validate
 from figcli.commands.config_context import ConfigContext
 from figcli.commands.factory import Factory
 from figcli.svcs.kms import KmsSvc
-from figcli.svcs.sso.session_manager import SessionManager
+from figcli.svcs.auth.session_manager import SessionManager
 from figcli.views.rbac_limited_config import RBACLimitedConfigView
 from figcli.utils.utils import *
 

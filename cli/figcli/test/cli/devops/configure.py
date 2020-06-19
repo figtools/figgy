@@ -10,7 +10,7 @@ class DevOpsConfigure(FiggyTest):
 
     def run(self):
         print(f"Testing `{CLI_NAME} --{Utils.get_first(configure)}`")
-        child = pexpect.spawn(f'{CLI_NAME} --{Utils.get_first(configure)} --skip-upgrade',
+        child = pexpect.spawn(f'{CLI_NAME} --{Utils.get_first(configure)} --skip-upgrade {self.extra_args}',
                               encoding='utf-8', timeout=3)
         user_name = os.environ.get(SNAGBOT_USER_ENV_KEY)
         password = os.environ.get(SNAGBOT_PASSWORD_ENV_KEY)

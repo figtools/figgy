@@ -14,9 +14,10 @@ from figcli.models.role import Role
 from figcli.models.run_env import RunEnv
 from figcli.svcs.cache_manager import CacheManager
 from figcli.svcs.config_manager import ConfigManager
-from figcli.svcs.sso.provider.provider_factory import SessionProviderFactory
-from figcli.svcs.sso.provider.session_provider import SessionProvider
-from figcli.svcs.sso.session_manager import SessionManager
+from figcli.svcs.auth.provider.provider_factory import SessionProviderFactory
+from figcli.svcs.auth.provider.session_provider import SessionProvider
+from figcli.svcs.auth.provider.sso_session_provider import SSOSessionProvider
+from figcli.svcs.auth.session_manager import SessionManager
 from figcli.utils.secrets_manager import SecretsManager
 from figcli.utils.utils import Utils
 from json import JSONDecodeError
@@ -98,7 +99,7 @@ class FiggySetup:
     def configure_roles(self, current_defaults: CLIDefaults, run_env: RunEnv = None, role: Role = None) -> CLIDefaults:
         updated_defaults = current_defaults
         provider_factory: SessionProviderFactory = SessionProviderFactory(current_defaults)
-        session_provider: SessionProvider = provider_factory.instance()
+        session_provider: SSOSessionProvider = provider_factory.instance()
         session_provider.cleanup_session_cache()
 
         # Get assertion and parse out account -> role -> run_env mappings.
@@ -175,11 +176,15 @@ class FiggySetup:
         return defaults if defaults else CLIDefaults.unconfigured()
 
     @staticmethod
-    def stc_get_defaults(skip: bool = False) -> Optional[CLIDefaults]:
+    def stc_get_defaults(skip: bool = False, profile: str = None) -> Optional[CLIDefaults]:
         """Lookup a user's defaults as configured by --configure option.
         :param skip - Boolean, if this is true, exit and return none.
+        :param profile - AWS CLI profile to use as an override. If this is passed in all other options are ignored.
         :return: hydrated CLIDefaults object of default values stored in cache file or None if no cache found
         """
+        if profile:
+            return CLIDefaults.from_profile(profile)
+
         cache_mgr = CacheManager(file_override=DEFAULTS_FILE_CACHE_PATH)
         try:
             last_write, defaults = cache_mgr.get(DEFAULTS_KEY)

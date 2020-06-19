@@ -16,8 +16,8 @@ class DevEdit(FiggyTest):
     _VALUE = 'asdf'
     _DESC = 'desc'
 
-    def __init__(self):
-        super().__init__(None)
+    def __init__(self, extra_args=""):
+        super().__init__(None, extra_args=extra_args)
 
     def run(self):
         self.step(f"Testing edit for {param_1}")
@@ -25,7 +25,8 @@ class DevEdit(FiggyTest):
 
     def edit(self):
         # Get Value
-        child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(edit)} --env {DEFAULT_ENV} --skip-upgrade',
+        child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(edit)} --env {DEFAULT_ENV} '
+                              f'--skip-upgrade {self.extra_args}',
                               timeout=10, encoding='utf-8')
 
         child.expect('.*Please input a PS Name.*')
@@ -40,7 +41,7 @@ class DevEdit(FiggyTest):
         child.sendline('n')
         print("Add success. Checking successful save")
 
-        get = DevGet()
+        get = DevGet(extra_args=self.extra_args)
         get.get(param_1, DevEdit._VALUE, DevEdit._DESC)
-        delete = DevDelete()
+        delete = DevDelete(extra_args=self.extra_args)
         delete.delete(param_1)

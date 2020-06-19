@@ -67,7 +67,7 @@ EOF
 # These are used by figgy CLI for looking up appropriate user -> role mappings. These do not drive
 # access, but are needed for the CLI user experience. Access is driven purely by IAM based RBAC.
 resource "aws_ssm_parameter" "user_to_role_mappings" {
-  count = local.enable_sso == false && local.bastion_account_number == var.aws_account_id ? length(keys(local.bastion_users)) : 0
+  count = local.bastion_enabled && local.bastion_account_number == var.aws_account_id ? length(keys(local.bastion_users)) : 0
   name  = "/figgy/users/${keys(local.bastion_users)[count.index]}/roles"
   type  = "String"
   value = jsonencode(local.bastion_users[keys(local.bastion_users)[count.index]])
@@ -76,7 +76,7 @@ resource "aws_ssm_parameter" "user_to_role_mappings" {
 # These are used by the Figgy CLI to know what accounts exist and which ones a user can assume into
 # for permission management.
 resource "aws_ssm_parameter" "account_mappings" {
-  count = local.enable_sso == false && local.bastion_account_number == var.aws_account_id ? length(keys(local.associated_accounts)) : 0
+  count = local.bastion_enabled && local.bastion_account_number == var.aws_account_id ? length(keys(local.associated_accounts)) : 0
   name  = "/figgy/accounts/${keys(local.associated_accounts)[count.index]}"
   type  = "String"
   value = local.associated_accounts[keys(local.associated_accounts)[count.index]]

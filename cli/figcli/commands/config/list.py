@@ -47,6 +47,7 @@ class List(ConfigCommand):
             if not self._utils.is_valid_input(namespace, "namespace", notify=False):
                 continue
 
+            print(f"Passing in prefix of :{namespace}")
             parameters = self._view.get_config_names(prefix=namespace)
             names = [['Selector', 'Name']]
             count = 1

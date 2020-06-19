@@ -47,10 +47,6 @@ class SessionProvider(ABC):
             -> Tuple[boto3.Session, AssumableRole]:
         return self.get_session(assumable_role, prompt, exit_on_fail), assumable_role
 
-    #Todo later decide whether to move this to SSOSessionProvider
-    @abstractmethod
-    def get_assumable_roles(self) -> List[AssumableRole]:
-        pass
 
     @abstractmethod
     def cleanup_session_cache(self):

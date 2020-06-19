@@ -1,5 +1,5 @@
 import logging
-from typing import Set
+from typing import Set, List
 
 from figcli.data.dao.config import ConfigDao
 from figcli.data.models.config_item import ConfigState, ConfigItem
@@ -25,6 +25,10 @@ class ConfigService:
         self._config_dao = config_dao
         self._cache_mgr = cache_mgr
         self._run_env = run_env
+
+    def get_root_namespaces(self) -> List[str]:
+        all_params = self.get_parameter_names()
+        return sorted(list(set([f"/{p.split('/')[1]}" for p in all_params])))
 
     @Utils.trace
     def get_parameter_names(self) -> Set[str]:

@@ -29,10 +29,10 @@ CACHE_DIR = f'{HOME}/.figgy/cache'
 VAULT_DIR = f'{HOME}/.figgy/vault'
 CONFIG_FILE = f'{HOME}/.figgy/config'
 c = Utils.default_colors()
-AUTH_TYPES = ['google', 'okta', 'bastion']
+AUTH_TYPES = ['google', 'okta', 'bastion', 'profile']
 
 
-# FYI I know all these tests are UGLY, but I'm ok with it, it's just tests! :)
+# FYI I know tests are a bit UGLY, but I'm ok with it, it's just tests! :)
 
 ## JORDAN: If you get EOF exceptions like this:
 ## pexpect.exceptions.EOF: End Of File (EOF). Empty string style platform.
@@ -96,34 +96,40 @@ def main():
         ConfigureOkta('data').run()
         data_tests()
 
+    elif auth_type.lower() == 'profile':
+        dev_tests(profile='figgy-dev-sandbox')
+        clear_cache()
 
-def dev_tests():
+
+def dev_tests(profile=None):
+    extra_args = f"--profile {profile}" if profile else ""
+
     print_test("Dev Put")
-    DevPut().run()
+    DevPut(extra_args=extra_args).run()
     print_test("Dev Get")
-    DevGet().run()
+    DevGet(extra_args=extra_args).run()
     print_test("Dev Delete")
-    DevDelete().run()
+    DevDelete(extra_args=extra_args).run()
     print_test("Dev Dump")
-    DevDump().run()
+    DevDump(extra_args=extra_args).run()
     print_test("Dev List")
-    DevList().run()
+    DevList(extra_args=extra_args).run()
     print_test("Dev Audit")
-    DevAudit().run()
+    DevAudit(extra_args=extra_args).run()
     print_test("Dev Sync")
-    DevSync().run()
+    DevSync(extra_args=extra_args).run()
     print_test("Dev Cleanup")
-    DevCleanup().run()
+    DevCleanup(extra_args=extra_args).run()
     print_test("Dev Browse")
-    DevBrowse().run()
+    DevBrowse(extra_args=extra_args, key_down_to_shared=4).run()
     print_test("Dev Restore")
-    DevRestore().run()
+    DevRestore(extra_args=extra_args).run()
     print_test("Dev Export")
-    DevExport().run()
+    DevExport(extra_args=extra_args).run()
     print_test("Dev Edit")
-    DevEdit().run()
+    DevEdit(extra_args=extra_args).run()
     print_test("Dev Validate")
-    DevValidate().run()
+    DevValidate(extra_args=extra_args).run()
 
 
 def data_tests():

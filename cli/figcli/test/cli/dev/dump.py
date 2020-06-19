@@ -11,11 +11,11 @@ import time
 
 class DevDump(FiggyTest):
 
-    def __init__(self):
-        super().__init__(None)
+    def __init__(self, extra_args=""):
+        super().__init__(None, extra_args=extra_args)
 
     def run(self):
-        put = DevPut()
+        put = DevPut(extra_args=self.extra_args)
 
         # Use a number > 10 so paging is tested
         minimum, maximum = 1, 12
@@ -25,7 +25,8 @@ class DevDump(FiggyTest):
             more = i < maximum - 1
             put.add_another(f'{param_1}-{i}', param_1_val, f'{param_1_desc}-{i}', add_more=more)
 
-        child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(dump)} --env {DEFAULT_ENV} --skip-upgrade',
+        child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(dump)} --env {DEFAULT_ENV} {self.extra_args}'
+                              f' --skip-upgrade',
                               encoding='utf-8', timeout=7)
 
         self.step(f"Testing `{CLI_NAME} config {Utils.get_first(dump)} --env {DEFAULT_ENV}`")
@@ -34,7 +35,7 @@ class DevDump(FiggyTest):
         child.expect(f'.*{param_1}-{minimum}.*{param_1}-{maximum-1}.*')
         print(f"Dump was successful.")
 
-        delete = DevDelete()
+        delete = DevDelete(extra_args=self.extra_args)
         delete.delete(param_1, delete_another=True)
         for i in range(minimum, maximum):
             delete.delete(f'{param_1}-{i}', delete_another=i < maximum - 1)

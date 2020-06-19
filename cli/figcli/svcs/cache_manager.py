@@ -115,8 +115,10 @@ class CacheManager:
             -> Tuple[int, Any]:
 
         if not isinstance(max_age, int):
-            log.warning(f"Received an invalid max_age of : {max_age}. Defaulting to {DEFAULT_SESSION_DURATION}")
-            max_age = DEFAULT_SESSION_DURATION
+            log.warning(f"Received an invalid max_age of : {max_age}. Defaulting to"
+                        f" {CacheManager.DEFAULT_REFRESH_INTERVAL}")
+
+            max_age = CacheManager.DEFAULT_REFRESH_INTERVAL
 
         last_write, val = self.get(cache_key)
         if Utils.millis_since_epoch() - last_write > max_age or not val:

@@ -15,8 +15,8 @@ import time
 
 class DevSync(FiggyTest):
 
-    def __init__(self):
-        super().__init__(None)
+    def __init__(self, extra_args=""):
+        super().__init__(None, extra_args=extra_args)
         self.missing_key = '/app/ci-test/v1/config12'
 
     def run(self):
@@ -30,21 +30,21 @@ class DevSync(FiggyTest):
         self.sync_with_orphans()
 
     def prep_sync(self):
-        put = DevPut()
+        put = DevPut(extra_args=self.extra_args)
         put.add('/app/ci-test/v1/config9', DELETE_ME_VALUE, desc='desc', add_more=True)
         put.add('/app/ci-test/v1/config11', DELETE_ME_VALUE, desc='desc', add_more=True)
         put.add('/shared/jordan/testrepl', DELETE_ME_VALUE, desc='desc', add_more=True)
         put.add('/shared/jordan/testrepl2', DELETE_ME_VALUE, desc='desc', add_more=True)
         put.add('/shared/jordan/testrepl3', DELETE_ME_VALUE, desc='desc', add_more=True)
         put.add('/shared/jordan/testrepl4', DELETE_ME_VALUE, desc='desc', add_more=False)
-        delete = DevDelete()
+        delete = DevDelete(extra_args=self.extra_args)
         delete.delete(self.missing_key)
 
     def sync_success(self):
         print(f"Testing: {CLI_NAME} config {Utils.get_first(sync)} --env {DEFAULT_ENV} "
-              f"--config figgy/test/assets/success/figgy.json")
+              f"--config figcli/test/assets/success/figgy.json")
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(sync)} --env {DEFAULT_ENV} '
-                              f'--config figgy/test/assets/success/figgy.json --skip-upgrade',
+                              f'--config figcli/test/assets/success/figgy.json --skip-upgrade {self.extra_args}',
                               encoding='utf-8', timeout=10)
         child.logfile = sys.stdout
         missing_key = '/app/ci-test/v1/config12'
@@ -58,10 +58,10 @@ class DevSync(FiggyTest):
 
     def sync_multi_level_success(self):
         missing_key = '/app/dev/thing/ci-test2/app/ci-test/v1/config12'
-        delete = DevDelete()
+        delete = DevDelete(extra_args=self.extra_args)
         delete.delete(missing_key)
 
-        put = DevPut()
+        put = DevPut(extra_args=self.extra_args)
         put.add('/app/dev/thing/ci-test2/config9', DELETE_ME_VALUE, desc='desc', add_more=True)
         put.add('/app/dev/thing/ci-test2/config11', DELETE_ME_VALUE, desc='desc', add_more=True)
         put.add('/shared/jordan/testrepl', DELETE_ME_VALUE, desc='desc', add_more=True)
@@ -70,9 +70,9 @@ class DevSync(FiggyTest):
         put.add('/shared/jordan/testrepl4', DELETE_ME_VALUE, desc='desc', add_more=False)
 
         print(f"Testing: {CLI_NAME} config {Utils.get_first(sync)} --env {DEFAULT_ENV} "
-              f"--config figgy/test/assets/success/multi-level-ns.json")
+              f"--config figcli/test/assets/success/multi-level-ns.json")
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(sync)} --env {DEFAULT_ENV} '
-                              f'--config figgy/test/assets/success/multi-level-ns.json --skip-upgrade',
+                              f'--config figcli/test/assets/success/multi-level-ns.json --skip-upgrade {self.extra_args}',
                               encoding='utf-8', timeout=10)
 
         child.expect(f'.*Please input a value for.*{missing_key}.*')
@@ -84,13 +84,13 @@ class DevSync(FiggyTest):
         child.expect('.*Sync completed with no errors!')
 
     def sync_with_orphans(self):
-        delete = DevDelete()
+        delete = DevDelete(extra_args=self.extra_args)
         delete.delete(self.missing_key)
         print("Successful sync + cleanup passed!")
 
         print(f"Testing: {CLI_NAME} config {Utils.get_first(sync)} --env {DEFAULT_ENV} "
-              f"--config figgy/test/assets/error/figgy.json")
+              f"--config figcli/test/assets/error/figgy.json")
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(sync)} --env {DEFAULT_ENV} '
-                              f'--config figgy/test/assets/error/figgy.json --skip-upgrade', timeout=10)
+                              f'--config figcli/test/assets/error/figgy.json --skip-upgrade {self.extra_args}', timeout=10)
         child.expect('.*Unused Parameter:.*/app/ci-test/v1/config11.*Orphaned replication.*/shared/jordan/testrepl2.*')
         print("Sync with orphaned configs passed!")

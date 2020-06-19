@@ -14,8 +14,8 @@ from figcli.models.run_env import RunEnv
 from figcli.models.sso.okta.okta_primary_auth import OktaPrimaryAuth, OktaSession
 from figcli.models.sso.okta.okta_session_auth import OktaSessionAuth
 from figcli.svcs.cache_manager import CacheManager
-from figcli.svcs.sso.okta.okta import Okta, InvalidSessionError
-from figcli.svcs.sso.provider.sso_session_provider import SSOSessionProvider
+from figcli.svcs.auth.okta.okta import Okta, InvalidSessionError
+from figcli.svcs.auth.provider.sso_session_provider import SSOSessionProvider
 from figcli.svcs.vault import FiggyVault
 from figcli.utils.secrets_manager import SecretsManager
 from figcli.utils.utils import Utils
@@ -158,7 +158,8 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
                 assumable_roles.append(AssumableRole(account_id=account_id,
                                                      role=Role(role, full_name=role_name),
                                                      run_env=RunEnv(run_env),
-                                                     provider_name=provider_name))
+                                                     provider_name=provider_name,
+                                                     profile=None))
         return assumable_roles
 
     def cleanup_session_cache(self):

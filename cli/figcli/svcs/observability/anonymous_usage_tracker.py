@@ -37,8 +37,8 @@ class AnonymousUsageTracker:
     _METRICS_KEY = 'metrics'
     _USER_KEY = 'user_id'
     _VERSION_KEY = 'version'
-    # REPORT_FREQUENCY = 60  # Report daily
-    REPORT_FREQUENCY = 1000 * 60 * 60 * 24  # Report daily
+    REPORT_FREQUENCY = 60  # Report daily
+    # REPORT_FREQUENCY = 1000 * 60 * 60 * 24  # Report daily
 
     @staticmethod
     def report_usage(metrics: FiggyMetrics):
@@ -70,7 +70,9 @@ class AnonymousUsageTracker:
                 else:
                     user_id = "NoOne"
 
-                last_write, metrics = cache.get(AnonymousUsageTracker._METRICS_KEY, default=FiggyMetrics(user_id=user_id))
+                last_write, metrics = cache.get(AnonymousUsageTracker._METRICS_KEY,
+                                                default=FiggyMetrics(user_id=user_id))
+
                 metrics.increment_count(command)
                 if Utils.millis_since_epoch() - metrics.last_report > AnonymousUsageTracker.REPORT_FREQUENCY:
                     defaults = FiggySetup.stc_get_defaults(skip=True)

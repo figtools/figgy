@@ -15,7 +15,7 @@ from figcli.svcs.config_manager import ConfigManager
 from figcli.svcs.observability.anonymous_usage_tracker import AnonymousUsageTracker
 from figcli.svcs.observability.version_tracker import VersionTracker
 from figcli.svcs.setup import FiggySetup
-from figcli.svcs.sso.provider.provider_factory import SessionProviderFactory
+from figcli.svcs.auth.provider.provider_factory import SessionProviderFactory
 from figcli.models.sandbox.login_response import SandboxLoginResponse
 
 from figcli.utils.awscli import AWSCLIUtils

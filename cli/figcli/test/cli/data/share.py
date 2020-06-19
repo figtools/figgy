@@ -8,11 +8,12 @@ from figcli.utils.utils import *
 
 
 class DataShare(FiggyTest):
-    def __init__(self):
+    def __init__(self, extra_args=""):
         print(f"Testing `{CLI_NAME} config {Utils.get_first(share)} --env {DEFAULT_ENV}`")
-        super().__init__(None)
+        super().__init__(None, extra_args=extra_args)
         self._child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(share)} --env '
-                                       f'{DEFAULT_ENV} --skip-upgrade', timeout=10, encoding='utf-8')
+                                    f'{DEFAULT_ENV} --skip-upgrade {extra_args}',
+                                    timeout=10, encoding='utf-8')
 
     def run(self):
         self.step("Adding parameters to share...")
@@ -33,7 +34,7 @@ class DataShare(FiggyTest):
         # print("Faking successful replication")
         # put.add(automated_test_dest_1, data_param_1_val, data_param_1_desc)
 
-        delete = DataDelete()
+        delete = DataDelete(extra_args=self.extra_args)
         self.step("Testing successful deletion of a repl destination.")
         delete.delete(automated_test_dest_1, delete_another=False, repl_dest_delete=True)
 

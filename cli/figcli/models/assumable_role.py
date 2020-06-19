@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
+from figcli.models.defaults.provider import Provider
 from figcli.models.role import Role
 from figcli.models.run_env import RunEnv
 from tabulate import tabulate
@@ -9,9 +10,10 @@ from tabulate import tabulate
 @dataclass
 class AssumableRole:
     account_id: int
-    role: Role
     run_env: RunEnv
+    role: Optional[Role]
     provider_name: Optional[str]
+    profile: Optional[str]
 
     def tabulate_data(self) -> List[str]:
         return [f'{self.account_id[0:5]} REDACTED', self.run_env.env, self.role.role]
@@ -21,6 +23,15 @@ class AssumableRole:
 
     def print(self):
         print(self.__dict__)
+
+    @staticmethod
+    def from_profile(profile: str):
+        return AssumableRole(
+            account_id=1234567899,
+            run_env=RunEnv(env=profile),
+            profile=profile,
+            role=Role(profile),
+            provider_name=Provider.PROFILE.value)
 
     @property
     def role_arn(self) -> str:
@@ -38,7 +49,8 @@ class AssumableRole:
     def __eq__(self, other):
         return self.account_id == other.account_id and \
                self.role == other.role and \
-               self.run_env == other.run_env
+               self.run_env == other.run_env and \
+               self.profile == other.profile
 
     def __hash__(self):
         return hash(f'{self.account_id}-{self.role}-{self.run_env}')

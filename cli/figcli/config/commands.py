@@ -45,6 +45,7 @@ copy_from = frozenset({'copy-from'})
 generate = frozenset({'generate'})
 from_path = frozenset({'from'})
 validate = frozenset({'validate'})
+profile = frozenset({'profile'})
 
 # IAM sub commands
 export = frozenset({'export'})
@@ -69,14 +70,16 @@ arg_options = {
             prompt_com: {action: store_true, required: False},
             env: {action: None, required: False},
             skip_upgrade: {action: store_true, required: False},
-            debug: {action: store_true, required: False}
+            debug: {action: store_true, required: False},
+            profile: {action: None, required: False},
         },
         delete: {
             info: {action: store_true, required: False},
             prompt_com: {action: store_true, required: False},
             env: {action: None, required: False},
             skip_upgrade: {action: store_true, required: False},
-            debug: {action: store_true, required: False}
+            debug: {action: store_true, required: False},
+            profile: {action: None, required: False},
         },
         get: {
             info: {action: store_true, required: False},
@@ -84,7 +87,8 @@ arg_options = {
             env: {action: None, required: False},
             role: {action: None, required: False},
             skip_upgrade: {action: store_true, required: False},
-            debug: {action: store_true, required: False}
+            debug: {action: store_true, required: False},
+            profile: {action: None, required: False},
         },
         list_com: {
             info: {action: store_true, required: False},
@@ -92,7 +96,8 @@ arg_options = {
             env: {action: None, required: False},
             role: {action: None, required: False},
             skip_upgrade: {action: store_true, required: False},
-            debug: {action: store_true, required: False}
+            debug: {action: store_true, required: False},
+            profile: {action: None, required: False},
         },
         put: {
             info: {action: store_true, required: False},
@@ -100,7 +105,8 @@ arg_options = {
             env: {action: None, required: False},
             role: {action: None, required: False},
             skip_upgrade: {action: store_true, required: False},
-            debug: {action: store_true, required: False}
+            debug: {action: store_true, required: False},
+            profile: {action: None, required: False},
         },
         edit: {
             info: {action: store_true, required: False},
@@ -108,7 +114,8 @@ arg_options = {
             env: {action: None, required: False},
             role: {action: None, required: False},
             skip_upgrade: {action: store_true, required: False},
-            debug: {action: store_true, required: False}
+            debug: {action: store_true, required: False},
+            profile: {action: None, required: False},
         },
         restore: {
             info: {action: store_true, required: False},
@@ -117,7 +124,8 @@ arg_options = {
             role: {action: None, required: False},
             point_in_time: {action: store_true, required: False},
             skip_upgrade: {action: store_true, required: False},
-            debug: {action: store_true, required: False}
+            debug: {action: store_true, required: False},
+            profile: {action: None, required: False},
         },
         share: {
             info: {action: store_true, required: False},
@@ -125,7 +133,8 @@ arg_options = {
             env: {action: None, required: False},
             role: {action: None, required: False},
             skip_upgrade: {action: store_true, required: False},
-            debug: {action: store_true, required: False}
+            debug: {action: store_true, required: False},
+            profile: {action: None, required: False},
         },
         sync: {
             info: {action: store_true, required: False},
@@ -136,7 +145,8 @@ arg_options = {
             config: {action: None, required: False},
             skip_upgrade: {action: store_true, required: False},
             debug: {action: store_true, required: False},
-            copy_from: {action: None, required: False}
+            copy_from: {action: None, required: False},
+            profile: {action: None, required: False},
         },
         browse: {
             info: {action: store_true, required: False},
@@ -145,7 +155,8 @@ arg_options = {
             role: {action: None, required: False},
             skip_upgrade: {action: store_true, required: False},
             debug: {action: store_true, required: False},
-            prefix: {action: None, required: False}
+            prefix: {action: None, required: False},
+            profile: {action: None, required: False},
         },
         dump: {
             info: {action: store_true, required: False},
@@ -155,21 +166,24 @@ arg_options = {
             prefix: {action: None, required: False},
             out: {action: None, required: False},
             skip_upgrade: {action: store_true, required: False},
-            debug: {action: store_true, required: False}
+            debug: {action: store_true, required: False},
+            profile: {action: None, required: False},
         },
         audit: {
             info: {action: store_true, required: False},
             env: {action: None, required: False},
             role: {action: None, required: False},
             skip_upgrade: {action: store_true, required: False},
-            debug: {action: store_true, required: False}
+            debug: {action: store_true, required: False},
+            profile: {action: None, required: False},
         },
         promote: {
             info: {action: store_true, required: False},
             env: {action: None, required: False},
             role: {action: None, required: False},
             skip_upgrade: {action: store_true, required: False},
-            debug: {action: store_true, required: False}
+            debug: {action: store_true, required: False},
+            profile: {action: None, required: False},
         },
         generate: {
             info: {action: store_true, required: False},
@@ -177,7 +191,8 @@ arg_options = {
             from_path: {action: None, required: False},
             role: {action: None, required: False},
             skip_upgrade: {action: store_true, required: False},
-            debug: {action: store_true, required: False}
+            debug: {action: store_true, required: False},
+            profile: {action: None, required: False},
         },
         validate: {
             info: {action: store_true, required: False},
@@ -186,6 +201,7 @@ arg_options = {
             config: {action: None, required: False},
             skip_upgrade: {action: store_true, required: False},
             debug: {action: store_true, required: False},
+            profile: {action: None, required: False},
         },
     },
     iam: {
@@ -195,7 +211,8 @@ arg_options = {
             skip_upgrade: {action: store_true, required: False},
             all_profiles: {action: store_true, required: False},
             role: {action: None, required: False},
-            debug: {action: store_true, required: False}
+            debug: {action: store_true, required: False},
+            profile: {action: None, required: False},
         },
     },
     login: {
@@ -203,6 +220,7 @@ arg_options = {
             info: {action: store_true, required: False},
             skip_upgrade: {action: store_true, required: False},
             debug: {action: store_true, required: False},
+            profile: {action: None, required: False},
         },
         sandbox: {
             info: {action: store_true, required: False},

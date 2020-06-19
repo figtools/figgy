@@ -16,9 +16,9 @@ from figcli.commands.figgy_context import FiggyContext
 from figcli.svcs.kms import KmsSvc
 from figcli.svcs.config import ConfigService
 from figcli.svcs.cache_manager import CacheManager
-from figcli.svcs.sso.provider.provider_factory import SessionProviderFactory
-from figcli.svcs.sso.provider.session_provider import SessionProvider
-from figcli.svcs.sso.session_manager import SessionManager
+from figcli.svcs.auth.provider.provider_factory import SessionProviderFactory
+from figcli.svcs.auth.provider.session_provider import SessionProvider
+from figcli.svcs.auth.session_manager import SessionManager
 from figcli.data.dao.config import ConfigDao
 from figcli.utils.utils import Utils
 from figcli.config import *

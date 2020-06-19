@@ -34,6 +34,7 @@ class FiggyContext:
         self.out_file = Utils.attr_if_exists(out, args)
         self.query_prefix = Utils.attr_if_exists(prefix, args)
         self.service = Utils.attr_if_exists(service, args)
+        self.profile = Utils.attr_if_exists(profile, args)
 
         # Flags like --prompt that are unset or set to true
         self.repl = Utils.is_set_true(replication_only, args)

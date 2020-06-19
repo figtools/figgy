@@ -21,7 +21,7 @@ auto_mfa = true
 # You may remove this is you do not use OKTA
 [OKTA]
 # Find this on your OKTA AWS applicatoin page on the General tab. It's labeled as EMBED LINK:
-app_link = https://your-domain.okta.com/home/amazon_aws/0oasdfasdfasfssP4x6/123
+app_link = https://your-domain.okta.com/home/amazon_aws/AsdF1afak123145faf1/123
 factor_type = GOOGLE
 
 # You may remove this if you don't use GOOGLE

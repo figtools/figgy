@@ -17,7 +17,7 @@ from figcli.models.defaults.provider import Provider
 from figcli.models.role import Role
 from figcli.models.run_env import RunEnv
 from figcli.svcs.cache_manager import CacheManager
-from figcli.svcs.sso.provider.session_provider import SessionProvider
+from figcli.svcs.auth.provider.session_provider import SessionProvider
 from figcli.svcs.vault import FiggyVault
 from figcli.utils.secrets_manager import SecretsManager
 from figcli.utils.utils import Utils, InvalidSessionError
@@ -171,7 +171,8 @@ class BastionSessionProvider(SessionProvider):
                     run_env=RunEnv(env=env_name, account_id=account_id),
                     role=Role(role, full_name=f'{FIGGY_ROLE_NAME_PREFIX}{env_name}-{role}'),
                     account_id=account_id,
-                    provider_name=Provider.AWS_BASTION.value
+                    provider_name=Provider.AWS_BASTION.value,
+                    profile=None
                 ))
 
         return assumable_roles

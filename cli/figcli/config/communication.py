@@ -78,6 +78,9 @@ LOGIN_SANDBOX_HELP_TEXT = "Get a temporary session from the free figgy sandbox a
 MISSING_PS_NAME_MESSAGE = "Your application is missing at least one ParameterStore name that it expects to exist as " \
                           "defined in your figgy.json file. To resolve this issue, first try running your `figgy` " \
                           " `sync` command to validate and synchronize your expected configs."
+PROFILE_HELP_TEXT = "Overrides all other figgy configurations and instead pulls ALL credentials from your local " \
+                    "~/.aws/credentials file and uses that for all types of authorization. Ideal for CICD pipelines."
+
 
 # Point in time (--point-in-time)
 POINT_IN_TIME = "Restore all parameters to a point in time."
@@ -123,7 +126,8 @@ HELP_TEXT_MAP = {
     from_path: FROM_HELP_TEXT,
     login: LOGIN_HELP_TEXT,
     sandbox: LOGIN_SANDBOX_HELP_TEXT,
-    validate: VALIDATE_HELP_TEXT
+    validate: VALIDATE_HELP_TEXT,
+    profile: PROFILE_HELP_TEXT
 }
 
 # Other

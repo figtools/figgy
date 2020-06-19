@@ -9,11 +9,11 @@ from typing import Optional, Any, List
 from figcli.models.assumable_role import AssumableRole
 from figcli.models.role import Role
 from figcli.models.run_env import RunEnv
-from figcli.svcs.sso.google.google import Google, ExpectedGoogleException
+from figcli.svcs.auth.google.google import Google, ExpectedGoogleException
 
 from figcli.models.defaults.defaults import CLIDefaults
 from figcli.svcs.cache_manager import CacheManager
-from figcli.svcs.sso.provider.sso_session_provider import SSOSessionProvider
+from figcli.svcs.auth.provider.sso_session_provider import SSOSessionProvider
 from figcli.svcs.vault import FiggyVault
 from figcli.utils.secrets_manager import SecretsManager
 from figcli.utils.utils import Utils
@@ -90,7 +90,8 @@ class GoogleSessionProvider(SSOSessionProvider):
                     assumable_roles.append(AssumableRole(account_id=account_id,
                                                          role=Role(role, full_name=role_name),
                                                          run_env=RunEnv(run_env),
-                                                         provider_name=provider_name))
+                                                         provider_name=provider_name,
+                                                         profile=None))
 
             return assumable_roles
 

@@ -15,24 +15,24 @@ KEY_PATH = '/shared/aaa/aa'
 
 class DevOpsBrowse(FiggyTest):
 
-    def __init__(self):
-        super().__init__(None)
+    def __init__(self, extra_args=""):
+        super().__init__(None, extra_args=extra_args)
 
     def run(self):
         self.step(f"Testing browse for {param_1}")
         self.browse()
 
     def _cleanup(self):
-        delete = DevDelete()
+        delete = DevDelete(extra_args=self.extra_args)
         delete.delete(KEY_PATH, delete_another=False)
 
     def _setup(self):
-        put = DevPut()
+        put = DevPut(extra_args=self.extra_args)
         put.add(KEY_PATH, DELETE_ME_VALUE, param_1_desc, add_more=False)
 
     def _validate_delete(self, key, value):
         print(f"Validating successfully deletion of {key}")
-        get = DevGet()
+        get = DevGet(extra_args=self.extra_args)
         get.get(key, value, get_more=False, expect_missing=True)
         print("Delete success validated.")
 
@@ -43,7 +43,8 @@ class DevOpsBrowse(FiggyTest):
         time.sleep(15)
         print(f"Getting {KEY_PATH} through browse...")
         # Get Value
-        child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(browse)} --env {DEFAULT_ENV} --skip-upgrade',
+        child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(browse)} --env {DEFAULT_ENV} '
+                              f'--skip-upgrade {self.extra_args}',
                               timeout=10, encoding='utf-8')
         child.send(KEY_DOWN)
         child.send(KEY_DOWN)
@@ -61,7 +62,8 @@ class DevOpsBrowse(FiggyTest):
 
         self.step("Get success. Deleting through browse.")
         # Delete Value
-        child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(browse)} --env {DEFAULT_ENV} --skip-upgrade',
+        child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(browse)} --env {DEFAULT_ENV} '
+                              f'--skip-upgrade {self.extra_args}',
                               timeout=10, encoding='utf-8')
         child.send(KEY_DOWN)
         child.send(KEY_DOWN)

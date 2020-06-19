@@ -8,8 +8,9 @@ import sys
 
 class FiggyTest(ABC):
 
-    def __init__(self, child):
+    def __init__(self, child, extra_args=""):
         self.c = Utils.default_colors()
+        self.extra_args = extra_args
 
         if child:
             c = Utils.default_colors()
