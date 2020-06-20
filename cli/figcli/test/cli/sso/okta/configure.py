@@ -9,8 +9,7 @@ class ConfigureOkta(FiggyTest):
     def __init__(self, role_type: str):
         self._role_type = role_type
         super().__init__(None)
-
-         self._child = pexpect.spawn(f'{CLI_NAME} --{Utils.get_first(configure)} --skip-upgrade',
+        self._child = pexpect.spawn(f'{CLI_NAME} --{Utils.get_first(configure)} --skip-upgrade',
                                        encoding='utf-8', timeout=5)
 
     def run(self):
