@@ -101,6 +101,11 @@ jobs:
 
           pyinstaller figcli/__main__.py --hiddenimport configparser --hiddenimport pyreadline --hiddenimport win32timezone --hiddenimport keyrings  --hiddenimport pkg_resources.py2_warn --hiddenimport keyring.backends
           cd dist/__main__/
+          echo "PWD"
+          pwd
+          echo "LS"
+          ls .
+          echo "MOVE"
           mv __main__ figgy
           zip -r figgy.zip .
 
