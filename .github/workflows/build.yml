@@ -20,7 +20,7 @@ jobs:
           pip3 install -r requirements-darwin.txt
 
           echo "Building figgy onedir"
-          pyinstaller figcli/__main__.py --onedir --hiddenimport configparser --hiddenimport keyrings --hiddenimport keyring.backends --hiddenimport pycrypto  --hiddenimport pkg_resources.py2_warn
+          pyinstaller figcli/__main__.py --onedir --hiddenimport configparser --hiddenimport keyrings --hiddenimport keyring.backends --hiddenimport pycryptodome  --hiddenimport pkg_resources.py2_warn
           cd dist/__main__/
           mv __main__ figgy
           zip -r figgy.zip .
@@ -54,7 +54,7 @@ jobs:
           sudo pip install -r requirements.txt
           sudo pip install -r requirements-linux.txt
 
-          pyinstaller ficli/__main__.py --onefile --log-level=DEBUG --hiddenimport configparser --hiddenimport keyrings --hiddenimport keyring.backends --hiddenimport pkg_resources.py2_warn
+          pyinstaller ficli/__main__.py --hiddenimport configparser --hiddenimport keyrings --hiddenimport keyring.backends --hiddenimport pkg_resources.py2_warn
           cd dist/__main__/
           mv __main__ figgy
           zip -r figgy.zip .
@@ -91,7 +91,7 @@ jobs:
           sudo pip install -r requirements.txt
           sudo pip install -r requirements-windows.txt
 
-          pyinstaller ficli/__main__.py --onefile --log-level=DEBUG --hiddenimport configparser --hiddenimport keyrings --hiddenimport keyring.backends --hiddenimport pkg_resources.py2_warn
+          pyinstaller ficli/__main__.py --hiddenimport configparser --hiddenimport pyreadline --hiddenimport win32timezone --hiddenimport keyrings  --hiddenimport pkg_resources.py2_warn --hiddenimport keyring.backends
           cd dist/__main__/
           mv __main__ figgy
           zip -r figgy.zip .
