@@ -50,6 +50,7 @@ jobs:
           echo "Linux build is happening!!!"
           # install requirements
 
+          cd cli
           sudo pip install pyinstaller
           sudo pip install -r requirements.txt
           sudo pip install -r requirements-linux.txt
@@ -87,6 +88,7 @@ jobs:
           echo "Windows build is happening!!!"
           # install requirements
 
+          cd cli
           sudo pip install pyinstaller
           sudo pip install -r requirements.txt
           sudo pip install -r requirements-windows.txt
