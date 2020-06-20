@@ -10,30 +10,27 @@ jobs:
   build_mac:
     runs-on: macos-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Build
         run: |
-            echo "MacOs build is happening!!!"
-            pwd
-            echo "LS"
-            ls .
-            echo "CD"
-            cd cli
-            pip3 install pyinstaller
-            pip3 install -r requirements.txt
-            pip3 install -r requirements-darwin.txt
+          echo "MacOs build is happening!!!"
+          cd cli
+          pip3 install pyinstaller
+          pip3 install -r requirements.txt
+          pip3 install -r requirements-darwin.txt
 
-            ## Build OneDir
-            echo "Deploying OSX figgy to $dest"
-            aws s3 cp dist/figgy $dest
-            rm dist/figgy
+          ## Build OneDir
+          echo "Deploying OSX figgy to $dest"
+          aws s3 cp dist/figgy $dest
+          rm dist/figgy
 
-            echo "Building figgy onedir"
-            pyinstaller figcli/entrypoint/cli.py --onedir --log-level=DEBUG --hiddenimport configparser --hiddenimport keyrings --hiddenimport keyring.backends --hiddenimport pycrypto  --hiddenimport pkg_resources.py2_warn
-            cd dist/figgy
-            zip -r figgy.zip .
+          echo "Building figgy onedir"
+          pyinstaller figcli/entrypoint/cli.py --onedir --log-level=DEBUG --hiddenimport configparser --hiddenimport keyrings --hiddenimport keyring.backends --hiddenimport pycrypto  --hiddenimport pkg_resources.py2_warn
+          cd dist/figgy
+          zip -r figgy.zip .
 
-            dest="s3://figgy-website/releases/cli/latest/darwin/figgy.zip"
-            aws s3 cp figgy.zip $dest
+          dest="s3://figgy-website/releases/cli/latest/darwin/figgy.zip"
+          aws s3 cp figgy.zip $dest
 
 #
 #
