@@ -89,9 +89,9 @@ jobs:
           # install requirements
 
           cd cli
-          sudo pip install pyinstaller
-          sudo pip install -r requirements.txt
-          sudo pip install -r requirements-windows.txt
+          sudo pip3 install pyinstaller
+          sudo pip3 install -r requirements.txt
+          sudo pip3 install -r requirements-windows.txt
 
           pyinstaller ficli/__main__.py --hiddenimport configparser --hiddenimport pyreadline --hiddenimport win32timezone --hiddenimport keyrings  --hiddenimport pkg_resources.py2_warn --hiddenimport keyring.backends
           cd dist/__main__/
