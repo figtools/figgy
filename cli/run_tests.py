@@ -57,6 +57,8 @@ def main():
     clear_cache()
 
     auth_type = sys.argv[1] if len(sys.argv) > 1 else "none"
+    profile = sys.argv[2] if len(sys.argv) > 2 else "none"
+
     if auth_type.lower() not in AUTH_TYPES:
         raise ValueError(f'Invalid role passed in. expected params are: {AUTH_TYPES}')
 
@@ -97,7 +99,7 @@ def main():
         data_tests()
 
     elif auth_type.lower() == 'profile':
-        dev_tests(profile='figgy-dev')
+        dev_tests(profile=profile)
         clear_cache()
 
 

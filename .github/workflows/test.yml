@@ -147,4 +147,4 @@ jobs:
           export TERM=linux
           export TERMINFO=/etc/terminfo
           cd cli
-          python run_tests.py profile
+          python run_tests.py profile default
