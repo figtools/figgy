@@ -140,6 +140,7 @@ jobs:
           CONFIG_FILE: ${{ secrets.CONFIG_FILE }}
           CREDENTIALS_FILE: ${{ secrets.CREDENTIALS_FILE }}
         run: |
+          mkdir -p ~/.aws
           echo "$CONFIG_FILE" > ~/.aws/config
           echo "$CREDENTIALS_FILE" > ~/.aws/credentials
 
