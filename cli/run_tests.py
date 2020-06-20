@@ -97,7 +97,7 @@ def main():
         data_tests()
 
     elif auth_type.lower() == 'profile':
-        dev_tests(profile='figgy-dev-sandbox')
+        dev_tests(profile='figgy-dev')
         clear_cache()
 
 
