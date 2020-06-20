@@ -10,12 +10,6 @@ jobs:
   build_mac:
     runs-on: macos-latest
     steps:
-      - name: Install dependencies
-        run: |
-          brew update
-          brew install awscli
-          brew install python3
-
       - name: Build
         run: |
             echo "MacOs build is happening!!!"
