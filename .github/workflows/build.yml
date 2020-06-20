@@ -20,10 +20,6 @@ jobs:
           pip3 install -r requirements-darwin.txt
 
           ## Build OneDir
-          echo "Deploying OSX figgy to $dest"
-          aws s3 cp dist/figgy $dest
-          rm dist/figgy
-
           echo "Building figgy onedir"
           pyinstaller figcli/entrypoint/cli.py --onedir --log-level=DEBUG --hiddenimport configparser --hiddenimport keyrings --hiddenimport keyring.backends --hiddenimport pycrypto  --hiddenimport pkg_resources.py2_warn
           cd dist/figgy
