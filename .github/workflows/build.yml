@@ -106,7 +106,7 @@ jobs:
           echo "LS"
           ls .
           echo "MOVE"
-          mv __main__.exe figgy
+          mv __main__.exe figgy.exe
           zip -r figgy.zip .
 
 
