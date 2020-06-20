@@ -116,7 +116,7 @@ class OktaProviderConfig(ProviderConfig):
 
     @staticmethod
     def get_app_link() -> str:
-        app_link = input("\nPlease input your OKTA AWS Application Embed Link. It's usually something like "
+        app_link = Input.input("Please input your OKTA AWS Application Embed Link. It's usually something like "
                          "'https://your-company.okta.com/home/amazon_aws/ASDF12351fg1/234': ")
         Utils.stc_is_valid_input(app_link, "OKTA AWS Application URL", True)
         return app_link

@@ -147,7 +147,7 @@ jobs:
           export TERM=linux
           export TERMINFO=/etc/terminfo
           cd cli
-          python run_tests.py okta
+          python run_tests.py profile
 
   release:
     if: github.ref == 'refs/heads/master'

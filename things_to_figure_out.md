@@ -1,13 +1,10 @@
 These are problems I intend to solve, once I figure out the best way to do it.
 
 ## Todo:
-- groups for people using --profile for everything?
-- Figgy Lib PyDocs
-- Do python demo top-to-bottom
+- Revisit Pyintaller. 
 
 - Test release rollback
 - Add automated test with replicate from
-- Support for multi-profile
 - Make CLI used shared libs.
 - Pre-commit hook
 - Fix "requests" dependency on legacy botocore layer thing

@@ -138,7 +138,7 @@ class Input:
 
     @staticmethod
     def get_mfa(display_hint: bool = False, color: Optional[Color] = None) -> str:
-        if display_hint and random.randint(0, 1) >= 0:
+        if display_hint and random.randint(0, 10) == 10:
             blue = color.fg_bl if color else ''
             rs = color.rs if color else ''
             print(f"{blue}Hint:{rs} Tired of typing in your MFA? Consider saving your MFA secret to your keychain and "

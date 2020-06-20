@@ -93,7 +93,7 @@ class Put(ConfigCommand):
                     else:
                         key_name = valid_keys[0]
 
-                    kms_id = self._config_view.get_authorized_key_id(key_name)
+                    kms_id = self._config_view.get_authorized_key_id(key_name, self.run_env)
 
                 notify = True
 

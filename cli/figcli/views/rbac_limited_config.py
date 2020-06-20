@@ -7,6 +7,7 @@ from prompt_toolkit.completion import WordCompleter
 from figcli.config import *
 from figcli.data.dao.ssm import SsmDao
 from figcli.models.role import Role
+from figcli.models.run_env import RunEnv
 from figcli.svcs.cache_manager import CacheManager
 from figcli.svcs.config import ConfigService
 from figcli.utils.utils import Utils
@@ -71,13 +72,14 @@ class RBACLimitedConfigView:
 
         return authed_nses
 
-    def get_authorized_key_id(self, authorized_key_name: str) -> str:
+    def get_authorized_key_id(self, authorized_key_name: str, run_env: RunEnv) -> str:
         """
         Returns the appropriate KMS Key ID for a provided authorized key name.
         :param authorized_key_name: KMS Key the provider user has access to.
+        :param run_env: Run environment associated with this key
         :return: KMS Key id of the associated key.
         """
-        cache_key = f'kms-{authorized_key_name}'
+        cache_key = f'kms-{authorized_key_name}-{run_env.env}'
         key_path = f'/figgy/kms/{authorized_key_name}-key-id'
 
         if authorized_key_name not in self.get_authorized_kms_keys():
