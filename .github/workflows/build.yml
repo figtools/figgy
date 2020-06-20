@@ -1,46 +1,43 @@
-#name: Build & Test
-#
-#on:
-#  push:
-#    branches: [develop, master]
-#  pull_request:
-#    branches: [develop, master]
-#
-#jobs:
-#  build_mac:
-#    runs-on: macos-latest
-#    steps:
-#      - name: Install dependencies
-#        run: |
-#          brew update
-#          brew uninstall python
-#          brew install awscli
-#          brew install python3
-#
-#      - name: Build
-#        run: |
-#            echo "MacOs build is happening!!!"
-#            cd cli
-#            pip3 install pyinstaller
-#            pip3 install -r requirements.txt
-#
-#            ## Build OneFile
-#            pyinstaller figcli/entrypoint.cli.py --onefile --log-level=DEBUG --hiddenimport configparser --hiddenimport keyrings --hiddenimport keyring.backends --hiddenimport pycrypto  --hiddenimport pkg_resources.py2_warn
-#            dest="s3://figgy-website/releases/cli/latest/darwin/figgy"
-#
-#            ## Build OneDir
-#            echo "Deploying OSX figgy to $dest"
-#            aws s3 cp dist/figgy $dest
-#            rm dist/figgy
-#
-#            echo "Building figgy onedir"
-#            pyinstaller figgy.py --onedir --log-level=DEBUG --hiddenimport configparser --hiddenimport keyrings --hiddenimport keyring.backends --hiddenimport pycrypto  --hiddenimport pkg_resources.py2_warn
-#            cd dist/figgy
-#            zip -r figgy.zip .
-#
-#            dest="s3://figgy-website/releases/cli/latest/darwin/figgy.zip"
-#            aws s3 cp figgy.zip $dest
-#
+name: Build & Test
+
+on:
+  push:
+    branches: [develop, master]
+  pull_request:
+    branches: [develop, master]
+
+jobs:
+  build_mac:
+    runs-on: macos-latest
+    steps:
+      - name: Install dependencies
+        run: |
+          brew update
+          brew uninstall python
+          brew install awscli
+          brew install python3
+
+      - name: Build
+        run: |
+            echo "MacOs build is happening!!!"
+            cd cli
+            pip3 install pyinstaller
+            pip3 install -r requirements.txt
+            pip3 install -r requirements-darwin.txt
+            
+            ## Build OneDir
+            echo "Deploying OSX figgy to $dest"
+            aws s3 cp dist/figgy $dest
+            rm dist/figgy
+
+            echo "Building figgy onedir"
+            pyinstaller figcli/entrypoint/cli.py --onedir --log-level=DEBUG --hiddenimport configparser --hiddenimport keyrings --hiddenimport keyring.backends --hiddenimport pycrypto  --hiddenimport pkg_resources.py2_warn
+            cd dist/figgy
+            zip -r figgy.zip .
+
+            dest="s3://figgy-website/releases/cli/latest/darwin/figgy.zip"
+            aws s3 cp figgy.zip $dest
+
 #
 #
 #  build_linux:

@@ -1,6 +1,5 @@
 import logging
 import botocore
-import urllib3
 from figcli.utils.utils import *
 from botocore.exceptions import ClientError
 from typing import List, Optional
