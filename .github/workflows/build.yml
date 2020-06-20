@@ -38,41 +38,74 @@ jobs:
           aws s3 cp figgy.zip $dest
 
   build_linux:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
-        - name: Set up Python 3.8
-          uses: actions/setup-python@v2
-          with:
-            python-version: 3.8
-        - name: Build
-          env:
-            FIGGY_TEST: true
-          run: |
-            echo "Linux build is happening!!!"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Build
+        run: |
+          echo "Linux build is happening!!!"
+          # install requirements
 
-            # install requirements
-            cd cli
-            sudo pip3 install pyinstaller
-            sudo pip3 install -r requirements.txt
-            sudo pip3 install -r requirements-linux.txt
+          sudo pip install pyinstaller
+          sudo pip install -r requirements.txt
+          sudo pip install -r requirements-linux.txt
 
-            pyinstaller ficli/__main__.py --onefile --log-level=DEBUG --hiddenimport configparser --hiddenimport keyrings --hiddenimport keyring.backends --hiddenimport pkg_resources.py2_warn
-            cd dist/__main__/
-            mv __main__ figgy
-            zip -r figgy.zip .
+          pyinstaller ficli/__main__.py --onefile --log-level=DEBUG --hiddenimport configparser --hiddenimport keyrings --hiddenimport keyring.backends --hiddenimport pkg_resources.py2_warn
+          cd dist/__main__/
+          mv __main__ figgy
+          zip -r figgy.zip .
 
 
-        - name: Deploy as latest
-          env:
-            CONFIG_FILE: ${{ secrets.CONFIG_DEFAULT }}
-            CREDENTIALS_FILE: ${{ secrets.CREDENTIALS_DEPLOY }}
-          run: |
-            mkdir -p ~/.aws
-            echo "$CONFIG_FILE" > ~/.aws/config
-            echo "$CREDENTIALS_FILE" > ~/.aws/credentials
-        
-            dest="s3://figgy-website/releases/cli/latest/linux/figgy.zip"
-            echo "Deploying linux figgy to $dest"
-            aws s3 cp dist/figgy $dest
+    - name: Deploy as latest
+      env:
+        CONFIG_FILE: ${{ secrets.CONFIG_DEFAULT }}
+        CREDENTIALS_FILE: ${{ secrets.CREDENTIALS_DEPLOY }}
+      run: |
+        mkdir -p ~/.aws
+        echo "$CONFIG_FILE" > ~/.aws/config
+        echo "$CREDENTIALS_FILE" > ~/.aws/credentials
 
+        dest="s3://figgy-website/releases/cli/latest/linux/figgy.zip"
+        echo "Deploying linux figgy to $dest"
+        aws s3 cp dist/figgy $dest
+
+
+  build_windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Build
+        run: |
+          echo "Windows build is happening!!!"
+          # install requirements
+
+          sudo pip install pyinstaller
+          sudo pip install -r requirements.txt
+          sudo pip install -r requirements-windows.txt
+
+          pyinstaller ficli/__main__.py --onefile --log-level=DEBUG --hiddenimport configparser --hiddenimport keyrings --hiddenimport keyring.backends --hiddenimport pkg_resources.py2_warn
+          cd dist/__main__/
+          mv __main__ figgy
+          zip -r figgy.zip .
+
+
+    - name: Deploy as latest
+      env:
+        CONFIG_FILE: ${{ secrets.CONFIG_DEFAULT }}
+        CREDENTIALS_FILE: ${{ secrets.CREDENTIALS_DEPLOY }}
+      run: |
+        mkdir -p ~/.aws
+        echo "$CONFIG_FILE" > ~/.aws/config
+        echo "$CREDENTIALS_FILE" > ~/.aws/credentials
+
+        dest="s3://figgy-website/releases/cli/latest/windows/figgy.zip"
+        echo "Deploying linux figgy to $dest"
+        aws s3 cp dist/figgy $dest
