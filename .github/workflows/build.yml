@@ -35,7 +35,7 @@ jobs:
           echo "$CREDENTIALS_FILE" > ~/.aws/credentials
 
           dest="s3://figgy-website/releases/cli/latest/darwin/figgy.zip"
-          aws s3 cp figgy.zip $dest
+          aws s3 cp cli/dist/__main__/figgy.zip $dest
 
   build_linux:
     runs-on: ubuntu-latest
@@ -60,18 +60,18 @@ jobs:
           zip -r figgy.zip .
 
 
-    - name: Deploy as latest
-      env:
-        CONFIG_FILE: ${{ secrets.CONFIG_DEFAULT }}
-        CREDENTIALS_FILE: ${{ secrets.CREDENTIALS_DEPLOY }}
-      run: |
-        mkdir -p ~/.aws
-        echo "$CONFIG_FILE" > ~/.aws/config
-        echo "$CREDENTIALS_FILE" > ~/.aws/credentials
+      - name: Deploy as latest
+        env:
+          CONFIG_FILE: ${{ secrets.CONFIG_DEFAULT }}
+          CREDENTIALS_FILE: ${{ secrets.CREDENTIALS_DEPLOY }}
+        run: |
+          mkdir -p ~/.aws
+          echo "$CONFIG_FILE" > ~/.aws/config
+          echo "$CREDENTIALS_FILE" > ~/.aws/credentials
 
-        dest="s3://figgy-website/releases/cli/latest/linux/figgy.zip"
-        echo "Deploying linux figgy to $dest"
-        aws s3 cp dist/figgy $dest
+          dest="s3://figgy-website/releases/cli/latest/linux/figgy.zip"
+          echo "Deploying linux figgy to $dest"
+          aws s3 cp cli/dist/__main__/figgy.zip $dest
 
 
   build_windows:
@@ -97,15 +97,15 @@ jobs:
           zip -r figgy.zip .
 
 
-    - name: Deploy as latest
-      env:
-        CONFIG_FILE: ${{ secrets.CONFIG_DEFAULT }}
-        CREDENTIALS_FILE: ${{ secrets.CREDENTIALS_DEPLOY }}
-      run: |
-        mkdir -p ~/.aws
-        echo "$CONFIG_FILE" > ~/.aws/config
-        echo "$CREDENTIALS_FILE" > ~/.aws/credentials
+      - name: Deploy as latest
+        env:
+          CONFIG_FILE: ${{ secrets.CONFIG_DEFAULT }}
+          CREDENTIALS_FILE: ${{ secrets.CREDENTIALS_DEPLOY }}
+        run: |
+          mkdir -p ~/.aws
+          echo "$CONFIG_FILE" > ~/.aws/config
+          echo "$CREDENTIALS_FILE" > ~/.aws/credentials
 
-        dest="s3://figgy-website/releases/cli/latest/windows/figgy.zip"
-        echo "Deploying linux figgy to $dest"
-        aws s3 cp dist/figgy $dest
+          dest="s3://figgy-website/releases/cli/latest/windows/figgy.zip"
+          echo "Deploying windows figgy to $dest"
+          aws s3 cp cli/dist/__main__/figgy.zip $dest
