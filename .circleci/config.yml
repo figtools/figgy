@@ -267,14 +267,6 @@ workflows:
                 - master
                 - windows
                 - develop
-      - build_devopsci:
-          context: cicd-context
-          filters:
-            branches:
-              only:
-                - master
-                - linux
-                - develop
       - build_linux:
           context: cicd-context
           requires:
