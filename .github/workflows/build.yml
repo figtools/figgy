@@ -13,7 +13,6 @@ jobs:
       - name: Install dependencies
         run: |
           brew update
-#          brew uninstall python
           brew install awscli
           brew install python3
 
