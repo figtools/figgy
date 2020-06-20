@@ -45,6 +45,13 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update \
+          && sudo apt-get install libusb-1.0-0-dev libxmu-dev libxmu-headers \
+          freeglut3-dev libxext-dev libxi-dev libudev1 libudev-dev
+
       - name: Build
         run: |
           echo "Linux build is happening!!!"
@@ -59,7 +66,6 @@ jobs:
           cd dist/__main__/
           mv __main__ figgy
           zip -r figgy.zip .
-
 
       - name: Deploy as latest
         env:
