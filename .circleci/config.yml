@@ -257,22 +257,16 @@ workflows:
   version: 2
   build_all:
     jobs:
-      - test:
-          context: cicd-test
-          filters:
-            branches:
-              only:
-              - master
-              - develop
       - build_windows:
           context: cicd-default
           requires:
-            - test
+            - build_linux
           filters:
             branches:
               only:
                 - master
                 - windows
+                - develop
       - build_devopsci:
           context: cicd-default
           filters:
@@ -280,14 +274,16 @@ workflows:
               only:
                 - master
                 - linux
+                - develop
       - build_linux:
           context: cicd-default
           requires:
-            - test
+            - build_mac
           filters:
             branches:
               only:
               - master
+              - develop
       - build_mac:
           context: cicd-default
           filters:
@@ -295,6 +291,7 @@ workflows:
               only:
               - master
               - mac
+              - develop
 
 
 
