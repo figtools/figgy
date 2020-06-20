@@ -14,7 +14,9 @@ jobs:
         run: |
             echo "MacOs build is happening!!!"
             pwd
-            ls
+            echo "LS"
+            ls .
+            echo "CD"
             cd cli
             pip3 install pyinstaller
             pip3 install -r requirements.txt
