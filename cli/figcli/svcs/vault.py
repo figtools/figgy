@@ -1,7 +1,7 @@
 from figcli.utils.secrets_manager import SecretsManager
 from figcli.utils.utils import Utils
 from cryptography.fernet import Fernet
-from figcli.config.constants import KEYCHAIN_ENCRYPTION_KEY
+from figcli.config.constants import KEYCHAIN_ENCRYPTION_KEY, DEFAULT_ENCRYPTION_KEY
 
 """
 Largely taken from simple-crypt, but removing pycrypto requirement, instead using pycryptodome.
@@ -10,21 +10,21 @@ access keys. Nothing in the vault should be valid longer than 12 hours from the 
 to the vault.
 """
 
-
-class DecryptionException(Exception): pass
-
-
-class EncryptionException(Exception): pass
-
-
 class FiggyVault:
 
-    def __init__(self):
-        encryption_key = SecretsManager.get_password(KEYCHAIN_ENCRYPTION_KEY)
-        if not encryption_key:
-            Utils.wipe_vaults()
-            encryption_key: str = Fernet.generate_key().decode()
-            SecretsManager.set_password(KEYCHAIN_ENCRYPTION_KEY, encryption_key)
+    def __init__(self, keychain_enabled=True):
+        """
+        keychain_enabled: Stores the encyrption key in the user's keychain. This will be disabled for Sandbox
+        sessions to simlify the user experience.
+        """
+        if keychain_enabled:
+            encryption_key = SecretsManager.get_password(KEYCHAIN_ENCRYPTION_KEY)
+            if not encryption_key:
+                Utils.wipe_vaults()
+                encryption_key: str = Fernet.generate_key().decode()
+                SecretsManager.set_password(KEYCHAIN_ENCRYPTION_KEY, encryption_key)
+        else:
+            encryption_key = DEFAULT_ENCRYPTION_KEY
 
         self.fernet = Fernet(encryption_key)
 

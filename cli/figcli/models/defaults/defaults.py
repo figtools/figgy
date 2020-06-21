@@ -36,6 +36,7 @@ class CLIDefaults:
     valid_envs: Optional[List[RunEnv]] = field(default_factory=list)
     valid_roles: Optional[List[Role]] = field(default_factory=list)
     assumable_roles: Optional[List[AssumableRole]] = field(default_factory=list)
+    extras: Optional[Dict] = field(default_factory=dict)
 
     def __str__(self):
         return f"Role: {self.role}\nColors Enabled: {self.colors_enabled}\nOkta User: {self.user}\n" \
@@ -57,7 +58,8 @@ class CLIDefaults:
                            auto_mfa=False,
                            user_id=str(uuid.uuid4()),
                            service_ns="/app",
-                           usage_tracking=False)
+                           usage_tracking=False,
+                           extras={})
 
     @staticmethod
     def sandbox(user: str, role: str, colors: bool):
@@ -75,7 +77,8 @@ class CLIDefaults:
                            auto_mfa=False,
                            user_id=str(uuid.uuid4()),
                            service_ns="/app",
-                           usage_tracking=True)
+                           usage_tracking=True,
+                           extras={SANDBOX_ENABLED_KEY: True})
 
     @staticmethod
     def from_profile(profile):
@@ -93,7 +96,8 @@ class CLIDefaults:
                            auto_mfa=False,
                            user_id=str(uuid.uuid4()),
                            service_ns=os.environ.get(APP_NS_OVERRIDE) or "/app",
-                           usage_tracking=True)
+                           usage_tracking=True,
+                           extras={SANDBOX_ENABLED: true})
 
     def __str__(self) -> str:
         return jsonpickle.encode(self)

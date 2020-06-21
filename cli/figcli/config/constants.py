@@ -126,6 +126,7 @@ SANDBOX_ROLES = ['dev', 'devops', 'sre', 'data', 'dba']
 GET_SANBOX_CREDS_URL = "https://q39v8f3u13.execute-api.us-east-1.amazonaws.com/sandbox-bastion/v1/get-credentials"
 FIGGY_SANDBOX_REGION = 'us-east-1'
 FIGGY_SANDBOX_PROFILE = 'figgy-sandbox'
+SANDBOX_ENABLED_KEY = 'sandbox-enabled'
 
 # Guaranteed Namespaces
 shared_ns = '/shared'
@@ -140,5 +141,9 @@ FIGGY_VAULT_FILES = [OKTA_SESSION_CACHE_PATH, GOOGLE_SESSION_CACHE_PATH, STS_SES
 # Environment Variables
 APP_NS_OVERRIDE = 'FIGGY_APP_TREE_OVERRIDE'
 
-# Keychain IDS
+# Keychain
 KEYCHAIN_ENCRYPTION_KEY = 'figgy-encryption-key'
+
+# This is only used for temporary sandbox sessions. This reduces user friction when experimenting by not having to interact
+# with authenticating their OS Keychain.
+DEFAULT_ENCRYPTION_KEY = 'wX1C0nK1glfzaWQU8SKukdS7XZgYlAMW5ueb_V3cfSE='
