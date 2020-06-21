@@ -15,21 +15,13 @@ mac_hidden = ['configparser', 'keyrings', 'keyring.backends', 'pkg_resources.py2
 linux_hidden = ['configparser', 'keyrings', 'keyring.backends', 'pkg_resources.py2_warn']
 windows_hidden = ['configparser', 'pyreadline', 'win32timezone', 'keyrings', 'pkg_resources.py2_warn', 'keyring.backends'
 
-def is_linux():
-    return platform.system() == LINUX
 
-def is_mac():
-    return platform.system() == MAC
-
-def is_windows():
-    return platform.system() == WINDOWS
-
-if is_mac():
+if platform.system() == MAC:
     hidden_imports = mac_hidden
-elif is_linux():
+elif platform.system() == LINUX:
     hidden_imports = linux_hidden
-elif is_windows():
-    hidden_impots = windows_hidden
+elif platform.system() == WINDOWS:
+    hidden_imports = windows_hidden
 
 
 a = Analysis(['figcli/__main__.py'],
