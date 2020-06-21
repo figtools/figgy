@@ -30,12 +30,21 @@ jobs:
           zip -r figgy.zip .
 
       - name: Test Artifact
+        env:
+          OVERRIDE_KEYRING: true
+          OKTA_SSO_USER: ${{ secrets.OKTA_SSO_USER }}
+          OKTA_SSO_PASSWORD: ${{ secrets.OKTA_SSO_PASSWORD }}
+          OKTA_EMBED_URL: ${{ secrets.OKTA_EMBED_URL }}
+          OKTA_MFA_SECRET: ${{ secrets.OKTA_MFA_SECRET }}
         run: |
           echo "Adding figgy binary to path"
           cd cli/dist/__main__/
           echo "BEFORE: $PATH"
           export PATH="$PATH:$(PWD)"
           echo "$PATH"
+
+          figgy --version
+
           echo "TESTING ../../"
           python3 ../../run_tests.py okta
 
@@ -88,10 +97,13 @@ jobs:
 
       - name: Test Artifact
         run: |
+          export TERM=linux
+          export TERMINFO=/etc/terminfo
+          
           echo "Adding figgy binary to path"
           cd cli/dist/__main__/
           echo "PATH: $PATH"
-          export "PATH=$PATH:$(PWD)"
+          export "PATH=$PATH:$(pwd)"
           echo "PATH: $PATH"
           cd ../../
 
@@ -141,7 +153,6 @@ jobs:
           echo "Adding figgy binary to path"
           cd cli/dist/__main__/
           $env:path += ";."
-          figgy.exe --version
 
           echo "NORMAL VERSION NOW"
           figgy --version
