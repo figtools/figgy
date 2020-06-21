@@ -1,5 +1,3 @@
-from typing import Callable
-
 from figcli.utils.utils import *
 import platform
 import keyring
