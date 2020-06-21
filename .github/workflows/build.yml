@@ -184,15 +184,16 @@ jobs:
           pip3 install -r requirements.txt
           pip3 install -r requirements-windows.txt
 
-          #pyinstaller figcli/__main__.py --hiddenimport configparser --hiddenimport pyreadline --hiddenimport win32timezone --hiddenimport keyrings  --hiddenimport pkg_resources.py2_warn --hiddenimport keyring.backends
           pyinstaller figgy.spec
 
           mv dist/__main__/__main__.exe dist/__main__/figgy.exe
           #scripts/zip_it.sh
           scripts/tar_it.sh
 
-
-          cd dist/__main__/
+      - name: Zip
+        run: |
+          echo "Zipping!"
+          cd cli/dist/__main__/
           Compress-Archive . figgy.zip
           mv figgy.zip ../../
 
