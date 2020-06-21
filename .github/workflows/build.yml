@@ -11,6 +11,10 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
       - name: Build
         run: |
           echo "MacOs build is happening!!!"
@@ -29,7 +33,7 @@ jobs:
         run: |
           echo "Adding figgy binary to path"
           cd cli/dist/__main__/
-          export PATH=$PATH:$(PWD)
+          export PATH="$PATH:$(PWD)"
           cd ../
 
           echo "Testing MAC binary as okta user"
@@ -82,7 +86,7 @@ jobs:
         run: |
           echo "Adding figgy binary to path"
           cd cli/dist/__main__/
-          export PATH=$PATH:$(PWD)
+          export "PATH=$PATH:$(PWD)"
           cd ../
 
           echo "Testing Linux binary as bastion user"
