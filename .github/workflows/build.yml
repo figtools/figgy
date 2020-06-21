@@ -191,6 +191,7 @@ jobs:
 
       - name: Get Version
         id: version
+        shell: bash
         run: |
           cd cli
           # Parse version
