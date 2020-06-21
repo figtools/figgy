@@ -47,6 +47,20 @@ def print_test(test: str):
     print(f"{c.fg_yl} Starting test: {test}{c.rs}")
     print(f"{c.fg_bl}-----------------------------------------{c.rs}")
 
+
+def run_test(test_name: str, test):
+    print_test(test_name)
+    klass = test.__class__.__name__
+    env_override = f'{Utils.to_env_var(klass)}_DISABLED'
+    if os.environ.get(env_override) == "true":
+        print(f"{c.fg_bl}-----------------------------------------{c.rs}")
+        print(f"{c.fg_yl} Skipping test: {klass} due to presence of {env_override} environment variable. {c.rs}")
+        print(f"{c.fg_bl}-----------------------------------------{c.rs}")
+
+    else:
+        test.run()
+
+
 def clear_cache():
     delete_cache(f'{CACHE_DIR}/other')
     delete_cache(f'{CACHE_DIR}/okta')
@@ -54,6 +68,7 @@ def clear_cache():
     delete_cache(f'{VAULT_DIR}/sts')
     delete_file(CONFIG_FILE)
     delete_file(KEYRING_FILE)
+
 
 def main():
     clear_cache()
@@ -109,42 +124,26 @@ def main():
 def dev_tests(profile=None):
     extra_args = f"--profile {profile}" if profile else ""
 
-    print_test("Dev Put")
-    DevPut(extra_args=extra_args).run()
-    print_test("Dev Get")
-    DevGet(extra_args=extra_args).run()
-    print_test("Dev Delete")
-    DevDelete(extra_args=extra_args).run()
-    print_test("Dev Dump")
-    DevDump(extra_args=extra_args).run()
-    print_test("Dev List")
-    DevList(extra_args=extra_args).run()
-    print_test("Dev Audit")
-    DevAudit(extra_args=extra_args).run()
-    print_test("Dev Sync")
-    DevSync(extra_args=extra_args).run()
-    print_test("Dev Cleanup")
-    DevCleanup(extra_args=extra_args).run()
-    print_test("Dev Browse")
-    DevBrowse(extra_args=extra_args, key_down_to_shared=4).run()
-    print_test("Dev Restore")
-    DevRestore(extra_args=extra_args).run()
-    print_test("Dev Export")
-    DevExport(extra_args=extra_args).run()
-    print_test("Dev Edit")
-    DevEdit(extra_args=extra_args).run()
-    print_test("Dev Validate")
-    DevValidate(extra_args=extra_args).run()
+    # run_test("Dev Put", DevPut(extra_args=extra_args))
+    # run_test("Dev Get", DevGet(extra_args=extra_args))
+    # run_test("Dev Delete", DevDelete(extra_args=extra_args))
+    # run_test("Dev Dump", DevDump(extra_args=extra_args))
+    # run_test("Dev List", DevList(extra_args=extra_args))
+    run_test("Dev Audit", DevAudit(extra_args=extra_args))
+    run_test("Dev Sync", DevSync(extra_args=extra_args))
+    run_test("Dev Cleanup", DevCleanup(extra_args=extra_args))
+    run_test("Dev Browse", DevBrowse(extra_args=extra_args, key_down_to_shared=4))
+    run_test("Dev Restore", DevRestore(extra_args=extra_args))
+    run_test("Dev Export", DevExport(extra_args=extra_args))
+    run_test("Dev Edit", DevEdit(extra_args=extra_args))
+    run_test("Dev Validate", DevValidate(extra_args=extra_args))
 
 
 def data_tests():
     # Then Test DATA Role
-    print_test("Data Put")
-    DataPut().run()
-    print_test("Data Share")
-    DataShare().run()
-    print_test("Data Sync")
-    DataSync().run()
+    run_test("Data Put", DataPut())
+    run_test("Data Share", DataShare())
+    run_test("Data Sync", DataSync())
 
 
 def devops_tests():

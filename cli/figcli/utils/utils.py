@@ -476,8 +476,19 @@ class Utils:
             raise ValueError(f"Provided bool value of {value} is not a valid bool type.")
 
     @staticmethod
-    def default_colors() -> Color:
-        return TerminalFactory(Utils.not_windows()).instance().get_colors()
+    def default_colors(enabled: bool = None) -> Color:
+        if enabled is None:
+            enabled = Utils.not_windows()
+
+        return TerminalFactory(enabled).instance().get_colors()
+
+    @staticmethod
+    def to_env_var(variable_name: str):
+        """
+        converts aCasedVarable to A_CASED_VARIABLE case.
+        """
+        str1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', variable_name)
+        return re.sub('([a-z0-9])([A-Z])', r'\1_\2', str1).upper()
 
     def get_config_key_safe(self, key: str, config: Dict, default=None):
         if key in config:

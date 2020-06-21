@@ -1,4 +1,3 @@
-from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 
 from figcli.commands.config_context import ConfigContext

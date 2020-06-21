@@ -10,7 +10,7 @@ import sys
 from extras.completer import Completer
 from botocore.exceptions import ClientError
 
-from figcli.config import HOME
+from figcli.config import HOME, CLI_NAME
 from figcli.extras.s3_download_progress import S3Progress
 from figcli.svcs.observability.version_tracker import FiggyVersionDetails, VersionTracker
 from figcli.utils.utils import Utils
@@ -25,9 +25,9 @@ class DownloadProgressBar(tqdm):
 
 
 class UpgradeManager:
-
     def __init__(self, colors_enabled: bool):
         self._utils = Utils(colors_enabled=colors_enabled)
+        self.c = Utils.default_colors(enabled=colors_enabled)
         self.current_version: FiggyVersionDetails = VersionTracker.get_version()
 
     def download_url(self, url, output_path):
@@ -97,27 +97,10 @@ class UpgradeManager:
         if self._utils.file_exists(install_path):
             os.rename(install_path, old_path)
 
-        if not Utils.is_mac():
-            try:
-                total_bytes = self.get_s3_resource().Object(CLI_BUCKET, s3_path).content_length
-                progress = S3Progress(total=total_bytes, unit='B', unit_scale=True, miniters=1, desc='Downloading')
-                bucket = self.get_s3_resource().Bucket(CLI_BUCKET)
-
-                with progress:
-                    bucket.download_file(s3_path, temp_path, Callback=progress)
-
-            except ClientError as e:
-                if e.response['Error']['Code'] == "404":
-                    print("Unable to find the snagcli in S3. Something went terribly wrong! :(")
-                else:
-                    raise
-            else:
-                st = os.stat(temp_path)
-                os.chmod(temp_path, st.st_mode | stat.S_IEXEC)
-                os.rename(temp_path, install_path)
-        else:
+        if Utils.is_mac():
+            print("Performing auto-upgrade for MAC installation.")
             self._install_mac_onedir(f'{install_path}', latest_version)
 
-            print(f"{self.c.fg_gr}Installation successful! Exiting. Rerun `snagcli` "
+            print(f"{self.c.fg_gr}Installation successful! Exiting. Rerun `{CLI_NAME}` "
                   f"to use the latest version!{self.c.rs}")
             exit()
