@@ -1,3 +1,5 @@
+from typing import Callable
+
 from figcli.utils.utils import *
 import platform
 import keyring
@@ -42,6 +44,14 @@ class SecretsManager:
     def set_password(user: str, password: str) -> None:
         SecretsManager.set_keyring()
         keyring.set_password(FIGGY_KEYRING_NAMESPACE, user, password)
+
+    @staticmethod
+    def get_or_set(user: str, backup: str):
+        current = SecretsManager.get_password(user)
+        if not current:
+            SecretsManager.set_password(user, backup)
+
+        return current
 
     @staticmethod
     def get_password(user: str) -> str:

@@ -39,7 +39,7 @@ class BastionSessionProvider(SessionProvider):
         self._iam_client = None
         self._iam = None
         # Todo lookup access key from ~/.aws/creds?
-        vault = FiggyVault(defaults.provider_config.profile_name)
+        vault = FiggyVault()
         self._sts_cache: CacheManager = CacheManager(file_override=STS_SESSION_CACHE_PATH, vault=vault)
         self._role_name_prefix = os.getenv(FIGGY_ROLE_PREFIX_OVERRIDE_ENV, FIGGY_ROLE_NAME_PREFIX)
 

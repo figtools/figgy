@@ -28,7 +28,7 @@ class OktaSessionProvider(SSOSessionProvider, ABC):
 
     def __init__(self, defaults: CLIDefaults):
         super().__init__(defaults)
-        vault = FiggyVault(SecretsManager.get_password(defaults.user))
+        vault = FiggyVault()
         self._cache_manager: CacheManager = CacheManager(file_override=OKTA_SESSION_CACHE_PATH, vault=vault)
         self._saml_cache: CacheManager = CacheManager(file_override=SAML_SESSION_CACHE_PATH, vault=vault)
 

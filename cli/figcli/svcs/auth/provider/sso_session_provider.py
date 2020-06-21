@@ -30,7 +30,7 @@ class SSOSessionProvider(SessionProvider, ABC):
         super().__init__(defaults)
         self._utils = Utils(defaults.colors_enabled)
         self._sts = boto3.client('sts')
-        vault = FiggyVault(SecretsManager.get_password(defaults.user))
+        vault = FiggyVault()
         self._sts_cache: CacheManager = CacheManager(file_override=STS_SESSION_CACHE_PATH, vault=vault)
         self._saml_cache: CacheManager = CacheManager(file_override=SAML_SESSION_CACHE_PATH, vault=vault)
 

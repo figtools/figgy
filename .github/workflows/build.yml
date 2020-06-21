@@ -39,14 +39,8 @@ jobs:
         run: |
           echo "Adding figgy binary to path"
           cd cli/dist/__main__/
-          echo "BEFORE: $PATH"
           export PATH="$PATH:$(PWD)"
-          echo "$PATH"
-
           figgy --version
-
-          echo "TESTING ../../"
-          python3 ../../run_tests.py okta
 
           cd ../../
 
@@ -99,7 +93,7 @@ jobs:
         run: |
           export TERM=linux
           export TERMINFO=/etc/terminfo
-          
+
           echo "Adding figgy binary to path"
           cd cli/dist/__main__/
           echo "PATH: $PATH"

@@ -1,6 +1,7 @@
 These are problems I intend to solve, once I figure out the best way to do it.
 
 ## Todo:
+- Skip keychain if `login sandbox`
 - Revisit Pyinstaller. 
 - E2E tests for each binary
 - Test release rollback

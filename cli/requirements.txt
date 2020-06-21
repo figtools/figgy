@@ -14,7 +14,7 @@ jsonpickle==1.4.1
 urllib3==1.25.7
 pyotp==2.3.0
 python-u2flib-host==3.0.3
-pycryptodome==3.9.7
+cryptography==2.9.2
 requests==2.23.0
 
 # Must use git for this install b/c Cython breaks pyinstaller.

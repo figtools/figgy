@@ -35,7 +35,7 @@ class GoogleSessionProvider(SSOSessionProvider):
 
     def __init__(self, defaults: CLIDefaults):
         super().__init__(defaults)
-        vault = FiggyVault(SecretsManager.get_password(defaults.user))
+        vault = FiggyVault()
         self._cache_manager: CacheManager = CacheManager(file_override=GOOGLE_SESSION_CACHE_PATH, vault=vault)
         config = GoogleConfig(
             username=defaults.user,
