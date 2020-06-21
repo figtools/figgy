@@ -101,11 +101,7 @@ jobs:
 
           pyinstaller figcli/__main__.py --hiddenimport configparser --hiddenimport pyreadline --hiddenimport win32timezone --hiddenimport keyrings  --hiddenimport pkg_resources.py2_warn --hiddenimport keyring.backends
           cd dist/__main__/
-          echo "PWD"
-          pwd
-          echo "LS"
-          ls .
-          echo "MOVE"
+
           mv __main__.exe figgy.exe
           Compress-Archive . figgy.zip
 
@@ -118,6 +114,5 @@ jobs:
           echo "$CONFIG_FILE" > ~/.aws/config
           echo "$CREDENTIALS_FILE" > ~/.aws/credentials
 
-          dest="s3://figgy-website/releases/cli/latest/windows/figgy.zip"
-          echo "Deploying windows figgy to $dest"
-          aws s3 cp cli/dist/__main__/figgy.zip $dest
+          echo "Deploying windows figgy to s3://figgy-website/releases/cli/latest/windows/figgy.zip"
+          aws s3 cp cli/dist/__main__/figgy.zip s3://figgy-website/releases/cli/latest/windows/figgy.zip
