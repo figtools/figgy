@@ -14,6 +14,15 @@ mac_hidden = ['configparser', 'keyrings', 'keyring.backends', 'pkg_resources.py2
 linux_hidden = ['configparser', 'keyrings', 'keyring.backends', 'pkg_resources.py2_warn']
 windows_hidden = ['configparser', 'pyreadline', 'win32timezone', 'keyrings', 'pkg_resources.py2_warn', 'keyring.backends'
 
+def is_linux():
+    return platform.system() == LINUX
+
+def is_mac():
+    return platform.system() == MAC
+
+def is_windows():
+    return platform.system() == WINDOWS
+
 if is_mac():
     hidden_imports = mac_hidden
 elif is_linux():
@@ -56,11 +65,3 @@ coll = COLLECT(exe,
                name='__main__')
 
 
-def is_linux():
-    return platform.system() == LINUX
-
-def is_mac():
-    return platform.system() == MAC
-
-def is_windows():
-    return platform.system() == WINDOWS
