@@ -38,7 +38,7 @@ class DevAudit(FiggyTest):
 
     def audit(self, name, audit_another=False, expect_results=True):
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(audit)} --env {DEFAULT_ENV} --skip-upgrade'
-                              f' {self.extra_args}', encoding='utf-8', timeout=5)
+                              f' {self.extra_args}', encoding='utf-8', timeout=10)
         child.logfile = sys.stdout
 
         self.step(f"Auditing: {name}")
