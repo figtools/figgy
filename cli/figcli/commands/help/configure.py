@@ -45,6 +45,7 @@ class Configure(HelpCommand, ABC):
         Utils.wipe_vaults() or Utils.wipe_defaults() or Utils.wipe_config_cache()
         defaults: CLIDefaults = self._setup.get_defaults()
         defaults = self._setup.configure_auth(defaults)
+        defaults = self._setup.configure_extras(defaults)
         self._setup.save_defaults(defaults)
         self.c = TerminalFactory(Utils.is_mac()).instance().get_colors()
 

@@ -75,6 +75,7 @@ class Login(HelpCommand, ABC):
 
         config_mgr = ConfigManager.figgy()
         config_mgr.set(Config.Section.Bastion.PROFILE, FIGGY_SANDBOX_PROFILE)
+        defaults = self._setup.configure_extras(defaults)
         defaults = self._setup.configure_roles(current_defaults=defaults, role=Role(role))
         defaults = self._setup.configure_figgy_defaults(defaults)
         self._setup.save_defaults(defaults)

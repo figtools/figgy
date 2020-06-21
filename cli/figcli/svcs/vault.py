@@ -10,6 +10,7 @@ access keys. Nothing in the vault should be valid longer than 12 hours from the 
 to the vault.
 """
 
+
 class FiggyVault:
 
     def __init__(self, keychain_enabled=True):

@@ -15,10 +15,10 @@ class SecretsManager:
     def set_keyring():
         if platform.system() == WINDOWS:
             keyring.set_keyring(WinVaultKeyring())
-        elif platform.system() == MAC:
-            keyring.set_keyring(keyring.backends.OS_X.Keyring())
         elif os.environ.get(OVERRIDE_KEYRING_ENV_VAR) == "true":  # Used in builds when running tests
             keyring.set_keyring(PlaintextKeyring())
+        elif platform.system() == MAC:
+            keyring.set_keyring(keyring.backends.OS_X.Keyring())
         elif platform.system() == LINUX:
             keyring.set_keyring(EncryptedKeyring())
         else:
@@ -55,10 +55,10 @@ class SecretsManager:
     def get_password(user: str) -> str:
         if platform.system() == WINDOWS:
             keyring.set_keyring(WinVaultKeyring())
-        elif platform.system() == MAC:
-            keyring.set_keyring(keyring.backends.OS_X.Keyring())
         elif os.environ.get(OVERRIDE_KEYRING_ENV_VAR) == "true":  # Used in circleci builds for running tests
             keyring.set_keyring(PlaintextKeyring())
+        elif platform.system() == MAC:
+            keyring.set_keyring(keyring.backends.OS_X.Keyring())
         elif platform.system() == LINUX:
             keyring.set_keyring(EncryptedKeyring())
         else:

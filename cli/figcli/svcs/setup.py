@@ -1,8 +1,9 @@
 import logging
+import os
+
 from typing import Callable, List, Dict, Optional
 
 from tabulate import tabulate
-
 from figcli.config import *
 from figcli.data.dao.ssm import SsmDao
 from figcli.input import Input
@@ -141,6 +142,13 @@ class FiggySetup:
 
         updated_defaults.usage_tracking = self._config_mgr.get_or_prompt(Config.Section.Figgy.USAGE_TRACKING,
                                                                          Input.select_usage_tracking)
+        return updated_defaults
+
+    def configure_extras(self, current_defaults: CLIDefaults):
+        updated_defaults = current_defaults
+        if os.environ.get(FIGGY_DISABLE_KEYRING) == 'true':
+            updated_defaults.extras[DISABLE_KEYRING] = True
+
         return updated_defaults
 
     def configure_figgy_defaults(self, current_defaults: CLIDefaults):

@@ -17,7 +17,7 @@ from figcli.svcs.auth.provider.sso_session_provider import SSOSessionProvider
 from figcli.svcs.vault import FiggyVault
 from figcli.utils.secrets_manager import SecretsManager
 from figcli.utils.utils import Utils
-from figcli.config.constants import ERROR_LOG_DIR
+from figcli.config.constants import ERROR_LOG_DIR, DISABLE_KEYRING
 
 @dataclass
 class GoogleConfig:
@@ -35,7 +35,8 @@ class GoogleSessionProvider(SSOSessionProvider):
 
     def __init__(self, defaults: CLIDefaults):
         super().__init__(defaults)
-        vault = FiggyVault()
+        keychain_enabled = defaults.extras.get(DISABLE_KEYRING) is not True
+        vault = FiggyVault(keychain_enabled=keychain_enabled)
         self._cache_manager: CacheManager = CacheManager(file_override=GOOGLE_SESSION_CACHE_PATH, vault=vault)
         config = GoogleConfig(
             username=defaults.user,

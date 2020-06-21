@@ -78,7 +78,7 @@ class CLIDefaults:
                            user_id=str(uuid.uuid4()),
                            service_ns="/app",
                            usage_tracking=True,
-                           extras={SANDBOX_ENABLED_KEY: True})
+                           extras={})
 
     @staticmethod
     def from_profile(profile):
@@ -97,7 +97,7 @@ class CLIDefaults:
                            user_id=str(uuid.uuid4()),
                            service_ns=os.environ.get(APP_NS_OVERRIDE) or "/app",
                            usage_tracking=True,
-                           extras={SANDBOX_ENABLED: true})
+                           extras={})
 
     def __str__(self) -> str:
         return jsonpickle.encode(self)

@@ -34,6 +34,7 @@ jobs:
       - name: Test Artifact
         env:
           OVERRIDE_KEYRING: true
+          FIGGY_DISABLE_KEYRING: "true"
           OKTA_SSO_USER: ${{ secrets.OKTA_SSO_USER }}
           OKTA_SSO_PASSWORD: ${{ secrets.OKTA_SSO_PASSWORD }}
           OKTA_EMBED_URL: ${{ secrets.OKTA_EMBED_URL }}
@@ -94,6 +95,9 @@ jobs:
           zip -r figgy.zip .
 
       - name: Test Artifact
+        env:
+          FIGGY_DISABLE_KEYRING: "true"
+          OVERRIDE_KEYRING: "true"
         run: |
           export TERM=linux
           export TERMINFO=/etc/terminfo
