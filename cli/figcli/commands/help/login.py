@@ -36,7 +36,6 @@ class Login(HelpCommand, ABC):
                        f"{self.c.rs}{self.c.fg_yl}  --or--{self.c.rs}\n" \
                        f"{self.c.fg_bl}{CLI_NAME} {Utils.get_first(login)} {Utils.get_first(sandbox)}{self.c.rs}"
 
-
     def login(self):
         self._utils.validate(self._defaults.provider.name in Provider.names(),
                              f"You cannot login until you've configured Figgy. Please run `{CLI_NAME}` --configure")
@@ -83,10 +82,10 @@ class Login(HelpCommand, ABC):
         print(f"\n{self.c.fg_gr}Login successful. Your sandbox session will last for{self.c.rs} "
               f"{self.c.fg_bl}1 hour.{self.c.rs}")
 
-        print(f"\nIf your session expires, feel free to rerun `{CLI_NAME} login sandbox` to get another sandbox session. "
-              f"\nAll previous figgy sessions have been disabled, you'll need to run {CLI_NAME} "
-              f"--configure to leave the sandbox.")
-
+        print(
+            f"\nIf your session expires, feel free to rerun `{CLI_NAME} login sandbox` to get another sandbox session. "
+            f"\nAll previous figgy sessions have been disabled, you'll need to run {CLI_NAME} "
+            f"--configure to leave the sandbox.")
 
     @VersionTracker.notify_user
     @AnonymousUsageTracker.track_command_usage

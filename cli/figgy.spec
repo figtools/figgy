@@ -13,7 +13,7 @@ block_cipher = None
 cwd = os.getcwd()
 mac_hidden = ['configparser', 'keyrings', 'keyring.backends', 'pkg_resources.py2_warn']
 linux_hidden = ['configparser', 'keyrings', 'keyring.backends', 'pkg_resources.py2_warn']
-windows_hidden = ['configparser', 'pyreadline', 'win32timezone', 'keyrings', 'pkg_resources.py2_warn', 'keyring.backends'
+windows_hidden = ['configparser', 'pyreadline', 'win32timezone', 'keyrings', 'pkg_resources.py2_warn', 'keyring.backends']
 
 
 if platform.system() == MAC:
