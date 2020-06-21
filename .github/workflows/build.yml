@@ -89,24 +89,24 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
-      - name: Build
-        run: |
-          echo "Windows build is happening!!!"
-          # install requirements
-
-          cd cli
-          pip3 install pyinstaller
-          pip3 install -r requirements.txt
-          pip3 install -r requirements-windows.txt
-
-
-          pyinstaller figcli/__main__.py --hiddenimport configparser --hiddenimport pyreadline --hiddenimport win32timezone --hiddenimport keyrings  --hiddenimport pkg_resources.py2_warn --hiddenimport keyring.backends
-          cd dist/__main__/
-
-          ls .
-          mv __main__.exe figgy.exe
-          Compress-Archive . figgy.zip
-          ls .
+#      - name: Build
+#        run: |
+#          echo "Windows build is happening!!!"
+#          # install requirements
+#
+#          cd cli
+#          pip3 install pyinstaller
+#          pip3 install -r requirements.txt
+#          pip3 install -r requirements-windows.txt
+#
+#
+#          pyinstaller figcli/__main__.py --hiddenimport configparser --hiddenimport pyreadline --hiddenimport win32timezone --hiddenimport keyrings  --hiddenimport pkg_resources.py2_warn --hiddenimport keyring.backends
+#          cd dist/__main__/
+#
+#          ls .
+#          mv __main__.exe figgy.exe
+#          Compress-Archive . figgy.zip
+#          ls .
 
       - name: Deploy as latest
         env:
