@@ -12,7 +12,7 @@ from figcli.utils.utils import *
 import uuid
 import time
 
-AUDIT_PROPAGATION_TIME = 15
+AUDIT_PROPAGATION_TIME = 60
 
 class DevAudit(FiggyTest):
     def __init__(self, extra_args=""):
