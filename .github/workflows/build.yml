@@ -24,8 +24,8 @@ jobs:
           pip3 install -r requirements-darwin.txt
 
           echo "Building figgy onedir"
-          # pyinstaller figcli/__main__.py --onedir --hiddenimport configparser --hiddenimport keyrings --hiddenimport keyring.backends --hiddenimport pycryptodome  --hiddenimport pkg_resources.py2_warn
-          pyinstaller darwin.spec
+          # pyinstaller figcli/__main__.py --onedir --hiddenimport configparser --hiddenimport keyrings --hiddenimport keyring.backends  --hiddenimport pkg_resources.py2_warn
+          pyinstaller figgy.spec
 
           cd dist/__main__/
           mv __main__ figgy
@@ -86,7 +86,9 @@ jobs:
           pip3 install -r requirements.txt
           pip3 install -r requirements-linux.txt
 
-          pyinstaller figcli/__main__.py --hiddenimport configparser --hiddenimport keyrings --hiddenimport keyring.backends --hiddenimport pkg_resources.py2_warn
+          #pyinstaller figcli/__main__.py --hiddenimport configparser --hiddenimport keyrings --hiddenimport keyring.backends --hiddenimport pkg_resources.py2_warn
+          pyinstaller figgy.spec
+
           cd dist/__main__/
           mv __main__ figgy
           zip -r figgy.zip .
