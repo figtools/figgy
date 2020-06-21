@@ -110,7 +110,7 @@ jobs:
           cd ../../
 
           echo "Testing Linux binary as bastion user"
-          python run_tests.py bastion
+          python run_tests.py
 
       - name: Deploy as latest
         env:

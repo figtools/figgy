@@ -40,7 +40,7 @@ class DevAudit(FiggyTest):
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(audit)} --env {DEFAULT_ENV} --skip-upgrade'
                               f' {self.extra_args}', encoding='utf-8', timeout=5)
         self.step(f"Auditing: {name}")
-        child.expect('.*Please input a PS Name.*')
+        child.expect('.*Please.*input.*')
         child.sendline(name)
         if expect_results:
             child.expect(f'.*Found.*Parameter:.*{name}.*Audit another.*')
