@@ -1,6 +1,7 @@
 from figcli.utils.secrets_manager import SecretsManager
 from figcli.utils.utils import Utils
 from cryptography.fernet import Fernet
+from figcli.config.constants import KEYCHAIN_ENCRYPTION_KEY
 
 """
 Largely taken from simple-crypt, but removing pycrypto requirement, instead using pycryptodome.
@@ -19,11 +20,11 @@ class EncryptionException(Exception): pass
 class FiggyVault:
 
     def __init__(self):
-        encryption_key = SecretsManager.get_password('figgy-encryption-key')
+        encryption_key = SecretsManager.get_password(KEYCHAIN_ENCRYPTION_KEY)
         if not encryption_key:
             Utils.wipe_vaults()
             encryption_key: str = Fernet.generate_key().decode()
-            SecretsManager.set_password('figgy-encryption-key', encryption_key)
+            SecretsManager.set_password(KEYCHAIN_ENCRYPTION_KEY, encryption_key)
 
         self.fernet = Fernet(encryption_key)
 
