@@ -25,6 +25,17 @@ jobs:
           mv __main__ figgy
           zip -r figgy.zip .
 
+      - name: Test Artifact
+        run: |
+          echo "Adding figgy binary to path"
+          cd cli/dist/__main__/
+          export PATH=$PATH:$(PWD)
+          cd ../
+
+          echo "Testing MAC binary as okta user"
+          python run_tests.py okta
+
+
       - name: Deploy as latest
         env:
           CONFIG_FILE: ${{ secrets.CONFIG_DEFAULT }}
@@ -67,6 +78,16 @@ jobs:
           mv __main__ figgy
           zip -r figgy.zip .
 
+      - name: Test Artifact
+        run: |
+          echo "Adding figgy binary to path"
+          cd cli/dist/__main__/
+          export PATH=$PATH:$(PWD)
+          cd ../
+
+          echo "Testing Linux binary as bastion user"
+          python run_tests.py bastion
+
       - name: Deploy as latest
         env:
           CONFIG_FILE: ${{ secrets.CONFIG_DEFAULT }}
@@ -99,14 +120,23 @@ jobs:
           pip3 install -r requirements.txt
           pip3 install -r requirements-windows.txt
 
-
           pyinstaller figcli/__main__.py --hiddenimport configparser --hiddenimport pyreadline --hiddenimport win32timezone --hiddenimport keyrings  --hiddenimport pkg_resources.py2_warn --hiddenimport keyring.backends
           cd dist/__main__/
 
-          ls .
           mv __main__.exe figgy.exe
           Compress-Archive . figgy.zip
-          ls .
+
+      - name: Test Artifact
+        run: |
+          echo "Adding figgy binary to path"
+          cd cli/dist/__main__/
+          $env:path += ";."
+          cd ../
+
+          [Environment]::SetEnvironmentVariable("ENV_OVERRIDE", "qa", "Machine")
+
+          echo "Testing Linux binary as bastion user"
+          python run_tests.py bastion
 
       - name: Deploy as latest
         env:

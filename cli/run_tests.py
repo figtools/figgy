@@ -58,6 +58,7 @@ def main():
 
     auth_type = sys.argv[1] if len(sys.argv) > 1 else "none"
     profile = sys.argv[2] if len(sys.argv) > 2 else "none"
+    BASTION_ENV = os.environ.get("ENV_OVERRIDE") or DEFAULT_ENV
 
     if auth_type.lower() not in AUTH_TYPES:
         raise ValueError(f'Invalid role passed in. expected params are: {AUTH_TYPES}')
@@ -77,7 +78,7 @@ def main():
     elif auth_type == 'bastion':
         # Login to DEV Role
         print_test("Bastion DEV Login")
-        DevLogin().run()
+        DevLogin(BASTION_ENV).run()
         dev_tests()
 
         clear_cache()

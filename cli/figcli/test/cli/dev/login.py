@@ -8,9 +8,10 @@ import os
 
 class DevLogin(FiggyTest):
 
-    def __init__(self, extra_args=""):
+    def __init__(self, extra_args="", env: str = DEFAULT_ENV):
         super().__init__(pexpect.spawn(f'{CLI_NAME} login sandbox', timeout=10, encoding='utf-8'),
                          extra_args=extra_args)
+        self.env = env
 
     def run(self):
         self.expect('.*user name:.*')
@@ -20,5 +21,5 @@ class DevLogin(FiggyTest):
         self.expect('.*Options.*devops.*')
         self.sendline('dev')
         self.expect('.*default account.*')
-        self.sendline(DEFAULT_ENV)
+        self.sendline(self.env)
         self.expect('.*Login successful.*')
