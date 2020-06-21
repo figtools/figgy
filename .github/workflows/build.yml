@@ -33,12 +33,16 @@ jobs:
         run: |
           echo "Adding figgy binary to path"
           cd cli/dist/__main__/
+          echo "BEFORE: $PATH"
           export PATH="$PATH:$(PWD)"
+          echo "$PATH"
+          echo "TESTING ../../"
+          python3 ../../run_tests.py okta
+
           cd ../../
 
           echo "Testing MAC binary as okta user"
           python run_tests.py okta
-
 
       - name: Deploy as latest
         env:
@@ -86,7 +90,9 @@ jobs:
         run: |
           echo "Adding figgy binary to path"
           cd cli/dist/__main__/
+          echo "PATH: $PATH"
           export "PATH=$PATH:$(PWD)"
+          echo "PATH: $PATH"
           cd ../../
 
           echo "Testing Linux binary as bastion user"
@@ -135,12 +141,11 @@ jobs:
           echo "Adding figgy binary to path"
           cd cli/dist/__main__/
           $env:path += ";."
-          cd ../../
+          figgy.exe --version
 
-          [Environment]::SetEnvironmentVariable("ENV_OVERRIDE", "qa", "Machine")
+          echo "NORMAL VERSION NOW"
+          figgy --version
 
-          echo "Testing Linux binary as bastion user"
-          python run_tests.py bastion
 
       - name: Deploy as latest
         env:
