@@ -83,7 +83,6 @@ class UpgradeManager:
             self._utils.error_exit("Invalid install path specified, try providing the full path to the binary.")
 
         print(f"Install path: {install_path}")
-        s3_path = f'snagcli/{latest_version}/{platform.system().lower()}/snagcli{suffix}'
         print(f"Installing: snagcli/{latest_version}/{platform.system().lower()}/snagcli{suffix}")
         print(f"{self.c.fg_bl}Downloading `snagcli` version: {latest_version}{self.c.rs}")
 

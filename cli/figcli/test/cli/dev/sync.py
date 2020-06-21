@@ -37,6 +37,7 @@ class DevSync(FiggyTest):
         put.add('/shared/jordan/testrepl2', DELETE_ME_VALUE, desc='desc', add_more=True)
         put.add('/shared/jordan/testrepl3', DELETE_ME_VALUE, desc='desc', add_more=True)
         put.add('/shared/jordan/testrepl4', DELETE_ME_VALUE, desc='desc', add_more=False)
+        print("EXECUTING DELETE!!!!")
         delete = DevDelete(extra_args=self.extra_args)
         delete.delete(self.missing_key)
 

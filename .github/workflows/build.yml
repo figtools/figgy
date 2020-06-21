@@ -34,12 +34,13 @@ jobs:
       - name: Test Artifact
         env:
           OVERRIDE_KEYRING: true
-          FIGGY_DISABLE_KEYRING: "true"
+          FIGGY_DISABLE_KEYRING: true
           OKTA_SSO_USER: ${{ secrets.OKTA_SSO_USER }}
           OKTA_SSO_PASSWORD: ${{ secrets.OKTA_SSO_PASSWORD }}
           OKTA_EMBED_URL: ${{ secrets.OKTA_EMBED_URL }}
           OKTA_MFA_SECRET: ${{ secrets.OKTA_MFA_SECRET }}
           DEV_AUDIT_DISABLED: true
+          DEV_SYNC_DISABLED: true
         run: |
           echo "Adding figgy binary to path"
           cd cli/dist/__main__/
