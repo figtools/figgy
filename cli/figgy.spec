@@ -2,6 +2,7 @@
 
 import wcwidth
 import os
+import platform
 
 # Plaform Constants
 LINUX = "Linux"
