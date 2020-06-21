@@ -34,7 +34,7 @@ jobs:
           echo "Adding figgy binary to path"
           cd cli/dist/__main__/
           export PATH="$PATH:$(PWD)"
-          cd ../
+          cd ../../
 
           echo "Testing MAC binary as okta user"
           python run_tests.py okta
@@ -87,7 +87,7 @@ jobs:
           echo "Adding figgy binary to path"
           cd cli/dist/__main__/
           export "PATH=$PATH:$(PWD)"
-          cd ../
+          cd ../../
 
           echo "Testing Linux binary as bastion user"
           python run_tests.py bastion
@@ -135,7 +135,7 @@ jobs:
           echo "Adding figgy binary to path"
           cd cli/dist/__main__/
           $env:path += ";."
-          cd ../
+          cd ../../
 
           [Environment]::SetEnvironmentVariable("ENV_OVERRIDE", "qa", "Machine")
 
