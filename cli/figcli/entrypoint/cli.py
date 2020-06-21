@@ -51,6 +51,7 @@ class FiggyCLI:
         parser.add_argument(f'--{Utils.get_first(prompt_com)}', help=PROMPT_HELP_TEXT, action=store_true)
         parser.add_argument(f'--{Utils.get_first(version)}', help=VERSION_HELP_TEXT, action=store_true)
         parser.add_argument(f'--{Utils.get_first(skip_upgrade)}', help=SKIP_UPGRADE_HELP_TEXT, action=store_true)
+        parser.add_argument(f'--{Utils.get_first(upgrade)}', help=UPGRADE_HELP_TEXT, action=store_true)
 
         resource_subparsers = parser.add_subparsers(title='resources', dest='resource', metavar='')
 
@@ -168,7 +169,8 @@ class FiggyCLI:
         return Utils.is_set_true(configure, args) \
                or Utils.command_set(sandbox, args) \
                or Utils.is_set_true(version, args) \
-               or Utils.attr_exists(profile, args)
+               or Utils.attr_exists(profile, args) \
+               or Utils.is_set_true(upgrade, args)
 
     def __init__(self, args):
         """

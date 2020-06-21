@@ -2,7 +2,7 @@ boto3==1.13.19
 prompt-toolkit==2.0.7
 sty==1.0.0b8
 click==7.1.2
-tqdm==4.46.0
+tqdm==4.46.1
 npyscreen==4.10.5
 pexpect==4.8.0
 mfa==0.1.1

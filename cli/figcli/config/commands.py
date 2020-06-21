@@ -60,6 +60,7 @@ store_true = 'store_true'
 
 # help commands
 sandbox = frozenset({'sandbox'})
+upgrade = frozenset({'upgrade'})
 
 # Maps CLI `--options` for each argument, and sets flags if necessary
 arg_options = {
@@ -239,7 +240,7 @@ merge_suffixes = [merge_uri_suffix, empty_uri_suffix]
 config_commands = [sync, put, edit, delete, cleanup, get, share, generate,
                    list_com, browse, audit, dump, restore, promote, validate]
 iam_commands = [export]
-help_commands = [configure, version, login, sandbox]
+help_commands = [configure, version, login, sandbox, upgrade]
 
 # Used to build out parser, map of resource to sub-commands
 resource_map = {

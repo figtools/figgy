@@ -27,9 +27,9 @@ jobs:
           # pyinstaller figcli/__main__.py --onedir --hiddenimport configparser --hiddenimport keyrings --hiddenimport keyring.backends  --hiddenimport pkg_resources.py2_warn
           pyinstaller figgy.spec
 
-          cd dist/__main__/
-          mv __main__ figgy
-          zip -r figgy.zip .
+          mv dist/__main__/__main__ dist/__main__/figgy
+          scripts/zip_it.sh
+          scripts/tar_it.sh
 
       - name: Test Artifact
         env:
@@ -72,10 +72,16 @@ jobs:
           echo "$CREDENTIALS_FILE" > ~/.aws/credentials
 
           dest="s3://figgy-website/releases/cli/latest/darwin/figgy.zip"
-          aws s3 cp cli/dist/__main__/figgy.zip $dest
+          aws s3 cp cli/figgy.zip $dest
 
           echo "Deploying darwin figgy to s3://figgy-website/releases/cli/${VERSION}/darwin/figgy.zip"
-          aws s3 cp cli/dist/__main__/figgy.zip "s3://figgy-website/releases/cli/${VERSION}/darwin/figgy.zip"
+          aws s3 cp cli/figgy.zip "s3://figgy-website/releases/cli/${VERSION}/darwin/figgy.zip"
+
+          echo "Deploying darwin figgy to s3://figgy-website/releases/cli/latest/darwin/figgy.tar.gz"
+          aws s3 cp cli/figgy.tar.gz s3://figgy-website/releases/cli/latest/darwin/figgy.tar.gz
+
+          echo "Deploying darwin figgy to s3://figgy-website/releases/cli/${VERSION}/darwin/figgy.tar.gz"
+          aws s3 cp cli/figgy.tar.gz "s3://figgy-website/releases/cli/${VERSION}/darwin/figgy.tar.gz"
 
   build_linux:
     runs-on: ubuntu-latest
@@ -102,12 +108,12 @@ jobs:
           pip3 install -r requirements.txt
           pip3 install -r requirements-linux.txt
 
-          #pyinstaller figcli/__main__.py --hiddenimport configparser --hiddenimport keyrings --hiddenimport keyring.backends --hiddenimport pkg_resources.py2_warn
           pyinstaller figgy.spec
 
-          cd dist/__main__/
-          mv __main__ figgy
-          zip -r figgy.zip .
+          mv dist/__main__/__main__ dist/__main__/figgy
+          scripts/zip_it.sh
+          scripts/tar_it.sh
+
 
       - name: Test Artifact
         env:
@@ -146,12 +152,17 @@ jobs:
           echo "$CONFIG_FILE" > ~/.aws/config
           echo "$CREDENTIALS_FILE" > ~/.aws/credentials
 
-          dest="s3://figgy-website/releases/cli/latest/linux/figgy.zip"
           echo "Deploying linux figgy to $dest"
-          aws s3 cp cli/dist/__main__/figgy.zip $dest
+          aws s3 cp cli/figgy.zip s3://figgy-website/releases/cli/latest/linux/figgy.zip
 
           echo "Deploying linux figgy to s3://figgy-website/releases/cli/${VERSION}/linux/figgy.zip"
-          aws s3 cp cli/dist/__main__/figgy.zip "s3://figgy-website/releases/cli/${VERSION}/linux/figgy.zip"
+          aws s3 cp cli/figgy.zip "s3://figgy-website/releases/cli/${VERSION}/linux/figgy.zip"
+
+          echo "Deploying linux figgy to s3://figgy-website/releases/cli/latest/linux/figgy.tar.gz"
+          aws s3 cp cli/figgy.tar.gz s3://figgy-website/releases/cli/latest/linux/figgy.tar.gz
+
+          echo "Deploying linux figgy to s3://figgy-website/releases/cli/${VERSION}/linux/figgy.tar.gz"
+          aws s3 cp cli/figgy.tar.gz "s3://figgy-website/releases/cli/${VERSION}/linux/figgy.tar.gz"
 
 
   build_windows:
@@ -163,6 +174,7 @@ jobs:
         with:
           python-version: 3.8
       - name: Build
+        shell: bash
         run: |
           echo "Windows build is happening!!!"
           # install requirements
@@ -175,10 +187,15 @@ jobs:
           #pyinstaller figcli/__main__.py --hiddenimport configparser --hiddenimport pyreadline --hiddenimport win32timezone --hiddenimport keyrings  --hiddenimport pkg_resources.py2_warn --hiddenimport keyring.backends
           pyinstaller figgy.spec
 
-          cd dist/__main__/
+          mv dist/__main__/__main__ dist/__main__/figgy
+          scripts/zip_it.sh
+          scripts/tar_it.sh
 
-          mv __main__.exe figgy.exe
-          Compress-Archive . figgy.zip
+
+          #cd dist/__main__/
+
+          #mv __main__.exe figgy.exe
+          #Compress-Archive . figgy.zip
 
       - name: Test Artifact
         run: |
@@ -200,9 +217,15 @@ jobs:
           echo "Setting release version to $VERSION"
 
           mkdir -p ~/.aws
-          cd cli/dist/__main__/
+          cd cli/
           echo "Deploying windows figgy to s3://figgy-website/releases/cli/latest/windows/figgy.zip"
           aws s3 cp figgy.zip "s3://figgy-website/releases/cli/latest/windows/figgy.zip"
 
           echo "Deploying windows figgy to s3://figgy-website/releases/cli/${VERSION}/windows/figgy.zip"
           aws s3 cp figgy.zip "s3://figgy-website/releases/cli/${VERSION}/windows/figgy.zip"
+
+          echo "Deploying windows figgy to s3://figgy-website/releases/cli/latest/windows/figgy.tar.gz"
+          aws s3 cp figgy.tar.gz "s3://figgy-website/releases/cli/latest/windows/figgy.tar.gz"
+
+          echo "Deploying windows figgy to s3://figgy-website/releases/cli/${VERSION}/windows/figgy.tar.gz"
+          aws s3 cp figgy.tar.gz "s3://figgy-website/releases/cli/${VERSION}/windows/figgy.tar.gz"

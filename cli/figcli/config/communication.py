@@ -24,6 +24,7 @@ UNUSED_CONFIG_DETECTED = f"%%red%%The following Names were found in PS but are n
 
 # Help Text
 VERSION_HELP_TEXT = f'Prints current version, which is, in this case: {VERSION}'
+UPGRADE_HELP_TEXT = f'If available for your operating system, walks the user through an automatic upgrade process.'
 SKIP_UPGRADE_HELP_TEXT = f'Prevents the figgy for checking for a new version. Useful when running E2E tests locally.'
 COMMAND_HELP_TEXT = f'Valid values are: {CollectionUtils.printable_set(config_commands)}'
 RESOURCE_HELP_TEXT = f'Valid values are: {CollectionUtils.printable_set(resources)}'
@@ -127,7 +128,8 @@ HELP_TEXT_MAP = {
     login: LOGIN_HELP_TEXT,
     sandbox: LOGIN_SANDBOX_HELP_TEXT,
     validate: VALIDATE_HELP_TEXT,
-    profile: PROFILE_HELP_TEXT
+    profile: PROFILE_HELP_TEXT,
+    upgrade: UPGRADE_HELP_TEXT
 }
 
 # Other

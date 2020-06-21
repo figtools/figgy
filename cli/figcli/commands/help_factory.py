@@ -1,5 +1,6 @@
 from figcli.commands.factory import Factory
 from figcli.commands.help.login import Login
+from figcli.commands.help.upgrade import Upgrade
 from figcli.commands.help.version import Version
 from figcli.commands.help_context import HelpContext
 from figcli.commands.help.configure import Configure
@@ -27,6 +28,8 @@ class HelpFactory(Factory):
             return Version(self._context)
         elif command == login or command == sandbox:
             return Login(self._context, self._setup)
+        elif upgrade in self._options:
+            return Upgrade(self._context)
         else:
             self._utils.error_exit(f"{Utils.get_first(command)} is not a valid command. You must select from: "
                                    f"[{CollectionUtils.printable_set(help_commands)}]. Try using --help for more info.")

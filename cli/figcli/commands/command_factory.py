@@ -210,8 +210,9 @@ class CommandFactory(Factory):
             factory = HelpFactory(self._context.command, context)
         else:
             if self._context.command is None or self._context.resource:
-                self._utils.error_exit("Propery figgy syntax is `figgy {resource} {command}`. "
-                                       "For example `figgy config get`. Either resource or command were not supplied.")
+                self._utils.error_exit(f"Proper {CLI_NAME} syntax is `{CLI_NAME} {resource} {command}`. "
+                                       f"For example `{CLI_NAME} config get`. Either resource or command were "
+                                       f"not supplied.")
             else:
                 self._utils.error_exit(
                     f"Command: {self._utils.get_first(self._context.command)} was not found in this version of figgy.")

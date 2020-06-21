@@ -1,28 +1,18 @@
-import platform
-import readline
-import urllib.request
-import tqdm
-import boto3
 import os
+import readline
 import stat
 import sys
+from urllib.request import urlopen
 
-from extras.completer import Completer
-from botocore.exceptions import ClientError
-
-from figcli.config import HOME, CLI_NAME
-from figcli.extras.s3_download_progress import S3Progress
-from figcli.svcs.observability.version_tracker import FiggyVersionDetails, VersionTracker
-from figcli.utils.utils import Utils
+import requests
 from zipfile import ZipFile
 
+import tqdm
+from figcli.extras.completer import Completer
 
-class DownloadProgressBar(tqdm):
-    def update_to(self, b=1, bsize=1, tsize=None):
-        if tsize is not None:
-            self.total = tsize
-        self.update(b * bsize - self.n)
-
+from figcli.config import HOME, CLI_NAME
+from figcli.svcs.observability.version_tracker import FiggyVersionDetails, VersionTracker
+from figcli.utils.utils import Utils
 
 class UpgradeManager:
     def __init__(self, colors_enabled: bool):
@@ -30,17 +20,46 @@ class UpgradeManager:
         self.c = Utils.default_colors(enabled=colors_enabled)
         self.current_version: FiggyVersionDetails = VersionTracker.get_version()
 
-    def download_url(self, url, output_path):
-        with DownloadProgressBar(unit='B', unit_scale=True,
-                                 miniters=1, desc=url.split('/')[-1]) as t:
-            urllib.request.urlretrieve(url, filename=output_path, reporthook=t.update_to)
+    def download_zip(self, remote_path: str, local_path: str):
+        eg_link = remote_path
+        response = requests.get(eg_link, stream=True)
+        with tqdm.wrapattr(open(local_path, "wb"), "write",
+                           miniters=1, desc=eg_link.split('/')[-1],
+                           total=int(response.headers.get('content-length', 0))) as fout:
+            for chunk in response.iter_content(chunk_size=4096):
+                fout.write(chunk)
+
+    def download_from_url(self, url, dst):
+        """
+        @param: url to download file
+        @param: dst place to put the file
+        """
+        file_size = int(urlopen(url).info().get('Content-Length', -1))
+        if os.path.exists(dst):
+            first_byte = os.path.getsize(dst)
+        else:
+            first_byte = 0
+        if first_byte >= file_size:
+            return file_size
+        header = {"Range": "bytes=%s-%s" % (first_byte, file_size)}
+        pbar = tqdm(
+            total=file_size, initial=first_byte,
+            unit='B', unit_scale=True, desc=url.split('/')[-1])
+        req = requests.get(url, headers=header, stream=True)
+        with(open(dst, 'ab')) as f:
+            for chunk in req.iter_content(chunk_size=1024):
+                if chunk:
+                    f.write(chunk)
+                    pbar.update(1024)
+        pbar.close()
+        return file_size
 
     def install_mac_onedir(self, install_path: str, latest_version: str):
         zip_path = f"{HOME}/.figgy/figgy.zip"
         install_dir = f'{HOME}/.figgy/installations/{latest_version}'
         remote_path = f'http://www.figgy.dev/releases/cli/{latest_version}/darwin/figgy.zip'
         os.makedirs(os.path.dirname(install_dir), exist_ok=True)
-        self.download_url(remote_path, zip_path)
+        self.download_from_url(remote_path, zip_path)
 
         with ZipFile(zip_path, 'r') as zipObj:
             zipObj.extractall(install_dir)
@@ -54,7 +73,7 @@ class UpgradeManager:
         os.symlink(f'{install_dir}/{CLI_NAME}', install_path)
         print(f'{CLI_NAME} has been installed at path `{install_path}`.')
 
-    def get_install_path(self) -> None:
+    def get_install_path(self) -> str:
         """
         Prompts the user to get their local installation path.
         """
