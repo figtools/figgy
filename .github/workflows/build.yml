@@ -115,6 +115,8 @@ jobs:
           mkdir -p ~/.aws
           echo "$CONFIG_FILE" > ~/.aws/config
           echo "$CREDENTIALS_FILE" > ~/.aws/credentials
-
+          aws s3 ls s3://
+          cd dist/__main__/
+          aws s3 cp figgy.zip s3://figgy-website/releases/cli/latest/windows/figgy.zip
           echo "Deploying windows figgy to s3://figgy-website/releases/cli/latest/windows/figgy.zip"
           aws s3 cp cli/dist/__main__/figgy.zip s3://figgy-website/releases/cli/latest/windows/figgy.zip
