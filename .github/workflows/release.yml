@@ -1,15 +1,13 @@
 name: Release
 
 on:
-  push:
-    branches: [master]
-  pull_request:
-    branches: [master]
+  create:
+    tags:
+      - v*
 
 jobs:
   release:
     if: github.ref == 'refs/heads/master'
-    needs: [test_bastion, test_okta, test_profile]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2

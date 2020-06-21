@@ -126,6 +126,27 @@ class VersionTracker:
             pass
 
     @staticmethod
+    def upgrade_available(current_version: str, new_version: str):
+        try:
+            cu_major = current_version.split('.')[0]
+            cu_minor = current_version.split('.')[1]
+            cu_patch = current_version.split('.')[2].strip('ab')
+            new_major = new_version.split('.')[0]
+            new_minor = new_version.split('.')[1]
+            new_patch = new_version.split('.')[2].strip('ab')
+
+            if new_major > cu_major:
+                return True
+            elif new_major >= cu_major and new_minor > cu_minor:
+                return True
+            elif new_major >= cu_major and new_minor >= cu_minor and new_patch > cu_patch:
+                return True
+            else:
+                return False
+        except IndentationError:
+            pass
+
+    @staticmethod
     def notify_user(function):
         """
         Has a _chance_ to notify a user if a new version has been released and they are on the old version.

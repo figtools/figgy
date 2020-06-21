@@ -35,10 +35,9 @@ class UpgradeManager:
                                  miniters=1, desc=url.split('/')[-1]) as t:
             urllib.request.urlretrieve(url, filename=output_path, reporthook=t.update_to)
 
-    def _install_mac_onedir(self, install_path: str, latest_version: str):
-        s3_path = f'figgy/{latest_version}/{platform.system().lower()}/figgy.zip'
-        zip_path = f"{HOME}/.snag/figgy.zip"
-        install_dir = f'{HOME}/.snag/figgy/version/{latest_version}'
+    def install_mac_onedir(self, install_path: str, latest_version: str):
+        zip_path = f"{HOME}/.figgy/figgy.zip"
+        install_dir = f'{HOME}/.figgy/installations/{latest_version}'
         remote_path = f'http://www.figgy.dev/releases/cli/{latest_version}/darwin/figgy.zip'
         os.makedirs(os.path.dirname(install_dir), exist_ok=True)
         self.download_url(remote_path, zip_path)
@@ -49,20 +48,15 @@ class UpgradeManager:
         if self._utils.file_exists(install_path):
             os.remove(install_path)
 
-        executable_path = f'{install_dir}/figgy'
+        executable_path = f'{install_dir}/{CLI_NAME}'
         st = os.stat(executable_path)
         os.chmod(executable_path, st.st_mode | stat.S_IEXEC)
-        os.symlink(f'{install_dir}/figgy', install_path)
-        print(f'figgy has been installed at path `{install_path}`.')
+        os.symlink(f'{install_dir}/{CLI_NAME}', install_path)
+        print(f'{CLI_NAME} has been installed at path `{install_path}`.')
 
-    def _perform_upgrade(self, latest_version: str) -> None:
+    def get_install_path(self) -> None:
         """
-        Walks the user through the upgrade path. Supports Windows/Linux/& OSX for Windows we must rename the running
-        binary to a different name, as we cannot overwrite the existing running binary.
-        Args:
-            latest_version: str: The version ot upgrade to, i.e 1.0.6
-            mgmt_session: Session that may be leveraged for performing the upgrade by downloading the appropriate binary
-                          from S3.
+        Prompts the user to get their local installation path.
         """
         readline.parse_and_bind("tab: complete")
         comp = Completer()
@@ -77,29 +71,9 @@ class UpgradeManager:
             if install_path.endswith('/'):
                 install_path = install_path[:-1]
 
-            install_path = f"{install_path}/snagcli{suffix}"
+            install_path = f"{install_path}/{CLI_NAME}{suffix}"
 
         if not self._utils.file_exists(install_path):
             self._utils.error_exit("Invalid install path specified, try providing the full path to the binary.")
 
-        print(f"Install path: {install_path}")
-        print(f"Installing: snagcli/{latest_version}/{platform.system().lower()}/snagcli{suffix}")
-        print(f"{self.c.fg_bl}Downloading `snagcli` version: {latest_version}{self.c.rs}")
-
-        old_path = f'{install_path}.OLD'
-        temp_path = install_path + "tmp"
-
-        if self._utils.file_exists(old_path):
-            os.remove(old_path)
-        if self._utils.file_exists(temp_path):
-            os.remove(temp_path)
-        if self._utils.file_exists(install_path):
-            os.rename(install_path, old_path)
-
-        if Utils.is_mac():
-            print("Performing auto-upgrade for MAC installation.")
-            self._install_mac_onedir(f'{install_path}', latest_version)
-
-            print(f"{self.c.fg_gr}Installation successful! Exiting. Rerun `{CLI_NAME}` "
-                  f"to use the latest version!{self.c.rs}")
-            exit()
+        return install_path
