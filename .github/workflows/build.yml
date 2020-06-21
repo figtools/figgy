@@ -140,7 +140,9 @@ jobs:
           pip3 install -r requirements.txt
           pip3 install -r requirements-windows.txt
 
-          pyinstaller figcli/__main__.py --hiddenimport configparser --hiddenimport pyreadline --hiddenimport win32timezone --hiddenimport keyrings  --hiddenimport pkg_resources.py2_warn --hiddenimport keyring.backends
+          #pyinstaller figcli/__main__.py --hiddenimport configparser --hiddenimport pyreadline --hiddenimport win32timezone --hiddenimport keyrings  --hiddenimport pkg_resources.py2_warn --hiddenimport keyring.backends
+          pyinstaller figgy.spec
+
           cd dist/__main__/
 
           mv __main__.exe figgy.exe

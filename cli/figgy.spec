@@ -3,14 +3,30 @@
 import wcwidth
 import os
 
+# Plaform Constants
+LINUX = "Linux"
+MAC = "Darwin"
+WINDOWS = "Windows"
+
 block_cipher = None
 cwd = os.getcwd()
+mac_hidden = ['configparser', 'keyrings', 'keyring.backends', 'pkg_resources.py2_warn']
+linux_hidden = ['configparser', 'keyrings', 'keyring.backends', 'pkg_resources.py2_warn']
+windows_hidden = ['configparser', 'pyreadline', 'win32timezone', 'keyrings', 'pkg_resources.py2_warn', 'keyring.backends'
+
+if is_mac():
+    hidden_imports = mac_hidden
+elif is_linux():
+    hidden_imports = linux_hidden
+elif is_windows():
+    hidden_impots = windows_hidden
+
 
 a = Analysis(['figcli/__main__.py'],
              pathex=[cwd],
              binaries=[],
              datas=[(os.path.dirname(wcwidth.__file__), 'wcwidth')],
-             hiddenimports=['configparser', 'keyrings', 'keyring.backends', 'pkg_resources.py2_warn'],
+             hiddenimports=hidden_imports,
              hookspath=[],
              runtime_hooks=[],
              excludes=[],
@@ -38,3 +54,13 @@ coll = COLLECT(exe,
                upx=True,
                upx_exclude=[],
                name='__main__')
+
+
+def is_linux():
+    return platform.system() == LINUX
+
+def is_mac():
+    return platform.system() == MAC
+
+def is_windows():
+    return platform.system() == WINDOWS
