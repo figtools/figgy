@@ -89,43 +89,32 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
-#      - name: Build
-#        run: |
-#          echo "Windows build is happening!!!"
-#          # install requirements
-#
-#          cd cli
-#          pip3 install pyinstaller
-#          pip3 install -r requirements.txt
-#          pip3 install -r requirements-windows.txt
-#
-#
-#          pyinstaller figcli/__main__.py --hiddenimport configparser --hiddenimport pyreadline --hiddenimport win32timezone --hiddenimport keyrings  --hiddenimport pkg_resources.py2_warn --hiddenimport keyring.backends
-#          cd dist/__main__/
-#
-#          ls .
-#          mv __main__.exe figgy.exe
-#          Compress-Archive . figgy.zip
-#          ls .
+      - name: Build
+        run: |
+          echo "Windows build is happening!!!"
+          # install requirements
+
+          cd cli
+          pip3 install pyinstaller
+          pip3 install -r requirements.txt
+          pip3 install -r requirements-windows.txt
+
+
+          pyinstaller figcli/__main__.py --hiddenimport configparser --hiddenimport pyreadline --hiddenimport win32timezone --hiddenimport keyrings  --hiddenimport pkg_resources.py2_warn --hiddenimport keyring.backends
+          cd dist/__main__/
+
+          ls .
+          mv __main__.exe figgy.exe
+          Compress-Archive . figgy.zip
+          ls .
 
       - name: Deploy as latest
         env:
-          CONFIG_FILE: ${{ secrets.CONFIG_DEFAULT }}
-          CREDENTIALS_FILE: ${{ secrets.CREDENTIALS_DEPLOY }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1
         run: |
           mkdir -p ~/.aws
-          echo "$CONFIG_FILE" > ~/.aws/config
-          echo "$CREDENTIALS_FILE" > ~/.aws/credentials
-          echo "HI" > test.txt
-          aws s3 cp test.txt s3://figgy-website/releases/cli/latest/windows/test.txt
-
-
-          aws s3 ls s3://
           cd cli/dist/__main__/
-          ls .
-          aws s3 cp figgy.zip "s3://figgy-website/releases/cli/latest/windows/figgy.zip"
           echo "Deploying windows figgy to s3://figgy-website/releases/cli/latest/windows/figgy.zip"
-          aws s3 cp cli/dist/__main__/figgy.zip "s3://figgy-website/releases/cli/latest/windows/figgy.zip"
+          aws s3 cp figgy.zip "s3://figgy-website/releases/cli/latest/windows/figgy.zip"
