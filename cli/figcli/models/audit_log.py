@@ -12,7 +12,7 @@ class AuditLog:
         self.user = user
 
     def __str__(self):
-        return f"Parameter: {self.parameter_name}\r\n" \
-               f"Time: {time.ctime(int(self.time / 1000))}\r\n" \
-               f"User: {self.user}\r\n" \
-               f"Action: {self.action}\r\n"
+        return f"Parameter: {self.parameter_name}\n" \
+               f"Time: {time.ctime(int(self.time / 1000))}\n" \
+               f"User: {self.user}\n" \
+               f"Action: {self.action}\n"

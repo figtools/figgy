@@ -5,6 +5,7 @@ from figcli.commands.config_context import ConfigContext
 from figcli.commands.types.config import ConfigCommand
 from figcli.data.dao.config import ConfigDao
 from figcli.data.dao.ssm import SsmDao
+from figcli.input import Input
 from figcli.svcs.observability.anonymous_usage_tracker import AnonymousUsageTracker
 from figcli.svcs.observability.version_tracker import VersionTracker
 from figcli.utils.utils import *
@@ -26,21 +27,20 @@ class Audit(ConfigCommand):
         audit_more = True
 
         while audit_more:
-            ps_name = prompt(f"Please input a PS Name : ", completer=self._config_completer)
-            if self._utils.is_valid_input(ps_name, 'Parameter Name', notify=True):
-                audit_logs = self._config.get_audit_logs(ps_name)
-                result_count = len(audit_logs)
-                if result_count > 0:
-                    print(f"\r\nFound {result_count} results.")
-                else:
-                    print(f"\r\nNo results found for {ps_name}")
-                for log in audit_logs:
-                    print(log)
+            ps_name = Input.input(f"Please input a PS Name : ", completer=self._config_completer)
+            audit_logs = self._config.get_audit_logs(ps_name)
+            result_count = len(audit_logs)
+            if result_count > 0:
+                print(f"\nFound {self.c.fg_bl}{result_count}{self.c.rs} results.")
+            else:
+                print(f"\n{self.c.fg_yl}No results found for: {ps_name}{self.c.rs}")
+            for log in audit_logs:
+                print(log)
 
-                to_continue = input(f"Audit another? (Y/n): ")
-                to_continue = to_continue if to_continue != '' else 'y'
-                audit_more = to_continue.lower() == "y"
-                print()
+            to_continue = input(f"Audit another? (Y/n): ")
+            to_continue = to_continue if to_continue != '' else 'y'
+            audit_more = to_continue.lower() == "y"
+            print()
 
     @VersionTracker.notify_user
     @AnonymousUsageTracker.track_command_usage
