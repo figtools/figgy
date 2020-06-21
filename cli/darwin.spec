@@ -4,10 +4,10 @@ import wcwidth
 import os
 
 block_cipher = None
-
+cwd = os.getcwd()
 
 a = Analysis(['figcli/__main__.py'],
-             pathex=['/Users/jordanmance/workspace/figgy/figgy/cli'],
+             pathex=[cwd],
              binaries=[],
              datas=[(os.path.dirname(wcwidth.__file__), 'wcwidth')],
              hiddenimports=['configparser', 'keyrings', 'keyring.backends', 'pycryptodome', 'pkg_resources.py2_warn'],
