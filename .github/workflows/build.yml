@@ -52,6 +52,15 @@ jobs:
           #echo "Testing MAC binary as okta user"
           #python run_tests.py okta
 
+      - name: Get Version
+        id: version
+        run: |
+          cd cli
+          # Parse version
+          VERSION=$(./scripts/get_version.sh)
+          echo "Setting release version to $VERSION"
+          echo "::set-env name=RELEASE_VERSION::$VERSION"
+
       - name: Deploy as latest
         env:
           CONFIG_FILE: ${{ secrets.CONFIG_DEFAULT }}
@@ -116,6 +125,15 @@ jobs:
 
           echo "Testing Linux binary as bastion user"
           python run_tests.py bastion
+
+      - name: Get Version
+        id: version
+        run: |
+          cd cli
+          # Parse version
+          VERSION=$(./scripts/get_version.sh)
+          echo "Setting release version to $VERSION"
+          echo "::set-env name=RELEASE_VERSION::$VERSION"
 
       - name: Deploy as latest
         env:
