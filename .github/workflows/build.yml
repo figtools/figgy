@@ -102,8 +102,10 @@ jobs:
           pyinstaller figcli/__main__.py --hiddenimport configparser --hiddenimport pyreadline --hiddenimport win32timezone --hiddenimport keyrings  --hiddenimport pkg_resources.py2_warn --hiddenimport keyring.backends
           cd dist/__main__/
 
+          ls .
           mv __main__.exe figgy.exe
           Compress-Archive . figgy.zip
+          ls .
 
       - name: Deploy as latest
         env:
