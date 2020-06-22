@@ -1,5 +1,8 @@
 Figgy Changelog:
 
+## 0.0.32
+- Testing release pipeline through pypi, brew, etc.
+
 ## 0.0.31
 - Adding support for `--profile` optional parameter that overrides all authentication schemes and authorizes 
 only with the user's locally configured & targeted AWSCLI profile. This will be very useful for CICD builds and for
