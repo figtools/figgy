@@ -13,7 +13,7 @@ FIGGY_ERROR_REPORTING_URL = f"{FIGGY_OBS_API_BASE_URL}/v1/log-error"
 FIGGY_GET_VERSION_URL = f"{FIGGY_OBS_API_BASE_URL}/v1/version"
 FIGGY_LOG_METRICS_URL = f"{FIGGY_OBS_API_BASE_URL}/v1/log-metrics"
 
-# Role names are assumed to be prefixed with `figgy-` - Users may override by setting the below ENV variable.   
+# Role names are assumed to be prefixed with `figgy-` - Users may override by setting the below ENV variable.
 FIGGY_ROLE_NAME_PREFIX = 'figgy-'
 FIGGY_ROLE_PREFIX_OVERRIDE_ENV = 'FIGGY_ROLE_PREFIX_OVERRIDE'
 
