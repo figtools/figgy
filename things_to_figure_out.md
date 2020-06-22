@@ -1,7 +1,9 @@
 These are problems I intend to solve, once I figure out the best way to do it.
 
 ## Todo:
+- Add licensing all over
 - E2E tests for each binary
+- Break apart CLI and Deploy repos
 - Test release rollback
 - Add automated test with replicate from
 - Make CLI used shared libs.
