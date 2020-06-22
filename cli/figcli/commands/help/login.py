@@ -58,7 +58,7 @@ class Login(HelpCommand, ABC):
 
         role = Input.select("Please select a role to impersonate: ", valid_options=SANDBOX_ROLES)
         params = {'role': role, 'user': user}
-        result = requests.get(GET_SANBOX_CREDS_URL, params=params)
+        result = requests.get(GET_SANDBOX_CREDS_URL, params=params)
 
         if result.status_code != 200:
             self._utils.error_exit("Unable to get temporary credentials from the Figgy sandbox. If this problem "
