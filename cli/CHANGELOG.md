@@ -1,5 +1,8 @@
 Figgy Changelog:
 
+## 0.0.33
+- Adding a set of default places to search for the figgy.json file to reduce keystrokes.
+
 ## 0.0.32
 - Testing release pipeline through pypi, brew, etc.
 

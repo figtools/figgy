@@ -16,7 +16,6 @@ from figcli.utils.utils import *
 
 
 class Cleanup(ConfigCommand):
-    _DEFAULT_PATH = './figgy.json'
     """
     Detects orphaned ParameterStore names, replication configurations, and merge keys, then
     prompts the user to delete them. This is typically run after the `sync` command informs
@@ -32,7 +31,7 @@ class Cleanup(ConfigCommand):
         self._utils = Utils(colors_enabled)
         self.example = f"{self.c.fg_bl}{CLI_NAME} config {self.command_printable} --env dev " \
             f"--config /path/to/figgy.json{self.c.rs}"
-        self._config_path = context.ci_config_path if context.ci_config_path else Cleanup._DEFAULT_PATH
+        self._config_path = context.ci_config_path if context.ci_config_path else Utils.find_figgy_json()
 
         # If user passes in --info flag, we don't need all of this to be initialized.
         if not hasattr(args, Utils.get_first(info)) or args.info is False:

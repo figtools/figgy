@@ -91,6 +91,14 @@ class Utils:
         return platform.system() == WINDOWS
 
     @staticmethod
+    def find_figgy_json():
+        for path in DEFAULT_FIGGY_JSON_PATHS:
+            if Path(path).is_file():
+                return path
+
+        return 'figgy.json'
+
+    @staticmethod
     def file_exists(path: str):
         return Path(path).is_file()
 
