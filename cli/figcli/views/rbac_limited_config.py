@@ -111,7 +111,7 @@ class RBACLimitedConfigView:
 
         if one_level:
             if prefix:
-                new_names = [name for name in new_names if len(name.split('/')) == len(prefix) + 1]
+                new_names = [name for name in new_names if len(name.split('/')) == len(prefix.split('/')) + 1]
             else:
                 new_names = authed_nses
 

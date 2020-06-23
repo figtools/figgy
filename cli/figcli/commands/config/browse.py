@@ -67,7 +67,6 @@ class Browse(ConfigCommand, npyscreen.NPSApp):
                 all_children = set(all_res.result())
 
         diff_children = all_children.difference(first_children)
-
         child_dirs = set(list(map(lambda x: f"{prefix}/{x.replace(f'{prefix}/', '', 1).split('/')[0]}", diff_children)))
         self.dirs = self.dirs | child_dirs
 
@@ -86,6 +85,8 @@ class Browse(ConfigCommand, npyscreen.NPSApp):
                 dir_node = td_node.newChild(content=child_dir.replace(prefix, '', 1), selectable=False, expanded=False)
                 self.add_children(child_dir, dir_node, all_children=grand_children,
                                   first_children=calculated_first_children)
+
+
 
     @AnonymousUsageTracker.track_command_usage
     def _browse(self):

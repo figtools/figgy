@@ -14,6 +14,7 @@ class DevCleanup(FiggyTest):
 
     def run(self):
         self.cleanup_success()
+        time.sleep(10)
         self.cleanup_with_orphans()
 
     def prep_success(self):
@@ -29,6 +30,7 @@ class DevCleanup(FiggyTest):
         self.prep_success()
         self.step(f"Testing: {CLI_NAME} config {Utils.get_first(cleanup)} --env {DEFAULT_ENV} "
               f"--config figcli/test/assets/success/figgy.json --skip-upgrade ")
+        time.sleep(30)
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(cleanup)} --env {DEFAULT_ENV} '
                                     f'--config figcli/test/assets/success/figgy.json --skip-upgrade {self.extra_args}',
                                     encoding='utf-8', timeout=10)
@@ -40,6 +42,8 @@ class DevCleanup(FiggyTest):
         self.prep_with_orphans()
         self.step(f"Testing: {CLI_NAME} config {Utils.get_first(cleanup)} --env {DEFAULT_ENV} "
               f"--config figcli/test/assets/error/figgy.json")
+
+        time.sleep(30)
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(cleanup)} --env {DEFAULT_ENV} '
                                     f'--config figcli/test/assets/error/figgy.json --skip-upgrade {self.extra_args}',
                                     encoding='utf-8', timeout=10)
