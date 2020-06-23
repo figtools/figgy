@@ -142,7 +142,7 @@ jobs:
         env:
           FIGGY_DISABLE_KEYRING: true
           OVERRIDE_KEYRING: true
-          CONFIG_FILE: ${{ secrets.CONFIG_FILE }}
+          CONFIG_DEFAULT: ${{ secrets.CONFIG_FILE }}
           CREDENTIALS_FILE: ${{ secrets.CREDENTIALS_FILE }}
         run: |
           mkdir -p ~/.aws
