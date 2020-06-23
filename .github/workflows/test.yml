@@ -146,7 +146,7 @@ jobs:
           AWS_REGION: us-east-1
         run: |
           mkdir -p ~/.aws
-          echo "[profile figgy-qa-tester]\nregion = us-east-1\noutput = json" > ~/.aws/config
+          echo "[profile figgy-qa-tester]\r\nregion = us-east-1\r\noutput = json" > ~/.aws/config
           echo "$CREDENTIALS_FILE" > ~/.aws/credentials
 
           cat ~/.aws/config
