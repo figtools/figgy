@@ -168,7 +168,7 @@ class Input:
         return Input.y_n_input("Is this value a secret?", default_yes=False)
 
     @staticmethod
-    def input(message: str, completer=None, default: str = None, optional: bool = False) -> str:
+    def input(message: str, completer=None, default: str = None, optional: bool = False, min_length=0) -> str:
         loop = True
         message = f'\n{message}\n  -> ' if len(message) > 15 else f'\n{message} -> '
 
@@ -182,6 +182,10 @@ class Input:
 
             if optional:
                 return result
+
+            if len(result) < min_length:
+                print(f"\nInvalid input. it must be at least {min_length} characters in length.\n")
+                result = None
 
             loop = not result or result.strip() == ''
 

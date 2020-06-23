@@ -124,20 +124,20 @@ def main():
 def dev_tests(profile=None, key_down_to_shared=4):
     extra_args = f"--profile {profile}" if profile else ""
 
-    run_test("Dev Put", DevPut(extra_args=extra_args))
-    run_test("Dev Get", DevGet(extra_args=extra_args))
-    run_test("Dev Delete", DevDelete(extra_args=extra_args))
-    run_test("Dev Dump", DevDump(extra_args=extra_args))
-    run_test("Dev List", DevList(extra_args=extra_args))
-    run_test("Dev Audit", DevAudit(extra_args=extra_args))
-    run_test("Dev Sync", DevSync(extra_args=extra_args))
+    # run_test("Dev Put", DevPut(extra_args=extra_args))
+    # run_test("Dev Get", DevGet(extra_args=extra_args))
+    # run_test("Dev Delete", DevDelete(extra_args=extra_args))
+    # run_test("Dev Dump", DevDump(extra_args=extra_args))
+    # run_test("Dev List", DevList(extra_args=extra_args))
+    # run_test("Dev Audit", DevAudit(extra_args=extra_args))
+    # run_test("Dev Sync", DevSync(extra_args=extra_args))
     run_test("Dev Cleanup", DevCleanup(extra_args=extra_args))
     print(f"Key down: {key_down_to_shared}")
-    run_test("Dev Browse", DevBrowse(extra_args=extra_args, key_down_to_shared=key_down_to_shared))
-    run_test("Dev Restore", DevRestore(extra_args=extra_args))
-    run_test("Dev Export", DevExport(extra_args=extra_args))
-    run_test("Dev Edit", DevEdit(extra_args=extra_args))
-    run_test("Dev Validate", DevValidate(extra_args=extra_args))
+    # run_test("Dev Browse", DevBrowse(extra_args=extra_args, key_down_to_shared=key_down_to_shared))
+    # run_test("Dev Restore", DevRestore(extra_args=extra_args))
+    # run_test("Dev Export", DevExport(extra_args=extra_args))
+    # run_test("Dev Edit", DevEdit(extra_args=extra_args))
+    # run_test("Dev Validate", DevValidate(extra_args=extra_args))
 
 
 def data_tests():

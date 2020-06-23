@@ -52,7 +52,7 @@ class Login(HelpCommand, ABC):
     def login_sandbox(self):
         Utils.wipe_vaults() or Utils.wipe_defaults() or Utils.wipe_config_cache()
         print(f"{self.c.fg_bl}Logging you into the Figgy Sandbox environment.{self.c.rs}")
-        user = Input.input("Please input a user name: ")
+        user = Input.input("Please input a user name: ", min_length=2)
         colors = Input.select_enable_colors()
         print()
 
