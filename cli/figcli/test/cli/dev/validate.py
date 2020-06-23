@@ -1,5 +1,5 @@
 import sys
-
+import time
 import pexpect
 
 from figcli.test.cli.config import *
@@ -23,7 +23,10 @@ class DevValidate(FiggyTest):
 
     def validate_success(self):
         sync = DevSync(extra_args=self.extra_args)
+        sync.prep_sync()
         sync.sync_success()
+        print("Sleeping to give time for replication")
+        time.sleep(50)
 
         print(f"Testing: {CLI_NAME} config {Utils.get_first(validate)} --env {DEFAULT_ENV} "
               f"--config figcli/test/assets/success/figgy.json {self.extra_args}")

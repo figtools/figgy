@@ -1,6 +1,6 @@
 from pathlib import Path
 
-VERSION = '0.0.33'
+VERSION = '0.0.34'
 CLI_NAME = 'figgy'
 PROJECT_NAME = 'figgy'
 
@@ -12,6 +12,9 @@ FIGGY_OBS_API_BASE_URL = "https://api.figgy.dev"
 FIGGY_ERROR_REPORTING_URL = f"{FIGGY_OBS_API_BASE_URL}/v1/log-error"
 FIGGY_GET_VERSION_URL = f"{FIGGY_OBS_API_BASE_URL}/v1/version"
 FIGGY_LOG_METRICS_URL = f"{FIGGY_OBS_API_BASE_URL}/v1/log-metrics"
+
+# Homebrew
+BREW_FORMULA = 'mancej/figgy/figgy'
 
 # Role names are assumed to be prefixed with `figgy-` - Users may override by setting the below ENV variable.
 FIGGY_ROLE_NAME_PREFIX = 'figgy-'

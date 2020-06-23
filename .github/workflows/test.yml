@@ -31,6 +31,9 @@ jobs:
           scripts/install.sh
 
       - name: Run E2E Test Suite
+        env:
+          FIGGY_DISABLE_KEYRING: true
+          OVERRIDE_KEYRING: true
         run: |
           export TERM=linux
           export TERMINFO=/etc/terminfo
@@ -62,6 +65,7 @@ jobs:
 #          scripts/install.sh
 #      - name: Run E2E Test Suite
 #        env:
+#          FIGGY_DISABLE_KEYRING: true
 #          OVERRIDE_KEYRING: true
 #          GOOGLE_IDP_ID: ${{ secrets.GOOGLE_IDP_ID }}
 #          GOOGLE_SP_ID: ${{ secrets.GOOGLE_SP_ID }}
@@ -99,6 +103,7 @@ jobs:
 
       - name: Run E2E Test Suite
         env:
+          FIGGY_DISABLE_KEYRING: true
           OVERRIDE_KEYRING: true
           OKTA_SSO_USER: ${{ secrets.OKTA_SSO_USER }}
           OKTA_SSO_PASSWORD: ${{ secrets.OKTA_SSO_PASSWORD }}
@@ -120,8 +125,6 @@ jobs:
           python-version: 3.8
 
       - name: Install dependencies
-        env:
-          FIGGY_TEST: true
         run: |
           sudo apt-get update \
           && sudo apt-get install libusb-1.0-0-dev libxmu-dev libxmu-headers \
@@ -136,15 +139,19 @@ jobs:
 
       - name: Run E2E Test Suite
         env:
+          FIGGY_DISABLE_KEYRING: true
           OVERRIDE_KEYRING: true
-          CONFIG_FILE: ${{ secrets.CONFIG_FILE }}
-          CREDENTIALS_FILE: ${{ secrets.CREDENTIALS_FILE }}
+          CONFIG_DEFAULT: ${{ secrets.CONFIG_FILE }}
+          CREDENTIALS_FILE: ${{ secrets.QA_TESTER_CREDENTIALS_FILE }}
+          CONFIG_FILE: ${{ secrets.QA_TESTER_CONFIG_FILE }}
+          AWS_REGION: us-east-1
         run: |
           mkdir -p ~/.aws
-          echo "$CONFIG_FILE" > ~/.aws/config
           echo "$CREDENTIALS_FILE" > ~/.aws/credentials
+          echo "$CONFIG_FILE" > ~/.aws/config
 
+          cat ~/.aws/config
           export TERM=linux
           export TERMINFO=/etc/terminfo
           cd cli
-          python run_tests.py profile default
+          python run_tests.py profile figgy-qa-tester

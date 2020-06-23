@@ -1,5 +1,8 @@
 Figgy Changelog:
 
+## 0.0.34
+- Forcing release to address brew issue
+
 ## 0.0.33
 - Adding a set of default places to search for the figgy.json file to reduce keystrokes.
 
@@ -11,7 +14,7 @@ Figgy Changelog:
 only with the user's locally configured & targeted AWSCLI profile. This will be very useful for CICD builds and for
 some teams who only have a single AWS account.
 
-- Renaming `figgy` package to `figcli` to prevent name collission shenanigans with the new `figgy-lib` package. 
+- Renaming `figgy` package to `figcli` to prevent name collission shenanigans with the new `figgy-lib` package.
 
 ## 0.0.30a
 - Naming figgy.json properties to their new 'figgy'names.

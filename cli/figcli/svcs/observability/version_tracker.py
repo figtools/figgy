@@ -94,14 +94,14 @@ class VersionTracker:
             print(f"Current Version: {c.fg_yl}{VERSION}{c.rs}")
             print(f"New Version: {c.fg_bl}{new_details.version}{c.rs}")
             print(f"To see what the new version has in store for you, run `{CLI_NAME} --version`")
-            print(f"To upgrade, run `brew upgrade figgy` or `pip install figgy-cli --upgrade`")
+            print(f"To upgrade, run `brew upgrade {BREW_FORMULA}` or `pip install figgy-cli --upgrade`")
             print(f'{c.fg_bl}------------------------------------------{c.rs}')
         else:
             print(f'\n{c.fg_bl}------------------------------------------{c.rs}')
-            print(f'Figgy was rolled back due to a major issue and you\'re on a bad version!')
+            print(f'Figgy was rolled back due to an issue and you\'re on a bad version!')
             print(f"Current Version: {c.fg_yl}{VERSION}{c.rs}")
             print(f"Recommended Version: {c.fg_bl}{new_details.version}{c.rs}")
-            print(f"To roll-back, run `brew upgrade figgy` or `pip install figgy-cli --upgrade`")
+            print(f"To roll-back, run `brew upgrade {BREW_FORMULA}` or `pip install figgy-cli --upgrade`")
             print(f'{c.fg_bl}------------------------------------------{c.rs}')
 
     @staticmethod
