@@ -210,7 +210,7 @@ class CommandFactory(Factory):
             factory = HelpFactory(self._context.command, context)
         else:
             if self._context.command is None or self._context.resource:
-                self._utils.error_exit(f"Proper {CLI_NAME} syntax is `{CLI_NAME} {resource} {command}`. "
+                self._utils.error_exit(f"Proper {CLI_NAME} syntax is `{CLI_NAME} <resource> <command> --options`. "
                                        f"For example `{CLI_NAME} config get`. Either resource or command were "
                                        f"not supplied.")
             else:

@@ -105,9 +105,8 @@ class FiggySetup:
 
         # Get assertion and parse out account -> role -> run_env mappings.
         assumable_roles: List[AssumableRole] = session_provider.get_assumable_roles()
-        print(
-            f"\n{self.c.fg_bl}The following roles were detected for user: {current_defaults.user} - if something is missing, "
-            f"contact your system administrator.{self.c.rs}\n")
+        print(f"\n{self.c.fg_bl}The following roles were detected for user: {current_defaults.user} "
+              f"- if something is missing, contact your system administrator.{self.c.rs}\n")
 
         if assumable_roles:
             self.print_role_table(assumable_roles)
