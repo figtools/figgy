@@ -47,10 +47,10 @@ jobs:
           export PATH="$PATH:$(PWD)"
           figgy --version
 
-          #cd ../../
+          cd ../../
 
-          #echo "Testing MAC binary as okta user"
-          #python run_tests.py okta
+          echo "Testing MAC binary as okta user"
+          python run_tests.py okta
 
       - name: Get Version
         id: version
