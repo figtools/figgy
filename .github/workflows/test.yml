@@ -145,9 +145,10 @@ jobs:
           OVERRIDE_KEYRING: true
           CONFIG_DEFAULT: ${{ secrets.CONFIG_FILE }}
           CREDENTIALS_FILE: ${{ secrets.QA_TESTER_CREDENTIALS_FILE }}
+          AWS_REGION: us-east-1
         run: |
           mkdir -p ~/.aws
-          echo "[figgy-qa-tester]\nregion = us-east-1\noutput = json" > ~/.aws/config
+          echo "[profile figgy-qa-tester]\nregion = us-east-1\noutput = json" > ~/.aws/config
           echo "$CREDENTIALS_FILE" > ~/.aws/credentials
 
           export TERM=linux
