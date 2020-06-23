@@ -17,8 +17,6 @@ jobs:
           python-version: 3.8
       - name: Install dependencies
         env:
-          FIGGY_DISABLE_KEYRING: true
-          OVERRIDE_KEYRING: true
           FIGGY_TEST: true
         run: |
           sudo apt-get update \
@@ -33,6 +31,9 @@ jobs:
           scripts/install.sh
 
       - name: Run E2E Test Suite
+        env:
+          FIGGY_DISABLE_KEYRING: true
+          OVERRIDE_KEYRING: true
         run: |
           export TERM=linux
           export TERMINFO=/etc/terminfo
@@ -143,13 +144,13 @@ jobs:
           FIGGY_DISABLE_KEYRING: true
           OVERRIDE_KEYRING: true
           CONFIG_DEFAULT: ${{ secrets.CONFIG_FILE }}
-          CREDENTIALS_FILE: ${{ secrets.CREDENTIALS_FILE }}
+          CREDENTIALS_FILE: ${{ secrets.QA_TESTER_CREDENTIALS_FILE }}
         run: |
           mkdir -p ~/.aws
-          echo "$CONFIG_FILE" > ~/.aws/config
+          echo "[figgy-qa-tester]\nregion = us-east-1\noutput = json" > ~/.aws/config
           echo "$CREDENTIALS_FILE" > ~/.aws/credentials
 
           export TERM=linux
           export TERMINFO=/etc/terminfo
           cd cli
-          python run_tests.py profile default
+          python run_tests.py profile figgy-qa-tester
