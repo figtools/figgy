@@ -125,8 +125,6 @@ jobs:
           python-version: 3.8
 
       - name: Install dependencies
-        env:
-          FIGGY_TEST: true
         run: |
           sudo apt-get update \
           && sudo apt-get install libusb-1.0-0-dev libxmu-dev libxmu-headers \
@@ -151,6 +149,7 @@ jobs:
           echo "[profile figgy-qa-tester]\nregion = us-east-1\noutput = json" > ~/.aws/config
           echo "$CREDENTIALS_FILE" > ~/.aws/credentials
 
+          cat ~/.aws/config
           export TERM=linux
           export TERMINFO=/etc/terminfo
           cd cli
