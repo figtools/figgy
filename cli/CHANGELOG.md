@@ -1,5 +1,8 @@
 Figgy Changelog:
 
+## 0.0.35
+- Fixing a bug with browse where certain figs would get improperly assigned within the browse tree.
+
 ## 0.0.34
 - Forcing release to address brew issue
 
