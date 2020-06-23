@@ -47,10 +47,10 @@ jobs:
           export PATH="$PATH:$(PWD)"
           figgy --version
 
-          cd ../../
+          #cd ../../
 
-          echo "Testing MAC binary as okta user"
-          python run_tests.py okta
+          #echo "Testing MAC binary as okta user"
+          #python run_tests.py okta
 
       - name: Get Version
         id: version
@@ -216,7 +216,8 @@ jobs:
           echo "Setting release version to $VERSION"
 
           mkdir -p ~/.aws
-          cd cli/
+          cd cli/dist/__main__
+
           echo "Deploying windows figgy to s3://figgy-website/releases/cli/latest/windows/figgy.zip"
           aws s3 cp figgy.zip "s3://figgy-website/releases/cli/latest/windows/figgy.zip"
 

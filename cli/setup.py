@@ -200,6 +200,5 @@ setup(
         "Programming Language :: Python :: Implementation",
         "Topic :: Terminals",
         "Topic :: Utilities",
-
     ]
 )

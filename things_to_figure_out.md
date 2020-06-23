@@ -1,15 +1,10 @@
 These are problems I intend to solve, once I figure out the best way to do it.
 
 ## Todo:
-- Add licensing all over
-- E2E tests for each binary
 - Break apart CLI and Deploy repos
 - Test release rollback
-- Add automated test with replicate from
-- Make CLI used shared libs.
-- Fix "requests" dependency on legacy botocore layer thing
-- CW alarm email integration
 - Canary rollout automation
+- Remove prompt for metrics
 
 ## Ideas:
 - `figgy --reset` or `figgy reset`
@@ -19,8 +14,10 @@ These are problems I intend to solve, once I figure out the best way to do it.
 
 - Add support for "ExternalId" verification for cross-account role assumption from Bastion.
 - Param finder
+
 - Figgy Experimental
 - Unused parameter recommender
+
 - 1 time password share-er
 - Encrypted event batching & backup to s3
 
@@ -31,3 +28,6 @@ These are problems I intend to solve, once I figure out the best way to do it.
 
 # Maybe one day:
 - Usage metric tracking on `--profile session overrides`
+- Fix "requests" dependency on legacy botocore layer thing
+- CW alarm email integration
+- Make CLI used shared libs.
