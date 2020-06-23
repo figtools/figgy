@@ -1,5 +1,5 @@
 import pexpect
-
+import sys
 from figcli.test.cli.config import *
 from figcli.test.cli.dev.sync import DevSync
 from figcli.test.cli.figgy import FiggyTest
@@ -33,6 +33,7 @@ class DevCleanup(FiggyTest):
                                     f'--config figcli/test/assets/success/figgy.json --skip-upgrade {self.extra_args}',
                                     encoding='utf-8', timeout=10)
         child.expect('.*No orphaned keys.*No remote replication configs.*')
+        child.logfile = sys.stdout
         print("Empty cleanup, success!")
 
     def cleanup_with_orphans(self):
@@ -42,6 +43,7 @@ class DevCleanup(FiggyTest):
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(cleanup)} --env {DEFAULT_ENV} '
                                     f'--config figcli/test/assets/error/figgy.json --skip-upgrade {self.extra_args}',
                                     encoding='utf-8', timeout=10)
+        child.logfile = sys.stdout
         child.expect('.*/app/ci-test/v1/config11.* exists.*but does not exist.*')
         child.sendline('n')
         child.expect('.*replication mapping.*does not exist.*')

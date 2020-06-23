@@ -93,5 +93,5 @@ class DevSync(FiggyTest):
               f"--config figcli/test/assets/error/figgy.json")
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(sync)} --env {DEFAULT_ENV} '
                               f'--config figcli/test/assets/error/figgy.json --skip-upgrade {self.extra_args}', timeout=10)
-        child.expect('.*Unused Parameter:.*/app/ci-test/v1/config11.*Orphaned replication.*/shared/jordan/testrepl2.*')
+        child.expect('.*Unused Parameter:.*/app/ci-test/v1/config11.*Orphaned replication.*')
         print("Sync with orphaned configs passed!")
