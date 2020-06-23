@@ -13,8 +13,8 @@ class DevCleanup(FiggyTest):
         self.missing_key = '/app/ci-test/v1/config12'
 
     def run(self):
-        self.cleanup_success()
-        time.sleep(10)
+        # self.cleanup_success()
+        # time.sleep(10)
         self.cleanup_with_orphans()
 
     def prep_success(self):
@@ -50,6 +50,6 @@ class DevCleanup(FiggyTest):
         child.logfile = sys.stdout
         child.expect('.*/app/ci-test/v1/config11.* exists.*but does not exist.*')
         child.sendline('n')
-        child.expect('.*replication mapping.*does not exist.*')
+        child.expect('.*does not exist in your figgy.json.*')
         child.sendline('n')
         print("Cleanup with orphans success!")
