@@ -18,14 +18,13 @@ from figcli.utils.utils import Utils
 
 
 class Sync(ConfigCommand):
-    _DEFAULT_PATH = './figgy.json'
 
     def __init__(self, ssm_init: SsmDao, config_init: ConfigDao, colors_enabled: bool,
                  context: ConfigContext, get: Get, put: Put):
         super().__init__(sync, colors_enabled, context)
         self._config = config_init
         self._ssm = ssm_init
-        self._config_path = context.ci_config_path if context.ci_config_path else Sync._DEFAULT_PATH
+        self._config_path = context.ci_config_path if context.ci_config_path else Utils.find_figgy_json()
         self._utils = Utils(colors_enabled)
         self._replication_only = context.replication_only
         self._errors_detected = False

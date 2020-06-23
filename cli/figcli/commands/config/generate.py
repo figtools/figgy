@@ -13,11 +13,10 @@ log = logging.getLogger(__name__)
 
 
 class Generate(ConfigCommand):
-    _DEFAULT_PATH = './figgy.json'
 
     def __init__(self, colors_enabled: bool, config_context: ConfigContext):
         super().__init__(generate, colors_enabled, config_context)
-        self._from_path = config_context.from_path if config_context.from_path else Generate._DEFAULT_PATH
+        self._from_path = config_context.ci_config_path if config_context.ci_config_path else Utils.find_figgy_json()
         self._utils = Utils(colors_enabled)
         self._errors_detected = False
         self.example = f"{self.c.fg_bl}{CLI_NAME} config {self.command_printable} " \

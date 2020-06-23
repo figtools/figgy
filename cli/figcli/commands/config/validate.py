@@ -10,12 +10,11 @@ from figcli.utils.utils import Utils
 
 
 class Validate(ConfigCommand):
-    _DEFAULT_PATH = './figgy.json'
 
     def __init__(self, ssm_init: SsmDao, colors_enabled: bool, context: ConfigContext):
         super().__init__(validate, colors_enabled, context)
         self._ssm = ssm_init
-        self._config_path = context.ci_config_path if context.ci_config_path else Validate._DEFAULT_PATH
+        self._config_path = context.ci_config_path if context.ci_config_path else Utils.find_figgy_json()
         self._utils = Utils(colors_enabled)
         self._replication_only = context.replication_only
         self._errors_detected = False

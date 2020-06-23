@@ -1,6 +1,6 @@
 from pathlib import Path
 
-VERSION = '0.0.30a'
+VERSION = '0.0.34'
 CLI_NAME = 'figgy'
 PROJECT_NAME = 'figgy'
 
@@ -126,7 +126,7 @@ ONE_WEEK_SECONDS = 60 * 60 * 24 * 7
 
 # Figgy Sandbox
 SANDBOX_ROLES = ['dev', 'devops', 'sre', 'data', 'dba']
-GET_SANBOX_CREDS_URL = "https://q39v8f3u13.execute-api.us-east-1.amazonaws.com/sandbox-bastion/v1/get-credentials"
+GET_SANDBOX_CREDS_URL = "https://q39v8f3u13.execute-api.us-east-1.amazonaws.com/sandbox-bastion/v1/get-credentials"
 FIGGY_SANDBOX_REGION = 'us-east-1'
 FIGGY_SANDBOX_PROFILE = 'figgy-sandbox'
 DISABLE_KEYRING = 'disable-keyring'
@@ -151,3 +151,6 @@ KEYCHAIN_ENCRYPTION_KEY = 'figgy-encryption-key'
 # This is only used for temporary sandbox sessions. This reduces user friction when experimenting by not having to interact
 # with authenticating their OS Keychain.
 DEFAULT_ENCRYPTION_KEY = 'wX1C0nK1glfzaWQU8SKukdS7XZgYlAMW5ueb_V3cfSE='
+
+# Default paths to search for figgy.json in
+DEFAULT_FIGGY_JSON_PATHS = ['figgy.json', 'figgy/figgy.json', 'config/figgy.json', '_figgy/figgy.json', '.figgy/figgy.json']

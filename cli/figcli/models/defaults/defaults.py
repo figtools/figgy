@@ -78,7 +78,7 @@ class CLIDefaults:
                            user_id=str(uuid.uuid4()),
                            service_ns="/app",
                            usage_tracking=True,
-                           extras={})
+                           extras={DISABLE_KEYRING: True})
 
     @staticmethod
     def from_profile(profile):
