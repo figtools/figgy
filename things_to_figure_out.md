@@ -7,6 +7,7 @@ These are problems I intend to solve, once I figure out the best way to do it.
 - Make CLI used shared libs.
 - Fix "requests" dependency on legacy botocore layer thing
 - CW alarm email integration
+- Canary rollout automation
 
 ## Ideas:
 - `figgy --reset` or `figgy reset`

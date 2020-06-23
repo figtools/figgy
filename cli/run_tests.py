@@ -84,7 +84,7 @@ def main():
         # Login to DEV Role
         print_test("Google DEV Login")
         ConfigureGoogle('dev').run()
-        dev_tests()
+        dev_tests(key_down_to_shared=1)
 
         clear_cache()
 
@@ -96,7 +96,7 @@ def main():
         # Login to DEV Role
         print_test("Bastion DEV Login")
         DevLogin(BASTION_ENV).run()
-        dev_tests()
+        dev_tests(key_down_to_shared=1)
 
         clear_cache()
         # Login to data role
@@ -107,7 +107,7 @@ def main():
     elif auth_type.lower() == 'okta':
         print_test("OKTA DEV Login")
         ConfigureOkta('dev').run()
-        dev_tests()
+        dev_tests(key_down_to_shared=1)
 
         clear_cache()
 
@@ -117,11 +117,11 @@ def main():
         data_tests()
 
     elif auth_type.lower() == 'profile':
-        dev_tests(profile=profile)
+        dev_tests(profile=profile, key_down_to_shared=4)
         clear_cache()
 
 
-def dev_tests(profile=None):
+def dev_tests(profile=None, key_down_to_shared=4):
     extra_args = f"--profile {profile}" if profile else ""
 
     run_test("Dev Put", DevPut(extra_args=extra_args))
@@ -132,7 +132,7 @@ def dev_tests(profile=None):
     run_test("Dev Audit", DevAudit(extra_args=extra_args))
     run_test("Dev Sync", DevSync(extra_args=extra_args))
     run_test("Dev Cleanup", DevCleanup(extra_args=extra_args))
-    run_test("Dev Browse", DevBrowse(extra_args=extra_args, key_down_to_shared=4))
+    run_test("Dev Browse", DevBrowse(extra_args=extra_args, key_down_to_shared=key_down_to_shared))
     run_test("Dev Restore", DevRestore(extra_args=extra_args))
     run_test("Dev Export", DevExport(extra_args=extra_args))
     run_test("Dev Edit", DevEdit(extra_args=extra_args))
