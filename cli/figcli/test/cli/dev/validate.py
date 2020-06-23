@@ -23,6 +23,7 @@ class DevValidate(FiggyTest):
 
     def validate_success(self):
         sync = DevSync(extra_args=self.extra_args)
+        sync.prep_sync()
         sync.sync_success()
 
         print(f"Testing: {CLI_NAME} config {Utils.get_first(validate)} --env {DEFAULT_ENV} "
