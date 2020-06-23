@@ -1,4 +1,5 @@
 # figgy
+![Figgy](.assets/logo-black-text.png)
 
 [Figgy Website](https://www.figgy.dev)
 

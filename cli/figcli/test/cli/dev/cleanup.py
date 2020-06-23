@@ -50,6 +50,6 @@ class DevCleanup(FiggyTest):
         child.logfile = sys.stdout
         child.expect('.*/app/ci-test/v1/config11.* exists.*but does not exist.*')
         child.sendline('n')
-        child.expect('.*does not exist in your figgy.json.*')
+        child.expect('.*does not exist in your.*')
         child.sendline('n')
         print("Cleanup with orphans success!")

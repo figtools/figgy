@@ -5,7 +5,7 @@ CLI_NAME = 'figgy'
 PROJECT_NAME = 'figgy'
 
 # Figgy URLS
-FIGGY_GITHUB = "https://github.com/mancej/figgy"
+FIGGY_GITHUB = "https://github.com/figtools/figgy"
 FIGGY_OBS_API_BASE_URL = "https://api.figgy.dev"
 
 # Paths
@@ -14,7 +14,7 @@ FIGGY_GET_VERSION_URL = f"{FIGGY_OBS_API_BASE_URL}/v1/version"
 FIGGY_LOG_METRICS_URL = f"{FIGGY_OBS_API_BASE_URL}/v1/log-metrics"
 
 # Homebrew
-BREW_FORMULA = 'mancej/figgy/figgy'
+BREW_FORMULA = 'figtools/figgy/figgy'
 
 # Role names are assumed to be prefixed with `figgy-` - Users may override by setting the below ENV variable.
 FIGGY_ROLE_NAME_PREFIX = 'figgy-'
