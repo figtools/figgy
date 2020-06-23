@@ -9,13 +9,14 @@ from figcli.test.cli.dev.put import DevPut
 from figcli.test.cli.dev.delete import DevDelete
 import time
 
+
 class DevList(FiggyTest):
 
     def __init__(self, extra_args=""):
         super().__init__(None, extra_args=extra_args)
 
     def run(self):
-        # self.successful_list()
+        self.successful_list()
         self.test_empty_input()
 
     def test_empty_input(self):
@@ -23,7 +24,7 @@ class DevList(FiggyTest):
         self._setup(1, 3)
         print(f"Testing {CLI_NAME} config {Utils.get_first(list_com)} --env dev")
         print("Waiting for cache population.")
-        time.sleep(80)
+        time.sleep(45)
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(list_com)} --env {DEFAULT_ENV} '
                               f'--skip-upgrade {self.extra_args}', timeout=10, encoding='utf-8')
         child.expect('.*Please input a namespace prefix.*')
@@ -44,14 +45,15 @@ class DevList(FiggyTest):
 
     def successful_list(self):
         self._setup(1, 3)
+        print("Waiting for cache population.")
+        time.sleep(45)
+
         self.step("Testing successful list.")
         print(f"Testing {CLI_NAME} config {Utils.get_first(list_com)} --env dev")
         child = pexpect.spawn(f'{CLI_NAME} config {Utils.get_first(list_com)} --env {DEFAULT_ENV} '
                               f'--skip-upgrade {self.extra_args}',
                               timeout=10, encoding='utf-8')
 
-        print("Waiting for cache population.")
-        time.sleep(80)
         child.expect('.*Please input a namespace prefix.*')
         child.sendline(dump_prefix)
         child.expect(f'.*1.*{dump_prefix}.*2.*{dump_prefix}.*3.*{param_1}.*Selection.*')
@@ -71,10 +73,8 @@ class DevList(FiggyTest):
             more = i < max - 1
             put.add_another(f'{param_1}-{i}', param_1_val, f'{param_1_desc}-{i}', add_more=more)
 
-
     def _cleanup(self, min: int, max: int):
         delete = DevDelete(extra_args=self.extra_args)
         delete.delete(param_1, delete_another=True)
         for i in range(min, max):
             delete.delete(f'{param_1}-{i}', delete_another=i < max - 1)
-
