@@ -216,7 +216,7 @@ jobs:
           echo "Setting release version to $VERSION"
 
           mkdir -p ~/.aws
-          cd cli/dist/__main__
+          cd cli/
 
           echo "Deploying windows figgy to s3://figgy-website/releases/cli/latest/windows/figgy.zip"
           aws s3 cp figgy.zip "s3://figgy-website/releases/cli/latest/windows/figgy.zip"
