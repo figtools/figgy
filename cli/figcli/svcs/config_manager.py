@@ -51,7 +51,8 @@ class ConfigManager:
         with open(self.config_file, "w") as file:
             self.config.write(file)
 
-    def get_or_prompt(self, key: Enum, get_it: Callable, colors_enabled=Utils.is_mac(), force_prompt=False) -> str:
+    def get_or_prompt(self, key: Enum, get_it: Callable, colors_enabled=Utils.is_mac(), force_prompt=False,
+                      desc: str = None) -> str:
         """
         Retrieves a value from the config_file based on the provided ENUM's value.
         If the value is unset, executes the get_it() method provided to retrieve the value, then returns it.
@@ -60,6 +61,7 @@ class ConfigManager:
         :param key: Enum representing the config value to fetch
         :param get_it: Method to execute if `config` is not in the configured config_file
         :param colors_enabled: Whether or not to enable colored output for the prompt if a config is found in config_file
+        :param optional description to provide context when user is prompted.
         :return: String value from the config file, or the result of get_it()
         """
         c = TerminalFactory(colors_enabled).instance().get_colors()
@@ -71,7 +73,8 @@ class ConfigManager:
                 print(f"\n\n{c.fg_bl}Default value found:{c.rs}")
                 print(f"Key: {c.fg_gr}{key.value}{c.rs}")
                 print(f"Value: {c.fg_gr}{val}{c.rs}")
-                print(f"Values found in file: {c.fg_bl}{self.config_file}{c.rs}\n\n")
+                if desc:
+                    print(f"Description: {desc}")
 
                 selection = Input.y_n_input(f"Continue with `{val}`? ", default_yes=True)
 
@@ -92,18 +95,19 @@ class ConfigManager:
 
         return val
 
-    def get_property(self, key: Union[Type[Config.Section], Enum]) -> Optional[str]:
+    def get_property(self, key: Union[Type[Config.Section], Enum], default=None) -> Optional[str]:
         """
         Retrieves a property from the ini formatted config file and returns its value
         :param section: [section] in the ini config to find this parameter
         :param key: The key in the provided section to look up
+        :param default: Default value to return if nothing is found in the config.
         :param property: name of property to retrieve
         """
         try:
             if self.config.has_option(key.__objclass__.NAME.value, key.value):
                 return self.config[key.__objclass__.NAME.value][key.value]
             else:
-                return None
+                return default
         except Exception as e:
             print(e)
 

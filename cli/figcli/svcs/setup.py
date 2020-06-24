@@ -76,7 +76,7 @@ class FiggySetup:
                                                                           Input.select_mfa_enabled))
             if mfa_enabled:
                 auto_mfa = Utils.parse_bool(self._config_mgr.get_or_prompt(Config.Section.Figgy.AUTO_MFA,
-                                                                           Input.select_auto_mfa))
+                                                                           Input.select_auto_mfa, desc=AUTO_MFA_DESC))
             else:
                 auto_mfa = False
 
@@ -139,8 +139,10 @@ class FiggySetup:
         # Defaulting to True, users will always be prompted to report or not report an error.
         updated_defaults.report_errors = True
 
-        updated_defaults.usage_tracking = self._config_mgr.get_or_prompt(Config.Section.Figgy.USAGE_TRACKING,
-                                                                         Input.select_usage_tracking)
+        # Defaulting usage tracking to on, unless the user updates ~/.figgy/config to disable it.
+        updated_defaults.usage_tracking = self._config_mgr.get_property(Config.Section.Figgy.USAGE_TRACKING,
+                                                                        default=True)
+
         return updated_defaults
 
     def configure_extras(self, current_defaults: CLIDefaults):

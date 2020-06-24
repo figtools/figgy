@@ -8,6 +8,7 @@ from figcli.config import Config, CONFIG_OVERRIDE_FILE_PATH, SUPPORTED_OKTA_FACT
 from figcli.input.input import Input, List
 from figcli.svcs.config_manager import ConfigManager
 from figcli.utils.utils import Utils, Color
+from figcli.config.communication import *
 
 from figcli.models.defaults.provider import Provider
 import re
@@ -126,7 +127,7 @@ class OktaProviderConfig(ProviderConfig):
         factor_type = prompt(f"\nPlease select your OKTA MFA Factor type. Supported Types are "
                              f"{SUPPORTED_OKTA_FACTOR_TYPES}: ",
                              completer=WordCompleter(SUPPORTED_OKTA_FACTOR_TYPES))
-        Utils.stc_validate(OktaProviderConfig.factor_type in SUPPORTED_OKTA_FACTOR_TYPES,
+        Utils.stc_validate(factor_type in SUPPORTED_OKTA_FACTOR_TYPES,
                            f"You must select a factor type from: {SUPPORTED_OKTA_FACTOR_TYPES}")
         return factor_type
 
@@ -135,12 +136,15 @@ class OktaProviderConfig(ProviderConfig):
         config, c = ConfigManager(CONFIG_OVERRIDE_FILE_PATH), Utils.default_colors()
         app_link = config.get_property(Config.Section.Google.IDP_ID)
         if app_link and app_link != FAKE_OKTA_APP_LINK:
-            app_link = config.get_or_prompt(Config.Section.Okta.APP_LINK, OktaProviderConfig.get_app_link)
+            app_link = config.get_or_prompt(Config.Section.Okta.APP_LINK, OktaProviderConfig.get_app_link,
+                                            desc=OKTA_APP_LINK_DESC)
         else:
-            app_link = config.get_or_prompt(Config.Section.Okta.APP_LINK, OktaProviderConfig.get_app_link, force_prompt=True)
+            app_link = config.get_or_prompt(Config.Section.Okta.APP_LINK, OktaProviderConfig.get_app_link,
+                                            force_prompt=True, desc=OKTA_APP_LINK_DESC)
 
         if mfa_enabled:
-            factor_type = config.get_or_prompt(Config.Section.Okta.FACTOR_TYPE, OktaProviderConfig.get_factor_type)
+            factor_type = config.get_or_prompt(Config.Section.Okta.FACTOR_TYPE, OktaProviderConfig.get_factor_type,
+                                               desc=OKTA_MFA_TYPE_DESC)
         else:
             factor_type = None
 

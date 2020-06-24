@@ -7,20 +7,20 @@ from figcli.utils.collection_utils import CollectionUtils
 CLEANUP_REPLICA_ORPHANS = "Some orphaned replication mappings were discovered for your service. " \
                           "Once they are no longer necessary please clean them up using the `cleanup` command."
 SHARED_NAME_RESOLUTION_MESSAGE = f"Your application is missing at least one ParameterStore name that it expects to " \
-    f"exist as defined in either the {SHARED_KEY} block of your configuration, or as a " \
-    f"dependency of a merge key. To resolve " \
-    f"this, contact whoever is responsible for sharing these config value(s) with you " \
-    f"and have them setup up config replication of the values into your apps namespace " \
-    f"at the expected path."
+                                 f"exist as defined in either the {SHARED_KEY} block of your configuration, or as a " \
+                                 f"dependency of a merge key. To resolve " \
+                                 f"this, contact whoever is responsible for sharing these config value(s) with you " \
+                                 f"and have them setup up config replication of the values into your apps namespace " \
+                                 f"at the expected path."
 RESOURCE_PARSER_DESC = "Provides utilities to help manage application configs and secrets across all environments. " \
-    f" For more details run `{CLI_NAME} [resource] --help"
+                       f" For more details run `{CLI_NAME} [resource] --help"
 COMMAND_PARSER_DESC = "Provides utilities to help manage application configs and secrets across all environments. " \
-    f"For more details on commands, run: `{CLI_NAME} [resource] [command] --help`"
+                      f"For more details on commands, run: `{CLI_NAME} [resource] [command] --help`"
 CONFIG_REQ_TEXT = f"--config is a requirement argument."
 CI_CONFIG_HELP_TEXT = f"Path to your project's figgy.json file."
 UNUSED_CONFIG_DETECTED = f"%%red%%The following Names were found in PS but are not referenced in your configurations. \n" \
-    f"Use the %%rs%%%%blue%%`cleanup`%%rs%%%%red%% command to clean them up once all " \
-    f"deployed application versions no longer use these configurations: %%rs%%"
+                         f"Use the %%rs%%%%blue%%`cleanup`%%rs%%%%red%% command to clean them up once all " \
+                         f"deployed application versions no longer use these configurations: %%rs%%"
 
 # Help Text
 VERSION_HELP_TEXT = f'Prints current version, which is, in this case: {VERSION}'
@@ -32,7 +32,7 @@ CONFIG_HELP_TEXT = f"Managed configuration resources. Commands: [{CollectionUtil
 PROMPT_HELP_TEXT = f"With --prompt set you will always be prompted for your AWS CLI Profile name and user type."
 REPLICATION_ONLY_HELP_TEXT = f"Sync a declarative replication-config json file that _only_ contains the {REPLICATION_KEY} block."
 MANUAL_HELP_TEXT = f"Migrate any K/V Hierarchy, or a single KV Pair from Consul into anywhere in ParameterStore " \
-    f"(that you have permissions)."
+                   f"(that you have permissions)."
 IAM_HELP_TEXT = f"Manage your temporary credentials. [{CollectionUtils.printable_set(iam_commands)}]"
 ENV_HELP_TEXT = f"Valid values are:"
 INFO_HELP_TEXT = f"Prints out more detailed information about the selected subcommand."
@@ -42,7 +42,7 @@ DELETE_HELP_TEXT = f"Manually delete parameters from Parameter Store"
 LIST_HELP_TEXT = f"Lists all matching configuration Names based on a namespace prefix. e.g. /app/demo-time/"
 PUT_HELP_TEXT = f"Store (or update) an arbitrary configuration in ParameterStore."
 SHARE_HELP_TEXT = f"Share a parameter from a source to an arbitrary destination path in Parameter Store via config " \
-    f"replication."
+                  f"replication."
 CLEANUP_HELP_TEXT = 'Cleanup will compare your config desired state as defined in your figgy.json with the current ' \
                     'config state in AWS. You will be prompted on whether or not you wish to delete orphaned ' \
                     'configurations (configs that exist in AWS but not in your figgy.json file).'
@@ -72,7 +72,7 @@ LOGIN_HELP_TEXT = "Logs you in to all viable AWS accounts and caches session loc
                   "`figgy login sandbox` will log you into the Figgy sandbox playground for hassle-free " \
                   "experimentation."
 VALIDATE_HELP_TEXT = "Validates a `figgy.json` file and ensures all required configurations exist in ParameterStore. " \
-           "Exits with an error code if any defined configuration is missing."
+                     "Exits with an error code if any defined configuration is missing."
 LOGIN_SANDBOX_HELP_TEXT = "Get a temporary session from the free figgy sandbox and have fun, experiment, do whatever" \
                           "you want!"
 
@@ -81,7 +81,6 @@ MISSING_PS_NAME_MESSAGE = "Your application is missing at least one ParameterSto
                           " `sync` command to validate and synchronize your expected configs."
 PROFILE_HELP_TEXT = "Overrides all other figgy configurations and instead pulls ALL credentials from your local " \
                     "~/.aws/credentials file and uses that for all types of authorization. Ideal for CICD pipelines."
-
 
 # Point in time (--point-in-time)
 POINT_IN_TIME = "Restore all parameters to a point in time."
@@ -140,3 +139,16 @@ DESC_MISSING_TEXT = "None specified"
 is_secret = [
     ('class:', 'Is this value a secret? (y/N): ')
 ]
+
+# Config defaults descriptions:
+AUTO_MFA_DESC = "By enabling this option you will never be prompted for MFA. Instead figgy will save your " \
+                "multi-factor secret in your OS keychain andwill generated one-time passcodes on your behalf. " \
+                "You will need your MFA secret handy. **This is your MFA secret, NOT your six-digit code that " \
+                "regularly generated."
+
+OKTA_APP_LINK_DESC = "This is the 'Embed URL' linked to your OKTA SAML integration with AWS. For more details see " \
+                     "the Figgy Docs OKTA setup guide."
+
+OKTA_MFA_TYPE_DESC = "Your OKTA administrator selects specific MFA types that are supported for OKTA. " \
+                     "For instance, GOOGLE = the Google Authenticator application. OKTA = Okta Verify - Push MFA."
+

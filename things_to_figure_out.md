@@ -1,10 +1,16 @@
 These are problems I intend to solve, once I figure out the best way to do it.
 
 ## Todo:
+
+- Simplify --configure
+- Remove prompt for metrics
+
+- Linux PW Override
+- Address linux keyring issue.
+
 - Break apart CLI and Deploy repos
 - Test release rollback
 - Canary rollout automation
-- Remove prompt for metrics
 
 ## Ideas:
 - `figgy --reset` or `figgy reset`

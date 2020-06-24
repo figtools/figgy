@@ -79,7 +79,7 @@ class Input:
     @staticmethod
     def select_enable_colors() -> bool:
         selection = ''
-        c = TerminalFactory(Utils.not_windows()).instance().get_colors()
+        c = TerminalFactory(True).instance().get_colors()
         while selection.lower() != 'y' and selection.lower() != 'n':
             selection = input(f'Enable colored output? (Colors: {c.fg_rd}RED{c.rs} {c.fg_bl}BLUE{c.rs} '
                               f'{c.fg_gr}GREEN{c.rs} <-- If you see weirdness, select N) Y/n?: ')

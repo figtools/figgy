@@ -35,10 +35,12 @@ changes over time, and roll back any config or group of configurations to any po
 Figgy supports SAML based SSO integrations with multi-factor authentication. Simplify AWS access control with Figgy!
 
 > **Feature rich CLI to speed-up your development workflow.**
+
 ![Figgy Get Browse]({{ "/assets/img/animations/home/get-browse.gif"| relative_url }})
 
 
 <br/>
+
 ## **Why Figgy?**
 
 *Out of the box, Figgy comes with all of these features:*
@@ -65,7 +67,7 @@ Figgy supports SAML based SSO integrations with multi-factor authentication. Sim
     - Easily integrate your CICD process with figgy
     - **BREAK THE BUILD** if the application you're deploying is missing a required config in the environment you're
         deploying to. 
-    - Give Developers confidence their code bootstrap properly if Figgy gives the thumbs-up! 
+    - Give Developers confidence their code will bootstrap properly if Figgy gives the thumbs-up! 
     - Easily determine application dependencies in _one place_ by looking at your application's **Fig Tree** 
 
 - **The Figgy Vault**
