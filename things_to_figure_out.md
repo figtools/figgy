@@ -9,6 +9,8 @@ These are problems I intend to solve, once I figure out the best way to do it.
 - Address linux keyring issue.
 
 - Break apart CLI and Deploy repos
+- Replace trending-tags in figgy.dev
+
 - Test release rollback
 - Canary rollout automation
 

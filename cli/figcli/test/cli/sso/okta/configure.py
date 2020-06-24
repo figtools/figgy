@@ -8,9 +8,9 @@ import os
 class ConfigureOkta(FiggyTest):
     def __init__(self, role_type: str):
         self._role_type = role_type
-        super().__init__(None)
-        self._child = pexpect.spawn(f'{CLI_NAME} --{Utils.get_first(configure)} --skip-upgrade',
-                                       encoding='utf-8', timeout=10)
+        super().__init__(pexpect.spawn(f'{CLI_NAME} --{Utils.get_first(configure)} --skip-upgrade',
+                                       encoding='utf-8', timeout=10))
+        # self._child = pexpect.spawn()
 
     def run(self):
         self.step(f"Testing `{CLI_NAME} --{Utils.get_first(configure)}`")
@@ -50,10 +50,6 @@ class ConfigureOkta(FiggyTest):
         self._child.expect('.*colors.*')
         self._child.sendline('n')
         self._child.expect('.*weirdness.*')
-        self._child.sendline('n')
-        self._child.expect('.*anonymous_metrics_enabled.*')
-        self._child.sendline('n')
-        self._child.expect('.*anonymou.*')
         self._child.sendline('n')
         self._child.expect('.*overwrite.*')
         self._child.expect('.*Setup successful.*')
