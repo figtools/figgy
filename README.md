@@ -36,7 +36,9 @@ Figgy supports SAML based SSO integrations with multi-factor authentication. Sim
 
 > **Feature rich CLI to speed-up your development workflow.**
 
-![Figgy Get Browse]({{ "/assets/img/animations/home/get-browse.gif"| relative_url }})
+![Figgy Get](".assets/get.gif")
+
+![Figgy Get](".assets/browse.gif")
 
 
 <br/>
