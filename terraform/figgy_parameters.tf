@@ -40,6 +40,17 @@ users are not shown parameters they cannot administrate."
 EOF
 }
 
+# These are used by figgy CLI to help the CLI only show the user parameters they have access to
+resource "aws_ssm_parameter" "profile_kms_keys" {
+  count = length(local.role_types)
+  name  = "/figgy/rbac/profile/keys"
+  type  = "String"
+  value = jsonencode(local.encryption_keys)
+  description =<<EOF
+A list of all KMS keys managed by figgy, except the replication key. Queried when users provide --profile option
+EOF
+}
+
 
 # These are used by figgy CLI to help the CLI only show the user parameters they have access to
 resource "aws_ssm_parameter" "service_namespace" {

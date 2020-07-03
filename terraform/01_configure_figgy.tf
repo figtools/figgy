@@ -16,8 +16,8 @@ locals {
   # How many unique roles will figgy users need? Each of these types should map to a particular figgy user story.
   role_types = ["devops", "data", "dba", "sre", "dev"]
 
-  # Todo: Reorder these and rebuild everything?
-  # Encryption keys to allow certain roles to use to encrypt and decrypt secrets stored with figgy. You will map access below
+  # Encryption keys to allow certain roles to use to encrypt and decrypt secrets stored with figgy.
+  # You will map access below
   encryption_keys = ["app", "devops", "data"]
 
   # List of namespaces at the root level of your parameter store namespace. Figgy (and its users)
@@ -58,7 +58,7 @@ locals {
   bastion_account_number = "816219277933"
 
   # Environments with replication key access. This will give all user types access to the figgy replication key.
-  # This will enable users to run services locally and still decrypt secrets shard with their application. Ideal for
+  # and enable users to run services locally and decrypt secrets shared with their application. Ideal for
   # local development. More details: https://www.figgy.dev/docs/advanced/confidentiality.html
   replication_key_access_envs = ["dev"]
 
