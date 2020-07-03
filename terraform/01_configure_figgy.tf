@@ -51,22 +51,19 @@ locals {
   }
 
   # Options: "okta", "google", "bastion", "standard"
-  auth_type = "okta"
+  auth_type = "bastion"
 
   # Bastion account #. Set to your bastion account # if you are leveraging bastion based authentication. Otherwise ignore.
   # If `enable_sso = true` then ignore this.
-  bastion_account_number = "816219277933"
+  bastion_account_number = "123467891011"
 
   # Environments with replication key access. This will give all user types access to the figgy replication key.
   # and enable users to run services locally and decrypt secrets shared with their application. Ideal for
   # local development. More details: https://www.figgy.dev/docs/advanced/confidentiality.html
+  # This should _never_ be production, and virtually never any higher environments.
   replication_key_access_envs = ["dev"]
 
-  # MFA Enabled - "true/false" - Require MFA for authentication for bastion based auth? For SSO users MFA
-  # is managed by your SSO provider. This is only for `bastion` MFA enforcement. The CLI supports MFA for SSO / Bastion auth types.
-  mfa_enabled = true
-
   # This is optional. If you'd like to receive notifications for configuration events, input a webhook url here.
-  # You may enter it here, or instead update
+  # You may enter it here, or instead update the vars/ files.
   slack_webhook_url = var.webhook_url
 }
