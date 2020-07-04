@@ -60,7 +60,7 @@ locals {
   # Environments with replication key access. This will give all user types access to the figgy replication key.
   # and enable users to run services locally and decrypt secrets shared with their application. Ideal for
   # local development. More details: https://www.figgy.dev/docs/advanced/confidentiality.html
-  # This should _never_ be production, and virtually never any higher environments.
+  # This should _never_ be production, and rarely any higher environments.
   replication_key_access_envs = ["dev"]
 
   # This is optional. If you'd like to receive notifications for configuration events, input a webhook url here.
