@@ -23,6 +23,7 @@ ACCOUNT_ENV = ssm.get_parameter_value(ACCOUNT_ENV_PS_PATH)
 NOTIFY_DELETES = ssm.get_parameter_value(NOTIFY_DELETES_PS_PATH)
 NOTIFY_DELETES = NOTIFY_DELETES.lower() == "true" if NOTIFY_DELETES else False
 
+
 def notify_delete(ps_name: str, user: str):
     if NOTIFY_DELETES:
         slack.send_message(
@@ -99,7 +100,7 @@ def handle(event, context):
     except Exception as e:
         log.error(e)
         message = f"The following error occurred in an the figgy-ssm-stream-replicator lambda. " \
-                  f"If this appears to be a bug with figgy, please tell us by submitting a GitHub issue!"\
+                  f"If this appears to be a bug with figgy, please tell us by submitting a GitHub issue!" \
                   f" \n\n{Utils.printable_exception(e)}"
 
         title = "Figgy experienced an irrecoverable error!"

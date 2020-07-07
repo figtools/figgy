@@ -1,5 +1,5 @@
 from abc import abstractmethod, ABC
-from plistlib import Dict
+from typing import Dict
 
 from dataclasses import dataclass
 from enum import Enum
@@ -52,11 +52,11 @@ class FigReplicationMessage(SlackMessage):
     def slack_format(self):
         extra_note = ""
         if self.triggering_user:
-            extra_note = f"This update was triggered by a chance to the source fig by: {self.triggering_user}"
+            extra_note = f"This update was triggered by a chance to the source fig by: *{self.triggering_user}*\n"
 
-        text = f"*Source*:       `{self.replication_cfg.source}`\n\n" \
-               f"*Destination*:  `{self.replication_cfg.destination}`\n\n" \
-               f"*Owner*:        `{self.replication_cfg.user}`\n\n" \
+        text = f"*Source*:   `{self.replication_cfg.source}`\n" \
+               f"*Dest*:       `{self.replication_cfg.destination}`\n" \
+               f"*Owner*:   `{self.replication_cfg.user}`\n" \
                f"{extra_note}" \
                f"For more information on what this means, check out the " \
                "<https://www.figgy.dev/docs/getting-started/basics/#the-solution-config-replication|Figgy Docs>"
@@ -71,7 +71,7 @@ class FigReplicationMessage(SlackMessage):
                                 "type": "section",
                                 "text": {
                                     "type": "mrkdwn",
-                                    "text": "*Fig successfully replicated by Figgy.*"
+                                    "text": "*Figgy Event:* Fig successfully replicated by Figgy."
                                 }
                             },
                             {
@@ -125,12 +125,16 @@ class FigDeletedMessage(SlackMessage):
                                 }
                             },
                             {
+                                "type": "divider"
+                            },
+                            {
                                 "type": "section",
                                 "text": {
                                     "type": "mrkdwn",
-                                    "text": f"*Id*:         `{self.name}`\n\n"
-                                            f"*By*:         `{self.user}`\n\n"
-                                            f"The above configuration was deleted in the {self.environment} environment."
+                                    "text": f"*Deleted*:    `{self.name}`\n"
+                                            f"*By User*:    `{self.user}`\n"
+                                            f"The above configuration was deleted in the *{self.environment}*"
+                                            f" environment."
                                 },
                                 "accessory": {
                                     "type": "image",
