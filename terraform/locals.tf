@@ -1,7 +1,7 @@
 # You do not need to tweak anything in this file :)
 locals {
   # This links your version of Figgy Cloud to the FiggyCLI.
-  version = '1.0.0'
+  version = "1.0.0"
 
   enable_sso = local.auth_type == "okta" || local.auth_type == "google"
   bastion_enabled = local.auth_type == "bastion"
