@@ -92,6 +92,13 @@ resource "aws_ssm_parameter" "account_mappings" {
   value = local.associated_accounts[keys(local.associated_accounts)[count.index]]
 }
 
+resource "aws_ssm_parameter" "account_id" {
+  name  = "/figgy/cloud/version"
+  type  = "String"
+  value = local.version
+  description = "Version associated with this deployment of Figgy Cloud"
+  overwrite = true
+}
 
 resource "aws_ssm_parameter" "account_id" {
   name  = "/figgy/account_id"
