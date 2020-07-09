@@ -26,8 +26,8 @@ resource "aws_s3_bucket" "figgy_bucket" {
 # capture and figgy can use them for its event-driven config workflow :)
 resource "aws_s3_bucket_policy" "cloudtrail_bucket_policy" {
   count  = var.cfgs.create_deploy_bucket == true && var.cfgs.configure_cloudtrail ? 1 : 0
-  bucket = aws_s3_bucket.figgy_bucket[0].id
-
+  bucket = var.deploy_bucket
+  depends_on = [aws_s3_bucket.figgy_bucket]
   policy = <<POLICY
 {
     "Version": "2012-10-17",
@@ -39,7 +39,7 @@ resource "aws_s3_bucket_policy" "cloudtrail_bucket_policy" {
               "Service": "cloudtrail.amazonaws.com"
             },
             "Action": "s3:GetBucketAcl",
-            "Resource": "arn:aws:s3:::${aws_s3_bucket.figgy_bucket[0].id}"
+            "Resource": "arn:aws:s3:::${var.deploy_bucket}"
         },
         {
             "Sid": "AWSCloudTrailWrite",
@@ -48,7 +48,7 @@ resource "aws_s3_bucket_policy" "cloudtrail_bucket_policy" {
               "Service": "cloudtrail.amazonaws.com"
             },
             "Action": "s3:PutObject",
-            "Resource": "arn:aws:s3:::${aws_s3_bucket.figgy_bucket[0].id}/AWSLogs/*",
+            "Resource": "arn:aws:s3:::${var.deploy_bucket}/AWSLogs/*",
             "Condition": {
                 "StringEquals": {
                     "s3:x-amz-acl": "bucket-owner-full-control"
