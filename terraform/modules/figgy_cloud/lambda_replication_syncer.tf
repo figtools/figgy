@@ -1,6 +1,6 @@
 module "replication_syncer" {
   source                  = "../figgy_lambda"
-  deploy_bucket           = var.deploy_bucket
+  deploy_bucket           = local.lambda_bucket
   description             = "Incrementally synchronizes the replication across all parameters in case something gets out-of-wack"
   handler                 = "functions/replication_syncer.handle"
   lambda_name             = "figgy-replication-syncer"
@@ -10,6 +10,7 @@ module "replication_syncer" {
   layers                  = [var.cfgs.aws_sdk_layer_map[var.region]]
   cw_lambda_log_retention = var.figgy_cw_log_retention
   sns_alarm_topic         = aws_sns_topic.figgy_alarms.arn
+  sha256 = data.archive_file.figgy.output_base64sha256
 }
 
 module "replication_syncer_trigger" {
