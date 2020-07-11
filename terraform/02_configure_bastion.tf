@@ -3,7 +3,6 @@
 locals {
   bastion_cfgs = {
     # Bastion account #. Set to your bastion account # if you are leveraging bastion based authentication. Otherwise ignore.
-    # If `enable_sso = true` then ignore this.
     bastion_account_number = "123467891011"
 
     # MFA Enabled - "true/false" - Require MFA for authentication for bastion based auth? For SSO users MFA

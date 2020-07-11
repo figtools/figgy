@@ -10,7 +10,7 @@ resource "aws_iam_policy" "figgy_access_policy" {
 
 
 
-# Dynamically assembled policy based on configure_figgy.tf locals configurations
+# Dynamically assembled policy based on user provided configurations
 data "aws_iam_policy_document" "dynamic_policy" {
   count = length(var.cfgs.role_types)
   statement {
@@ -118,7 +118,7 @@ data "aws_iam_policy_document" "dynamic_policy" {
 
   # Provide replication key access to appropriate environments
   dynamic "statement" {
-    for_each = contains(var.cfgs.replication_key_access_envs, var.run_env) ? [true] : []
+    for_each = contains(var.cfgs.replication_key_access_envs, var.env_alias) ? [true] : []
     content {
       sid = "KmsReplicationKeyAccess"
       actions = [
