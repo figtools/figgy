@@ -123,7 +123,8 @@ data "aws_iam_policy_document" "dynamic_policy" {
       sid = "KmsReplicationKeyAccess"
       actions = [
         "kms:DescribeKey",
-        "kms:Decrypt"
+        "kms:Decrypt",
+        "kms:Encrypt"
       ]
       resources = [aws_kms_key.replication_key.arn]
     }
