@@ -7,9 +7,9 @@
 
 Cultivate configuration clarity with Figgy. Open-source, cloud-native, configuration & secret management in AWS.
 
-Learn everything you need to know about Figgy by checking out the website:
+*Learn everything you need to know about Figgy by checking out the website:*
 
-[Figgy Website](https://www.figgy.dev)
+## [Figgy Website](https://www.figgy.dev)
 
 
 ## Figgy is now in beta release!
