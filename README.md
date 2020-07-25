@@ -22,25 +22,40 @@ KMS, among other services to ensure a simple and elegant integration with your A
 > **Never roll another application to production having forgotten to set that last pesky
 config in production.**
 
+
 Figgy makes it possible to **bind your code directly to configurations**. Easily break builds if configs 
 are missing and application deployments are destined to fail.
 
 
 > **Control user access like a champ**
 
+
 Figgy makes it easy to set up and control access to across all of your AWS environments and configuration namespaces. Consider
 your role types and use cases, map them up in a simple config file, and let Figgy do the rest. Audit all user activity and 
 changes over time, and roll back any config or group of configurations to any point-in-time -- to the second!
 
+
 > **Integrate with your SSO provider, abandon long-lived AWS Keys for good**
 
+
 Figgy supports SAML based SSO integrations with multi-factor authentication. Simplify AWS access control with Figgy!
+
 
 > **Feature rich CLI to speed-up your development workflow.**
 
 <br/>
 
-<video autoplay loop muted class="video"><source src=".assets/videos/walkthrough.mp4" type="video/mp4"></video>
+
+#### Get a configuration
+![Figgy Get](.assets/get.gif)
+
+#### Browse the Fig Orchard
+![Figgy Get](.assets/browse.gif)
+
+
+#### Validate your configurations exist before deploying
+![Figgy Validate](.assets/validate-fail.gif)
+
 
 **Figgy will help you:**
 
