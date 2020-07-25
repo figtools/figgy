@@ -15,7 +15,7 @@ Join our Slack community:
 
 https://slack.figgy.dev
 
-### Figgy is now in beta release!
+### Figgy is now in beta!
 
 Figgy is a **_free_** and **_opensource_** serverless application config framework designed to bring simplicity, security, and resilience to 
 application config management. Figgy is built on top of AWS ParameterStore and leverages native AWS constructs such as AWS IAM, 
