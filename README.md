@@ -47,14 +47,14 @@ Figgy supports SAML based SSO integrations with multi-factor authentication. Sim
 
 
 #### Get a configuration
-![Figgy Get](.assets/get.gif)
+![Figgy Get](.assets/gifs/get.gif)
 
 #### Browse the Fig Orchard
-![Figgy Get](.assets/browse.gif)
+![Figgy Get](.assets/gifs/browse.gif)
 
 
 #### Validate your configurations exist before deploying
-![Figgy Validate](.assets/validate-fail.gif)
+![Figgy Validate](.assets/gifs/validate.gif)
 
 
 **Figgy will help you:**
