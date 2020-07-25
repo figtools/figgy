@@ -3,16 +3,19 @@
 ![Build & Deploy](https://github.com/figtools/figgy-cli/workflows/Build%20&%20Deploy/badge.svg?branch=master)
 ![Release](https://github.com/figtools/figgy-cli/workflows/Release/badge.svg?branch=master)
 
-# Figgy
+# [Figgy](https://www.figgy.dev)
 
 Cultivate configuration clarity with Figgy. Open-source, cloud-native, configuration & secret management in AWS.
 
-*Learn everything you need to know about Figgy by checking out the website:*
+**Learn everything you need to know about Figgy by checking out the website:**
 
-## [Figgy Website](https://www.figgy.dev)
+https://www.figgy.dev
 
+Join our Slack community:
 
-## Figgy is now in beta release!
+https://slack.figgy.dev
+
+### Figgy is now in beta release!
 
 Figgy is a **_free_** and **_opensource_** serverless application config framework designed to bring simplicity, security, and resilience to 
 application config management. Figgy is built on top of AWS ParameterStore and leverages native AWS constructs such as AWS IAM, 
