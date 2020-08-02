@@ -3,12 +3,12 @@
 ![Build & Deploy](https://github.com/figtools/figgy-cli/workflows/Build%20&%20Deploy/badge.svg?branch=master)
 ![Release](https://github.com/figtools/figgy-cli/workflows/Release/badge.svg)
 
+<img src=".assets/media/svg/Brand/Lockups/Dark.svg" width="150" alt="Figgy"/>
+
+
 # Figgy
 
-<img src=".assets/media/svg/Brand/Lockups/Dark.svg" width="700px" alt="Figgy"/>
-
-
-Cultivate configuration clarity with Figgy. Open-source, cloud-native, configuration & secret management in AWS.
+Open-source, cloud-native, configuration & secret management in AWS.
 
 **Learn everything you need to know about Figgy by checking out the website:**
 
