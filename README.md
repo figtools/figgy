@@ -5,6 +5,9 @@
 
 # Figgy
 
+<img src=".assets/media/svg/Brand/Lockups/Dark.svg" width="700px" alt="Figgy"/>
+
+
 Cultivate configuration clarity with Figgy. Open-source, cloud-native, configuration & secret management in AWS.
 
 **Learn everything you need to know about Figgy by checking out the website:**
