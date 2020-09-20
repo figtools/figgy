@@ -34,6 +34,7 @@ Figgy makes it possible to **bind your code directly to configurations**. Easily
 are missing and application deployments are destined to fail.
 
 <br/>
+
 > **Control user access like a champ**
 
 
@@ -42,12 +43,14 @@ your role types and use cases, map them up in a simple config file, and let Figg
 changes over time, and roll back any config or group of configurations to any point-in-time -- to the second!
 
 <br/>
+
 > **Integrate with your SSO provider, abandon long-lived AWS Keys for good**
 
 
 Figgy supports SAML based SSO integrations with multi-factor authentication. Simplify AWS access control with Figgy!
 
 <br/>
+
 > **Feature-rich CLI to speed-up your development workflow.**
 
 <br/>
