@@ -24,6 +24,7 @@ Figgy is a **_free_** and **_opensource_** serverless application config framewo
 application config management. Figgy is built on top of AWS ParameterStore and leverages native AWS constructs such as AWS IAM, 
 KMS, among other services to ensure a simple and elegant integration with your AWS environment.
 <br/>
+<br/>
 
 > **Never roll another application to production having forgotten to set that last pesky
 config in production.**
@@ -32,7 +33,7 @@ config in production.**
 Figgy makes it possible to **bind your code directly to configurations**. Easily break builds if configs 
 are missing and application deployments are destined to fail.
 
-
+<br/>
 > **Control user access like a champ**
 
 
@@ -40,13 +41,13 @@ Figgy makes it easy to set up and control access across all of your AWS environm
 your role types and use cases, map them up in a simple config file, and let Figgy do the rest. Audit all user activity and 
 changes over time, and roll back any config or group of configurations to any point-in-time -- to the second!
 
-
+<br/>
 > **Integrate with your SSO provider, abandon long-lived AWS Keys for good**
 
 
 Figgy supports SAML based SSO integrations with multi-factor authentication. Simplify AWS access control with Figgy!
 
-
+<br/>
 > **Feature-rich CLI to speed-up your development workflow.**
 
 <br/>
