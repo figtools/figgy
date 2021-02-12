@@ -1,4 +1,4 @@
-# THIS IS OPTIONAL. Only configure this if you are using bastion-account-based authentication and _not_ SSO authentication.
+# THIS IS OPTIONAL. Only configure this if you are using bastion-account-based authentication and _not_ SAML based authentication.
 
 locals {
   bastion_cfgs = {
