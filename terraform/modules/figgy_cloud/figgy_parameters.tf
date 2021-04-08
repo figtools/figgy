@@ -63,7 +63,7 @@ all application/service configurations should be stored.
 EOF
 }
 
-# These are used by figgy CLI to help the CLI only show the user parameters they have access to
+# These are used by figgy CLI to help the CLI only show the user kms keys they have access to
 resource "aws_ssm_parameter" "role_to_kms_access" {
   count       = length(var.cfgs.role_types)
   name        = "/figgy/rbac/${var.cfgs.role_types[count.index]}/keys"
@@ -71,6 +71,17 @@ resource "aws_ssm_parameter" "role_to_kms_access" {
   value       = jsonencode(var.cfgs.role_to_kms_access[var.cfgs.role_types[count.index]])
   description = <<EOF
 This does nothing to actually ENFORCE access, this parameter is only to improve the UX when using the figgy CLI so
+users are not shown KMS keys do not have access to use"
+EOF
+}
+
+# These are used by figgy CLI to help the CLI only show the user kms keys they have access to
+resource "aws_ssm_parameter" "all_kms_keys" {
+  name        = "/figgy/kms/all-keys"
+  type        = "String"
+  value       = jsonencode(concat(var.cfgs.encryption_keys, [local.replication_key_alias_name])
+  description = <<EOF
+This does nothing to actually ENFORCE access, this parameter is only to improve the UX when using the Figgy CLI or UI so
 users are not shown KMS keys do not have access to use"
 EOF
 }
