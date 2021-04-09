@@ -1,5 +1,5 @@
 from botocore.exceptions import ClientError
-from typing import Dict, List, Set
+from typing import Dict, List, Set, Union
 
 SSM_SECURE_STRING = "SecureString"
 
@@ -53,12 +53,33 @@ class SsmDao:
         except ClientError:
             return None
 
-    def get_parameter_value(self, key) -> str:
+    def get_parameter_value(self, key) -> Union[str, None]:
         try:
             parameter = self._ssm.get_parameter(Name=key, WithDecryption=True)
-            return parameter['Parameter']['Value']
-        except ClientError:
-            return None
+            return parameter.get('Parameter', {}).get('Value')
+        except ClientError as e:
+            if "ParameterNotFound" == e.response['Error']['Code']:
+                return None
+            else:
+                raise
+
+    def get_parameter_value_encrypted(self, key) -> Union[str, None]:
+        """
+            Returns the parameter without decrypting the value. If parameter isn't encrypted, it returns the value.
+        Args:
+            key: The PS Name - E.G. /app/demo-time/parameter/abc123
+
+        Returns: str -> encrypted string value of an encrypted parameter.
+
+        """
+        try:
+            parameter = self._ssm.get_parameter(Name=key, WithDecryption=False)
+            return parameter.get('Parameter', {}).get('Value')
+        except ClientError as e:
+            if "ParameterNotFound" == e.response['Error']['Code']:
+                return None
+            else:
+                raise
 
     def set_parameter(self, key, value, desc, type, key_id=None) -> None:
         if key_id and type == SSM_SECURE_STRING:

@@ -6,7 +6,6 @@ import boto3
 import time
 import logging
 from config.constants import *
-from lib.models.replication_config import ReplicationConfig
 from lib.data.dynamo.audit_dao import AuditDao
 from lib.data.ssm import SsmDao
 from lib.models.slack import FigDeletedMessage, SlackColor, SimpleSlackMessage
@@ -91,7 +90,7 @@ def handle(event, context):
                 ps_key_id = request_params.get("keyId")
 
                 if not ps_value:
-                    ps_value = ssm.get_parameter_value(ps_name)
+                    ps_value = ssm.get_parameter_value_encrypted(ps_name)
 
                 audit.put_audit_log(
                     user,
