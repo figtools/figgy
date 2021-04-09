@@ -8,6 +8,7 @@ resource "aws_ssm_parameter" "parameter_replication_key_id" {
   name  = "/figgy/kms/replication-key-id"
   type  = "String"
   value = aws_kms_key.replication_key.key_id
+  overwrite = true
 }
 
 # These are used by figgy CLI for looking up the appropriate KMS key for on-the-fly encryption
@@ -16,6 +17,7 @@ resource "aws_ssm_parameter" "encryption_key_id" {
   name  = "/figgy/kms/${var.cfgs.encryption_keys[count.index]}-key-id"
   type  = "String"
   value = aws_kms_key.encryption_key[count.index].key_id
+  overwrite = true
 }
 
 # These are used by figgy CLI to help the CLI only show the user parameters they have access to
@@ -24,6 +26,7 @@ resource "aws_ssm_parameter" "role_to_ns_access" {
   name        = "/figgy/rbac/${var.cfgs.role_types[count.index]}/namespaces"
   type        = "String"
   value       = jsonencode(var.cfgs.role_to_ns_access[var.cfgs.role_types[count.index]])
+  overwrite = true
   description = <<EOF
 This does nothing to actually ENFORCE access, this parameter is only to improve the UX when using the figgy CLI so
 users are not shown parameters they cannot administrate."
@@ -35,6 +38,7 @@ resource "aws_ssm_parameter" "used_namespaces" {
   name        = "/figgy/namespaces"
   type        = "String"
   value       = jsonencode(var.cfgs.root_namespaces)
+  overwrite = true
   description = <<EOF
 This does nothing to actually ENFORCE access, this parameter is only to improve the UX when using the figgy CLI so
 users are not shown parameters they cannot administrate."
@@ -46,6 +50,7 @@ resource "aws_ssm_parameter" "profile_kms_keys" {
   name        = "/figgy/rbac/profile/keys"
   type        = "String"
   value       = jsonencode(var.cfgs.encryption_keys)
+  overwrite = true
   description = <<EOF
 A list of all KMS keys managed by figgy, except the replication key. Queried when users provide --profile option
 EOF
@@ -57,6 +62,7 @@ resource "aws_ssm_parameter" "service_namespace" {
   name        = "/figgy/defaults/service-namespace"
   type        = "String"
   value       = var.cfgs.service_namespace
+  overwrite = true
   description = <<EOF
 Figgy will automatically run `sync` and `cleanup` commands against this namespace. This namespace is where
 all application/service configurations should be stored.
@@ -69,6 +75,7 @@ resource "aws_ssm_parameter" "role_to_kms_access" {
   name        = "/figgy/rbac/${var.cfgs.role_types[count.index]}/keys"
   type        = "String"
   value       = jsonencode(var.cfgs.role_to_kms_access[var.cfgs.role_types[count.index]])
+  overwrite = true
   description = <<EOF
 This does nothing to actually ENFORCE access, this parameter is only to improve the UX when using the figgy CLI so
 users are not shown KMS keys do not have access to use"
@@ -80,6 +87,7 @@ resource "aws_ssm_parameter" "all_kms_keys" {
   name        = "/figgy/kms/all-keys"
   type        = "String"
   value       = jsonencode(concat(var.cfgs.encryption_keys, [local.replication_key_alias_name]))
+  overwrite = true
   description = <<EOF
 This does nothing to actually ENFORCE access, this parameter is only to improve the UX when using the Figgy CLI or UI so
 users are not shown KMS keys do not have access to use"
@@ -93,6 +101,7 @@ resource "aws_ssm_parameter" "user_to_role_mappings" {
   name  = "/figgy/users/${keys(var.cfgs.bastion_users)[count.index]}/roles"
   type  = "String"
   value = jsonencode(var.cfgs.bastion_users[keys(var.cfgs.bastion_users)[count.index]])
+  overwrite = true
 }
 
 # These are used by the Figgy CLI to know what accounts exist and which ones a user can assume into
@@ -102,6 +111,7 @@ resource "aws_ssm_parameter" "account_mappings" {
   name  = "/figgy/accounts/${keys(var.cfgs.associated_accounts)[count.index]}"
   type  = "String"
   value = var.cfgs.associated_accounts[keys(var.cfgs.associated_accounts)[count.index]]
+  overwrite = true
 }
 
 resource "aws_ssm_parameter" "version" {
@@ -142,4 +152,5 @@ resource "aws_ssm_parameter" "slack_webhook" {
   name  = "/figgy/integrations/slack/webhook-url"
   type  = "String"
   value = var.cfgs.slack_webhook_url
+  overwrite = true
 }
