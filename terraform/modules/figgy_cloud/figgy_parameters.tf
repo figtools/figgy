@@ -79,7 +79,7 @@ EOF
 resource "aws_ssm_parameter" "all_kms_keys" {
   name        = "/figgy/kms/all-keys"
   type        = "String"
-  value       = jsonencode(concat(var.cfgs.encryption_keys, [local.replication_key_alias_name])
+  value       = jsonencode(concat(var.cfgs.encryption_keys, [local.replication_key_alias_name]))
   description = <<EOF
 This does nothing to actually ENFORCE access, this parameter is only to improve the UX when using the Figgy CLI or UI so
 users are not shown KMS keys do not have access to use"
