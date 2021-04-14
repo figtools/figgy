@@ -76,3 +76,40 @@ resource "aws_dynamodb_table" "config_cache" {
     created_by  = "figgy"
   }
 }
+
+
+resource "aws_dynamodb_table" "user_tracker" {
+  name         = "figgy-config-usage-tracker"
+  hash_key     = "parameter_name"
+  range_key    = "user"
+  billing_mode = "PAY_PER_REQUEST"
+
+  attribute {
+    name = "parameter_name"
+    type = "S"
+  }
+
+  attribute {
+    name = "user"
+    type = "S"
+  }
+
+  attribute {
+    name = "last_updated"
+    type = "N"
+  }
+
+  local_secondary_index {
+    projection_type = "ALL"
+    range_key = "last_updated"
+    name = "last-updated"
+  }
+
+  tags = {
+    Name        = "figgy-config-usage-tracker"
+    Environment = var.env_alias
+    owner       = "devops"
+    application = "figgy"
+    created_by  = "figgy"
+  }
+}
