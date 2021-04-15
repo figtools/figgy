@@ -22,6 +22,6 @@ resource "aws_lambda_permission" "lamda_permissions" {
   statement_id = "CwLogsInvoke"
   action = "lambda:InvokeFunction"
   function_name = var.lambda_name
-  principal = "logs.${data.aws_region.current}.amazonaws.com"
+  principal = "logs.${data.aws_region.current.name}.amazonaws.com"
   source_arn = "${var.log_group_arn}:*"
 }
