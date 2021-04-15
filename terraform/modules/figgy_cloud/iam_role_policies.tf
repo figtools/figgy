@@ -135,7 +135,7 @@ data "aws_iam_policy_document" "dynamic_policy" {
 resource "aws_iam_policy" "figgy_write_cw_logs" {
   name        = "figgy-cw-logs-write"
   description = "Write logs to cloudwatch."
-  policy      = data.aws_iam_policy_document.dynamic_policy[count.index].json
+  policy      = data.aws_iam_policy_document.dynamic_policy.json
 }
 
 data "aws_iam_policy_document" "cloudwatch_logs_write" {
