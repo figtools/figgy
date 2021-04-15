@@ -129,5 +129,39 @@ data "aws_iam_policy_document" "dynamic_policy" {
       resources = [aws_kms_key.replication_key.arn]
     }
   }
+}
 
+# Policy created by
+resource "aws_iam_policy" "figgy_write_cw_logs" {
+  name        = "figgy-cw-logs-write"
+  description = "Write logs to cloudwatch."
+  policy      = data.aws_iam_policy_document.dynamic_policy[count.index].json
+}
+
+data "aws_iam_policy_document" "cloudwatch_logs_write" {
+  statement {
+    sid = "CWLogsWrite"
+    actions = [
+      "cloudwatch:Describe*",
+      "cloudwatch:Get*",
+      "cloudwatch:List*",
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:TestMetricFilter",
+    ]
+
+    # Required to create the log group
+    resources = ["*"]
+  }
+
+  statement {
+    sid = "PutLogEvents"
+    actions = [
+      "logs:PutLogEvents",
+    ]
+
+    # Figgy logs should all be written to the /figgy CW log namespace.
+    resources = ["arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/figgy/*"]
+  }
 }

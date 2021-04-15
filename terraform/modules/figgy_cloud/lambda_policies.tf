@@ -3,36 +3,9 @@ resource "aws_iam_policy" "lambda_default" {
   name        = "figgy-default-lambda"
   path        = "/"
   description = "Default IAM policy for figgy lambda. Provides basic Lambda access, such as writing logs to CW."
-  policy      = data.aws_iam_policy_document.lambda_default.json
+  policy      = data.aws_iam_policy_document.cloudwatch_logs_write.json
 }
 
-data "aws_iam_policy_document" "lambda_default" {
-  statement {
-    sid = "DefaultLambdaAccess"
-    actions = [
-      "cloudwatch:Describe*",
-      "cloudwatch:Get*",
-      "cloudwatch:List*",
-      "logs:CreateLogGroup",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-      "logs:TestMetricFilter",
-    ]
-
-    # Required to create the log group
-    resources = ["*"]
-  }
-
-  statement {
-    sid = "PutLogEvents"
-    actions = [
-      "logs:PutLogEvents",
-    ]
-
-    # Figgy logs should all be written to the /figgy CW log namespace.
-    resources = ["arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/figgy/*"]
-  }
-}
 
 # Config Auditor Lambda
 resource "aws_iam_policy" "config_auditor" {
