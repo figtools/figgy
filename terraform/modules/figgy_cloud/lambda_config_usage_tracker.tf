@@ -15,7 +15,7 @@ module "config_usage_tracker" {
   concurrent_executions   = 5
 }
 
-module "config_usage_tracker" {
+module "config_usage_tracker_trigger" {
   source           = "../triggers/cw_trigger"
   lambda_name      = module.config_usage_tracker.name
   lambda_arn       = module.config_usage_tracker.arn
