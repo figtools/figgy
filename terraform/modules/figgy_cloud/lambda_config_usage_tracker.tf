@@ -32,7 +32,8 @@ module "config_usage_tracker_trigger" {
       "ssm.amazonaws.com"
     ],
     "eventName": [
-      "GetParameter"
+      "GetParameter",
+      "DescribeParameters"
     ]
   }
 }
