@@ -19,6 +19,8 @@ module "config_usage_tracker" {
   concurrent_executions   = 5
 }
 
+# We do not want to consume all Cloudtrail events, instead we only want the ones relevant to ParameterStore. This CW
+# filter will ensure we only process relevant events.
 locals {
   is_get_param_event = "$.eventName = \"GetParameterHistory\" || $.eventName = \"GetParameter\" || $.eventName = \"GetParameters\" || $.eventName = \"GetParametersByPath\""
   is_api_call        = "$.eventType = \"AwsApiCall\""
