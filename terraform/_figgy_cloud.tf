@@ -2,7 +2,6 @@
 module "figgy_cloud" {
   source = "./modules/figgy_cloud"
   aws_account_id = var.aws_account_id
-  deploy_bucket = var.deploy_bucket
   region = var.region
   env_alias = var.env_alias
   cfgs = merge(local.cfgs, local.bastion_cfgs, local.other_cfgs)
