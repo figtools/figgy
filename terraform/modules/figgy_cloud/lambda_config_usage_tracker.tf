@@ -5,7 +5,11 @@ module "config_usage_tracker" {
   handler                 = "functions/config_usage_tracker.handle"
   lambda_name             = "figgy-config-usage-tracker"
   lambda_timeout          = 60
-  policies                = [aws_iam_policy.config_usage_tracker.arn, aws_iam_policy.lambda_default.arn]
+  policies                = [
+                              aws_iam_policy.config_usage_tracker.arn,
+                              aws_iam_policy.lambda_default.arn,
+                              aws_iam_policy.lambda_read_configs
+                            ]
   zip_path                = data.archive_file.figgy.output_path
   layers                  = [var.cfgs.aws_sdk_layer_map[var.region]]
   cw_lambda_log_retention = var.figgy_cw_log_retention
