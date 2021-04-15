@@ -46,7 +46,7 @@ def handle(event, context):
         for ps_name in event.parameters:
             name = f'/{ps_name}' if not ps_name.startswith('/') else ps_name
             matching_ns = [ns for ns in FIGGY_NAMESPACES if ps_name.startswith(ns)]
-            
+
             if matching_ns:
                 log.info(f"Found GET event for matching namespace: {matching_ns} and name: {name}")
                 usage_tracker.add_usage_log(name, event.user, event.time)

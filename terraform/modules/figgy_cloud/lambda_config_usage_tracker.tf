@@ -33,6 +33,9 @@ module "config_usage_tracker_trigger" {
     ],
     "eventName": [
       "GetParameter",
+      "GetParameterHistory",
+      "GetParameters",
+      "GetParametersByPath",
       "DescribeParameters"
     ]
   }
