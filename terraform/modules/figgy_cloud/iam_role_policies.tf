@@ -147,7 +147,6 @@ data "aws_iam_policy_document" "cloudwatch_logs_write" {
       "cloudwatch:List*",
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
-      "logs:PutLogEvents",
       "logs:TestMetricFilter",
     ]
 
@@ -161,7 +160,8 @@ data "aws_iam_policy_document" "cloudwatch_logs_write" {
       "logs:PutLogEvents",
     ]
 
-    # Figgy logs should all be written to the /figgy CW log namespace.
-    resources = ["arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/figgy/*"]
+    # Ideally, all figgy logs should all be written to the /figgy CW log namespace, however at this time it is not
+    # possible to have lambdas write to anywhere but /aws/lambda/${lambda_name}/ namespace.
+    resources = ["arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:*"]
   }
 }
