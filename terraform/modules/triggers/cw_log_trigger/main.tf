@@ -5,7 +5,7 @@ locals {
   is_api_call = "$.eventType = \"AwsApiCall\""
   is_ssm_event = "$.eventSource = \"ssm.amazonaws.com\" "
   log_group_split = split("/", var.log_group_name)
-  log_group_friendly_name = local.log_group_split[length(local.log_group_split - 1)]
+  log_group_friendly_name = local.log_group_split[length(local.log_group_split) - 1 ]
   // get last element of split.
 }
 
