@@ -8,7 +8,7 @@ locals {
 # If you comment this out, ensure your bucket exists, and then comment out delete the `depends_on` blocks  referencing
 # `aws_s3_bucket.figgy_bucket` in the files prefixed with `lambda_`
 resource "aws_s3_bucket" "figgy_bucket" {
-  bucket = var.deploy_bucket
+  bucket = local.bucket_name
   acl    = "private"
 
   versioning {
@@ -39,8 +39,7 @@ resource "aws_s3_bucket" "figgy_bucket" {
 # Generally I would not recommend using figgy to manage your cloudtrail, but this will ensure your events are properly
 # capture and figgy can use them for its event-driven config workflow :)
 resource "aws_s3_bucket_policy" "cloudtrail_bucket_policy" {
-  count  = var.cfgs.create_deploy_bucket == true && var.cfgs.configure_cloudtrail ? 1 : 0
-  bucket = var.deploy_bucket
+  bucket = aws_s3_bucket.figgy_bucket.id
   depends_on = [aws_s3_bucket.figgy_bucket]
   policy = <<POLICY
 {
@@ -53,7 +52,7 @@ resource "aws_s3_bucket_policy" "cloudtrail_bucket_policy" {
               "Service": "cloudtrail.amazonaws.com"
             },
             "Action": "s3:GetBucketAcl",
-            "Resource": "arn:aws:s3:::${var.deploy_bucket}"
+            "Resource": "arn:aws:s3:::${aws_s3_bucket.figgy_bucket.id}"
         },
         {
             "Sid": "AWSCloudTrailWrite",
@@ -62,7 +61,7 @@ resource "aws_s3_bucket_policy" "cloudtrail_bucket_policy" {
               "Service": "cloudtrail.amazonaws.com"
             },
             "Action": "s3:PutObject",
-            "Resource": "arn:aws:s3:::${var.deploy_bucket}/AWSLogs/*",
+            "Resource": "arn:aws:s3:::${aws_s3_bucket.figgy_bucket.id}/AWSLogs/*",
             "Condition": {
                 "StringEquals": {
                     "s3:x-amz-acl": "bucket-owner-full-control"
