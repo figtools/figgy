@@ -30,7 +30,7 @@ module "config_usage_tracker_trigger" {
   lambda_name      = module.config_usage_tracker.name
   lambda_arn       = module.config_usage_tracker.arn
   log_group_name   = aws_cloudwatch_log_group.figgy_trail_log_group.name
-  cw_filter_expression = "{ ${local.is_api_call} && ${local.is_ssm_event} && ( ${local.is_get_param_event} ) }"
   log_group_arn = aws_cloudwatch_log_group.figgy_trail_log_group.arn
+  cw_filter_expression = "{ ${local.is_api_call} && ${local.is_ssm_event} && ( ${local.is_get_param_event} ) }"
 }
 
