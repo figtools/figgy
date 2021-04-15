@@ -1,7 +1,7 @@
 resource "random_uuid" "uuid" {}
 
 locals {
-  bucket_name = "${var.cfgs.s3_bucket_prefix}figgy-${substr(random_uuid.uuid.result, 10)}"
+  bucket_name = "${var.cfgs.s3_bucket_prefix}figgy-${substr(random_uuid.uuid.result, 0, 5)}"
 }
 
 # This is optional, you may also select an existing bucket, feel free to comment out.
