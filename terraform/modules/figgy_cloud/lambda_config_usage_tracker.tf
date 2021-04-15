@@ -19,30 +19,17 @@ module "config_usage_tracker" {
   concurrent_executions   = 5
 }
 
+locals {
+  is_get_param_event = "$.eventName = \"GetParameterHistory\" || $.eventName = \"GetParameter\" || $.eventName = \"GetParameters\" || $.eventName = \"GetParametersByPath\""
+  is_api_call = "$.eventType = \"AwsApiCall\""
+  is_ssm_event = "$.eventSource = \"ssm.amazonaws.com\" "
+}
+
 module "config_usage_tracker_trigger" {
-  source           = "../triggers/cw_trigger"
+  source           = "../triggers/cw_log_trigger"
   lambda_name      = module.config_usage_tracker.name
   lambda_arn       = module.config_usage_tracker.arn
-  cw_event_pattern = <<PATTERN
-{
-  "source": [
-    "aws.ssm"
-  ],
-  "detail-type": [
-    "AWS API Call via CloudTrail"
-  ],
-  "detail": {
-    "eventSource": [
-      "ssm.amazonaws.com"
-    ],
-    "eventName": [
-      "GetParameter",
-      "GetParameterHistory",
-      "GetParameters",
-      "GetParametersByPath",
-      "DescribeParameters"
-    ]
-  }
+  log_group_name   = module.config_usage_tracker.cw_log_group_name
+  cw_filter_expression = "{ ${local.is_api_call} && ${local.is_ssm_event} && ( ${local.is_get_param_event} ) }"
 }
-PATTERN
-}
+

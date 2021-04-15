@@ -7,6 +7,10 @@ variable "lambda_arn" {
   description = "ARN of lambda to apply expression to"
 }
 
-variable "cw_event_pattern" {
-  description = "CW Event pattern to match events off of. Should be json: https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/CloudWatchEventsandEventPatterns.html"
+variable "log_group_name" {
+  description = "CW Log group to subscribe the associated lambda to."
+}
+
+variable "cw_filter_expression" {
+  description = "Filter expression to subselect log records by."
 }
