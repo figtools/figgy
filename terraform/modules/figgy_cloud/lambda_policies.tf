@@ -24,7 +24,7 @@ data "aws_iam_policy_document" "lambda_default" {
   }
 
   statement {
-    sid = "DefaultLambdaAccess"
+    sid = "PutLogEvents"
     actions = [
       "logs:PutLogEvents",
     ]
