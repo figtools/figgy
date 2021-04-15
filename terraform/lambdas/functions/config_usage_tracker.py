@@ -1,11 +1,8 @@
 import logging
-import time
-from datetime import datetime
-
+import json
 import boto3
 
 from config.constants import *
-from lib.data.dynamo.audit_dao import AuditDao
 from lib.data.dynamo.usage_tracker_dao import UsageTrackerDao
 from lib.data.ssm import SsmDao
 from lib.models.slack import SlackColor, SimpleSlackMessage
@@ -27,7 +24,7 @@ ACCOUNT_ENV = ssm.get_parameter_value(ACCOUNT_ENV_PS_PATH)
 NOTIFY_DELETES = ssm.get_parameter_value(NOTIFY_DELETES_PS_PATH)
 NOTIFY_DELETES = NOTIFY_DELETES.lower() == "true" if NOTIFY_DELETES else False
 
-FIGGY_NAMESPACES = ssm.get_parameter_value(FIGGY_NAMESPACES_PATH)
+FIGGY_NAMESPACES = json.loads(ssm.get_parameter_value(FIGGY_NAMESPACES_PATH))
 CLEANUP_INTERVAL = 60 * 60  # Cleanup hourly
 LAST_CLEANUP = 0
 
@@ -48,8 +45,11 @@ def handle(event, context):
 
         for ps_name in event.parameters:
             name = f'/{ps_name}' if not ps_name.startswith('/') else ps_name
-
-            usage_tracker.add_usage_log(name, event.user, event.time)
+            matching_ns = [ns for ns in FIGGY_NAMESPACES if ps_name.startswith(ns)]
+            
+            if matching_ns:
+                log.info(f"Found GET event for matching namespace: {matching_ns} and name: {name}")
+                usage_tracker.add_usage_log(name, event.user, event.time)
 
     except SSMErrorDetected as e:
         log.info(f'Not processing event due to error Message {event.error_message} and Code: {event.error_code}')
