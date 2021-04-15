@@ -31,5 +31,6 @@ module "config_usage_tracker_trigger" {
   lambda_arn       = module.config_usage_tracker.arn
   log_group_name   = module.config_usage_tracker.cw_log_group_name
   cw_filter_expression = "{ ${local.is_api_call} && ${local.is_ssm_event} && ( ${local.is_get_param_event} ) }"
+  log_group_arn = module.config_usage_tracker.cw_log_group_arn
 }
 
