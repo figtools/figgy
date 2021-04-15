@@ -49,7 +49,7 @@ class SSMEvent:
 
         if self.response_elements:
             log.info(f'Got response elements, getting version')
-            self.response_elements.get("version", 1)
+            self.version = self.response_elements.get("version", 1)
 
         # Convert to millis since epoch
         if event_time:
@@ -61,7 +61,6 @@ class SSMEvent:
             self.value = self.request_params.get("value")
             self.type = self.request_params.get("type")
             self.description = self.request_params.get("description")
-            self.version = self.version
             self.key_id = self.request_params.get("keyId")
 
     def validate(self):
