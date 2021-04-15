@@ -23,7 +23,7 @@ data "aws_iam_policy_document" "figgy_trail_role_assume_policy" {
 
 resource "aws_iam_role_policy_attachment" "figgy_trail_to_cw_logs" {
   policy_arn = aws_iam_policy.figgy_write_cw_logs.arn
-  role = aws_iam_role.figgy_trail_to_cw_logs.name
+  role       = aws_iam_role.figgy_trail_to_cw_logs.name
 }
 
 # At this time it is not possible to filter out ONLY SSM events, but we _can_ disable management events and auto-clean
@@ -34,11 +34,11 @@ resource "aws_cloudtrail" "figgy_cloudtrail" {
   name                          = "figgy-trail"
   s3_bucket_name                = var.deploy_bucket
   include_global_service_events = false
-  is_multi_region_trail = false
-  is_organization_trail = false
+  is_multi_region_trail         = false
+  is_organization_trail         = false
 
   # CloudTrail requires the Log Stream wildcard
   cloud_watch_logs_group_arn = "${aws_cloudwatch_log_group.figgy_trail_log_group.arn}:*"
-  cloud_watch_logs_role_arn = aws_iam_role.figgy_trail_to_cw_logs.arn
-  depends_on                    = [aws_s3_bucket_policy.cloudtrail_bucket_policy]
+  cloud_watch_logs_role_arn  = aws_iam_role.figgy_trail_to_cw_logs.arn
+  depends_on                 = [aws_s3_bucket_policy.cloudtrail_bucket_policy]
 }
