@@ -26,9 +26,10 @@ resource "aws_iam_role_policy_attachment" "figgy_trail_to_cw_logs" {
   role       = aws_iam_role.figgy_trail_to_cw_logs.name
 }
 
-# At this time it is not possible to filter out ONLY SSM events, but we _can_ disable management events and auto-clean
-# up logs from S3 within 1 day so we're going with that! Once we can filter trails by data-events only and limit to SSM
-# events we will update this.
+# At this time it is not possible to limit our cloudtrail to only select SSM events, but we can auto-clean the cloudwatch log group
+# and S3 bucket very quickly to ensure we are able to get what we need without burning too much space.
+# Currently, the only pre-filter types for data resources are  S3 objects, Lambdas, or DynamoDb
+# See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudtrail#data_resource
 resource "aws_cloudtrail" "figgy_cloudtrail" {
   count                         = var.cfgs.create_deploy_bucket == true && var.cfgs.configure_cloudtrail ? 1 : 0
   name                          = "figgy-trail"
@@ -41,4 +42,10 @@ resource "aws_cloudtrail" "figgy_cloudtrail" {
   cloud_watch_logs_group_arn = "${aws_cloudwatch_log_group.figgy_trail_log_group.arn}:*"
   cloud_watch_logs_role_arn  = aws_iam_role.figgy_trail_to_cw_logs.arn
   depends_on                 = [aws_s3_bucket_policy.cloudtrail_bucket_policy]
+
+  event_selector {
+    read_write_type = "ReadOnly"
+    # Must be true, if set to false, we cannot see GetParameterEvents from users who assumed roles into the account.
+    include_management_events = true
+  }
 }

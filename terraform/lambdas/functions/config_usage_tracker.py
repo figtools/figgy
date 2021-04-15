@@ -42,6 +42,9 @@ def handle(event, context):
         log.info(f"Event: {event}")
         event = SSMEvent(event)
         log.info(f"Got user: {event.user}, action: {event.action} for parameter(s) {event.parameters}")
+        if "figgy" in event.user:
+            log.info(f'Found event from figgy, not logging.')
+            return
 
         for ps_name in event.parameters:
             name = f'/{ps_name}' if not ps_name.startswith('/') else ps_name
