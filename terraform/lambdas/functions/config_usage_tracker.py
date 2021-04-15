@@ -10,7 +10,7 @@ from lib.data.dynamo.usage_tracker_dao import UsageTrackerDao
 from lib.data.ssm import SsmDao
 from lib.models.slack import SlackColor, SimpleSlackMessage
 from lib.svcs.slack import SlackService
-from lib.utils.ssm_event_parser import SSMEventParser, SSMEvent, SSMErrorDetected
+from lib.utils.ssm_event_parser import SSMEvent, SSMErrorDetected
 from lib.utils.utils import Utils
 
 log = Utils.get_logger(__name__, logging.INFO)
