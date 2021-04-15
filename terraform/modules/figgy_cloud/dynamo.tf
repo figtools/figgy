@@ -78,7 +78,7 @@ resource "aws_dynamodb_table" "config_cache" {
 }
 
 
-resource "aws_dynamodb_table" "user_tracker" {
+resource "aws_dynamodb_table" "config_usage_tracker" {
   name         = "figgy-config-usage-tracker"
   hash_key     = "parameter_name"
   range_key    = "user"

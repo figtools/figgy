@@ -32,6 +32,13 @@ AUDIT_KEYID_ATTR = "key_id"
 AUDIT_DESCRIPTION_ATTR = "description"
 AUDIT_VERSION_ATTR = "version"
 
+# Config Usage Tracker
+CONFIG_USAGE_TABLE_NAME = "figgy-config-usage-tracker"
+CONFIG_USAGE_PARAMETER_KEY = "parameter_name"
+CONFIG_USAGE_LAST_UPDATED_KEY = "last_updated"
+CONFIG_USAGE_USER_KEY = "user"
+
+
 # Generic
 PUT_PARAM_ACTION = "PutParameter"
 DELETE_PARAM_ACTION = "DeleteParameter"

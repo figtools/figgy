@@ -9,6 +9,10 @@ log = Utils.get_logger(__name__, logging.INFO)
 
 
 class AuditDao:
+    """
+    Supports operations on the figgy-config-auditor ddb table.
+    """
+
     def __init__(self, dynamo_resource):
         self._dynamo_resource = dynamo_resource
         self._table = self._dynamo_resource.Table(AUDIT_TABLE_NAME)
@@ -33,7 +37,7 @@ class AuditDao:
             ps_type: str,
             ps_key_id: Optional[str],
             ps_description: Optional[str],
-            ps_version: str,
+            ps_version: int,
             timestamp: int = int(time.time() * 1000)
     ):
 
@@ -46,7 +50,7 @@ class AuditDao:
             AUDIT_TYPE_ATTR: ps_type,
             AUDIT_KEYID_ATTR: ps_key_id,
             AUDIT_DESCRIPTION_ATTR: ps_description,
-            AUDIT_VERSION_ATTR: ps_version,
+            AUDIT_VERSION_ATTR: str(ps_version),
         }
 
         put_item = {}
@@ -71,6 +75,5 @@ class AuditDao:
                     Key={AUDIT_PARAM_NAME_KEY: item[AUDIT_PARAM_NAME_KEY], AUDIT_TIME_KEY: item[AUDIT_TIME_KEY]}
                 )
             else:
-                print(
-                    f"{item[AUDIT_PARAM_NAME_KEY]} is too young for cleanup - it's {age_in_minutes} minutes old. Waiting..."
-                )
+                print(f"{item[AUDIT_PARAM_NAME_KEY]} is too young for cleanup - it's {age_in_minutes} minutes old. "
+                      f"Waiting...")
