@@ -31,7 +31,6 @@ resource "aws_iam_role_policy_attachment" "figgy_trail_to_cw_logs" {
 # Currently, the only pre-filter types for data resources are  S3 objects, Lambdas, or DynamoDb
 # See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudtrail#data_resource
 resource "aws_cloudtrail" "figgy_cloudtrail" {
-  count                         = var.cfgs.create_deploy_bucket == true && var.cfgs.configure_cloudtrail ? 1 : 0
   name                          = "figgy-trail"
   s3_bucket_name                = var.deploy_bucket
   include_global_service_events = false

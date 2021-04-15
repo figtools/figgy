@@ -1,8 +1,13 @@
+resource "random_uuid" "uuid" {}
+
+locals {
+  bucket_name = "${var.cfgs.s3_bucket_prefix}figgy-${substr(random_uuid.uuid.result, 10)}"
+}
+
 # This is optional, you may also select an existing bucket, feel free to comment out.
 # If you comment this out, ensure your bucket exists, and then comment out delete the `depends_on` blocks  referencing
 # `aws_s3_bucket.figgy_bucket` in the files prefixed with `lambda_`
 resource "aws_s3_bucket" "figgy_bucket" {
-  count  = var.cfgs.create_deploy_bucket == true ? 1 : 0
   bucket = var.deploy_bucket
   acl    = "private"
 

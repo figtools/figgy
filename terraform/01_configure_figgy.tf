@@ -6,13 +6,10 @@
 locals {
   cfgs = {
 
-    # If you want figgy to create its own S3 bucket, set this to true, then specify the `var.deploy_bucket`
-    # with the appropriate deployment bucket name variable. This bucket is used to store figgy deployment artifacts.
-    create_deploy_bucket = true
-
-    # Cloudtrail logging is required by Figgy we can turn it on for you, or you can enable it on your own.
-    # If you already have it enabled, or want to enable it yourself, set this to false.
-    configure_cloudtrail = true
+    # Figgy needs to create a S3 bucket to deploy its lambdas and to store temporary logs (that are cleaned up after one day).
+    # Add something here if you want to prefix the bucket with a friendly name, otherwise leave empty. The default bucket name will be:
+    # 'figgy-${random-uuid}'
+    s3_bucket_prefix = ""
 
     # How many unique roles will figgy users need? Each of these types should map to a particular figgy user story.
     role_types = ["admin", "devops", "data", "dba", "sre", "dev"]
