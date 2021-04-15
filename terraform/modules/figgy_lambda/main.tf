@@ -26,6 +26,6 @@ resource "aws_s3_bucket_object" "figgy_deploy" {
 }
 
 resource "aws_cloudwatch_log_group" "lambda_log_group" {
-  name = "/figgy/lambda/${var.lambda_name}"
+  name = "/aws/lambda/${var.lambda_name}"
   retention_in_days = var.cw_lambda_log_retention
 }
