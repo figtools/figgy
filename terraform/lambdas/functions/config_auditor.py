@@ -47,6 +47,7 @@ def handle(event, context):
         return
 
     try:
+        log.info(f'Got event: {event}')
         event = SSMEvent(event)
 
         log.info(f"Got user: {event.user}, action: {event.action} for parameter(s) {event.parameters}")

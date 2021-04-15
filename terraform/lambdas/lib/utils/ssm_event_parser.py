@@ -31,6 +31,7 @@ class SSMEvent:
     name: str
 
     def __init__(self, event: Dict):
+        log.debug(f'Parsing event: {event}')
         self.event: Dict = event
         self.detail = event["detail"]
         self.validate()
@@ -39,12 +40,16 @@ class SSMEvent:
         self.user = self.user_arn.split("/")[-1:][0]
         self.action = self.detail.get("eventName")
         self.request_params = self.detail.get('requestParameters', {})
-        self.version = self.detail.get("responseElements", {}).get("version", 1)
+        self.response_elements = self.detail.get("responseElements", {})
 
         ps_names = self.request_params.get('names', [])
         ps_name = [self.request_params['name']] if 'name' in self.request_params else []
         self.parameters = ps_names + ps_name
         event_time = self.detail.get('eventTime')
+
+        if self.response_elements:
+            log.info(f'Got response elements, getting version')
+            self.response_elements.get("version", 1)
 
         # Convert to millis since epoch
         if event_time:
