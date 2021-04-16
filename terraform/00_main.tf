@@ -6,7 +6,7 @@
 # TODO: You may use S3 / Terraform Cloud (recommended) / Local / etc.
 # TODO: Docs: https://www.terraform.io/docs/backends/index.html
 terraform {
-  required_version = ">=0.12.0"
+  required_version = ">=0.14.0"
 
   backend "remote" {
     hostname = "app.terraform.io"
@@ -21,7 +21,8 @@ terraform {
 # TODO: You will need to configure this to point to YOUR environment. Use profiles, role assumption, whatever makes
 # TODO: sense for your terraform environment. Docs: https://www.terraform.io/docs/providers/aws/index.html
 provider "aws" {
-  version = ">= 2.0.0"
+  source = "hashicorp/aws"
+  version = "~>3.0"
   region = var.region
 
   assume_role {
