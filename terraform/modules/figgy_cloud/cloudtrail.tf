@@ -41,13 +41,17 @@ resource "aws_cloudtrail" "figgy_cloudtrail" {
   # CloudTrail requires the Log Stream wildcard
   cloud_watch_logs_group_arn = "${aws_cloudwatch_log_group.figgy_trail_log_group.arn}:*"
   cloud_watch_logs_role_arn  = aws_iam_role.figgy_trail_to_cw_logs.arn
-  depends_on                 = [aws_s3_bucket_policy.cloudtrail_bucket_policy]
+  depends_on                 = [
+    aws_s3_bucket.figgy_bucket,
+    aws_s3_bucket_policy.cloudtrail_bucket_policy,
+    aws_cloudwatch_log_group.figgy_trail_log_group
+  ]
 
-  event_selector {
-    # Must be All, if set to ReadOnly, there must be anohter Cloudtrail with All set otherwise SSM Write Events will not
-    # be available over cloudwatch event bus
-    read_write_type = "All"
-    # Must be true, if set to false, we cannot see GetParameterEvents from users who assumed roles into the account.
-    include_management_events = true
-  }
+//  event_selector {
+//    # Must be All, if set to ReadOnly, there must be anohter Cloudtrail with All set otherwise SSM Write Events will not
+//    # be available over cloudwatch event bus
+//    read_write_type = "All"
+//    # Must be true, if set to false, we cannot see GetParameterEvents from users who assumed roles into the account.
+//    include_management_events = true
+//  }
 }
