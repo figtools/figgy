@@ -47,12 +47,18 @@ def handle(event, context):
         return
 
     try:
-        log.info(f'Got event: {event}')
-        event = SSMEvent(event)
+        detail = event.get('detail')
+        log.info(f'Got event details: {detail}')
+        ssm_event = SSMEvent(detail)
 
-        log.info(f"Got user: {event.user}, action: {event.action} for parameter(s) {event.parameters}")
+        if ssm_event.is_error():
+            log.info(f'Not processing event due to error Message {ssm_event.error_message} '
+                     f'and Code: {ssm_event.error_code}')
+            return
 
-        for ps_name in event.parameters:
+        log.info(f"Got user: {ssm_event.user}, action: {ssm_event.action} for parameter(s) {ssm_event.parameters}")
+
+        for ps_name in ssm_event.parameters:
             ps_name = f'/{ps_name}' if not ps_name.startswith('/') else ps_name
             matching_ns = [ns for ns in FIGGY_NAMESPACES if ps_name.startswith(ns)]
 
@@ -60,26 +66,26 @@ def handle(event, context):
                 log.info(f'PS Name: {ps_name} - is not maintained by Figgy. Skipping..')
                 continue
 
-            if event.action == DELETE_PARAM_ACTION or event.action == DELETE_PARAMS_ACTION:
-                audit.put_delete_log(event.user, event.action, ps_name, timestamp=event.time)
-                notify_delete(ps_name, event.user)
-            elif event.action == PUT_PARAM_ACTION:
-                if not event.value:
-                    event.value = ssm.get_parameter_value_encrypted(ps_name)
+            if ssm_event.action == DELETE_PARAM_ACTION or ssm_event.action == DELETE_PARAMS_ACTION:
+                audit.put_delete_log(ssm_event.user, ssm_event.action, ps_name, timestamp=ssm_event.time)
+                notify_delete(ps_name, ssm_event.user)
+            elif ssm_event.action == PUT_PARAM_ACTION:
+                if not ssm_event.value:
+                    ssm_event.value = ssm.get_parameter_value_encrypted(ps_name)
 
                 audit.put_audit_log(
-                    event.user,
-                    event.action,
+                    ssm_event.user,
+                    ssm_event.action,
                     ps_name,
-                    event.value,
-                    event.type,
-                    event.key_id,
-                    event.description,
-                    event.version,
-                    timestamp=event.time,
+                    ssm_event.value,
+                    ssm_event.type,
+                    ssm_event.key_id,
+                    ssm_event.description,
+                    ssm_event.version,
+                    timestamp=ssm_event.time,
                 )
             else:
-                log.info(f"Unsupported action type found! --> {event.action}")
+                log.info(f"Unsupported action type found! --> {ssm_event.action}")
 
         # This will occasionally cleanup parameters with the explict value of DELETE_ME.
         # Great for testing and adding PS parameters you don't want to be restored later on.
@@ -88,9 +94,6 @@ def handle(event, context):
             audit.cleanup_test_logs()
             LAST_CLEANUP = time.time()
 
-    except SSMErrorDetected as e:
-        log.info(f'Not processing event due to error Message {event.error_message} and Code: {event.error_code}')
-        return
     except Exception as e:
         log.error(e)
         message = f"The following error occurred in an the figgy-ssm-stream-replicator lambda. " \
