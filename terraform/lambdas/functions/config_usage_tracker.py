@@ -69,7 +69,7 @@ def handle(event, context):
                 continue
 
             log.info(f"Got user: {ssm_event.user}, action: {ssm_event.action} for parameter(s) {ssm_event.parameters}")
-            if "figgy" in ssm_event.user:
+            if ssm_event.user.startswith('figgy'):
                 log.info(f'Found event from figgy, not logging.')
                 return
 
@@ -80,6 +80,8 @@ def handle(event, context):
                 if matching_ns:
                     log.info(f"Found GET event for matching namespace: {matching_ns} and name: {name}")
                     usage_tracker.add_usage_log(name, ssm_event.user, ssm_event.time)
+                else:
+                    log.info(f'PS Name: {name} - {FIGGY_NAMESPACES} - no match found. ')
 
 
         except Exception as e:
