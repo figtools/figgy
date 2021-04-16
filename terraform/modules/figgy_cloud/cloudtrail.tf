@@ -46,12 +46,4 @@ resource "aws_cloudtrail" "figgy_cloudtrail" {
     aws_s3_bucket_policy.cloudtrail_bucket_policy,
     aws_cloudwatch_log_group.figgy_trail_log_group
   ]
-
-//  event_selector {
-//    # Must be All, if set to ReadOnly, there must be anohter Cloudtrail with All set otherwise SSM Write Events will not
-//    # be available over cloudwatch event bus
-//    read_write_type = "All"
-//    # Must be true, if set to false, we cannot see GetParameterEvents from users who assumed roles into the account.
-//    include_management_events = true
-//  }
 }
