@@ -36,7 +36,7 @@ LAST_CLEANUP = 0
 def handle(event, context):
     global LAST_CLEANUP
     log.info(f"Event: {event}")
-    data = event.get('data')
+    data = event.get('awslogs', {}).get('data')
 
     if data:
         data: Dict = json.loads(gzip.decompress(base64.b64decode(data)))
