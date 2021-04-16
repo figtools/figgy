@@ -37,14 +37,19 @@ def handle(event, context):
     global LAST_CLEANUP
     log.info(f"Event: {event}")
     data = event.get('awslogs', {}).get('data')
-
+    bytes = base64.b64decode(data)
+    decompressed = gzip.decompress(bytes)
+    log.info(f'Decompressed: {decompressed}')
     if data:
-        data: Dict = json.loads(gzip.decompress(base64.b64decode(data)))
+        data: Dict = json.loads(decompressed)
+        log.info(f'Got data: {data}')
     else:
         raise ValueError(f"Unable decode and decompress event data: {event.get(data)}")
 
     log_events = data.get('logEvents')
+    log.info(f'Got events: {log_events}')
     for log_event in log_events:
+        log.info(f'Processing event: {event}')
         event = json.loads(log_event.get('message'))
 
         # Don't process other account's events.
