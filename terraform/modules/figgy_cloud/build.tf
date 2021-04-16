@@ -2,7 +2,7 @@ data "archive_file" "figgy" {
   source_dir  = "lambdas/"
   output_path = "figgy.zip"
   type        = "zip"
-  depends_on = [time_sleep.wait_45_seconds]
+  depends_on = [time_sleep.wait_45_seconds, aws_s3_bucket.figgy_bucket]
 
 }
 # Required to work around race condition for users creating their own S3 bucket. Traditional depedency mapping
