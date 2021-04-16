@@ -12,7 +12,7 @@ resource "aws_s3_bucket" "figgy_bucket" {
   acl    = "private"
 
   versioning {
-    enabled = true
+    enabled = false
   }
 
   tags = {

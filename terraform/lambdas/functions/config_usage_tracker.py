@@ -31,15 +31,16 @@ LAST_CLEANUP = 0
 
 def handle(event, context):
     global LAST_CLEANUP
+    log.info(f"Event: {event}")
 
     # Don't process other account's events.
     originating_account = event.get('account')
     if originating_account != ACCOUNT_ID:
-        log.info(f"Received event from different account with id: {ACCOUNT_ID}. Skipping this event.")
+        log.info(f"Received event from account {originating_account}, only processing events from account with "
+                 f"id: {ACCOUNT_ID}. Skipping this event.")
         return
 
     try:
-        log.info(f"Event: {event}")
         event = SSMEvent(event)
         log.info(f"Got user: {event.user}, action: {event.action} for parameter(s) {event.parameters}")
         if "figgy" in event.user:
