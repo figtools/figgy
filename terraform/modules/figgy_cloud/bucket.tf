@@ -37,9 +37,6 @@ resource "aws_s3_bucket" "figgy_bucket" {
   }
 }
 
-# You will need this if you do **_NOT_** already have cloud-trail logging events
-# Generally I would not recommend using figgy to manage your cloudtrail, but this will ensure your events are properly
-# capture and figgy can use them for its event-driven config workflow :)
 resource "aws_s3_bucket_policy" "cloudtrail_bucket_policy" {
   bucket = aws_s3_bucket.figgy_bucket.id
   depends_on = [aws_s3_bucket.figgy_bucket]
