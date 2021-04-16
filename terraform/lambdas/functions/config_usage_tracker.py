@@ -50,10 +50,10 @@ def handle(event, context):
     log.info(f'Got events: {log_events}')
     for log_event in log_events:
         log.info(f'Processing event: {event}')
-        event = json.loads(log_event.get('message'))
+        event = log_event.get('message')
 
         # Don't process other account's events.
-        originating_account = event.get('account')
+        originating_account = event.get('userIdentity', {}).get('account')
         if originating_account != ACCOUNT_ID:
             log.info(f"Received event from account {originating_account}, only processing events from account with "
                      f"id: {ACCOUNT_ID}. Skipping this event.")
