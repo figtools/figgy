@@ -6,7 +6,7 @@
 # TODO: You may use S3 / Terraform Cloud (recommended) / Local / etc.
 # TODO: Docs: https://www.terraform.io/docs/backends/index.html
 terraform {
-  required_version = ">=0.14.0"
+  required_version = ">=0.15.0"
 
   backend "remote" {
     hostname = "app.terraform.io"
