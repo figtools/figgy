@@ -1,6 +1,10 @@
 import logging
 import json
+from typing import Dict
+
 import boto3
+import base64
+import zlib
 
 from config.constants import *
 from lib.data.dynamo.usage_tracker_dao import UsageTrackerDao
@@ -32,46 +36,56 @@ LAST_CLEANUP = 0
 def handle(event, context):
     global LAST_CLEANUP
     log.info(f"Event: {event}")
+    data = event.get('data')
 
-    # Don't process other account's events.
-    originating_account = event.get('account')
-    if originating_account != ACCOUNT_ID:
-        log.info(f"Received event from account {originating_account}, only processing events from account with "
-                 f"id: {ACCOUNT_ID}. Skipping this event.")
-        return
+    if data:
+        data: Dict = json.loads(zlib.decompress(base64.b64decode(data)))
+    else:
+        raise ValueError(f"Unable decode and decompress event data: {event.get(data)}")
 
-    try:
-        event = SSMEvent(event)
-        log.info(f"Got user: {event.user}, action: {event.action} for parameter(s) {event.parameters}")
-        if "figgy" in event.user:
-            log.info(f'Found event from figgy, not logging.')
-            return
+    log_events = data.get('logEvents')
+    for log_event in log_events:
+        event = json.loads(log_event.get('message'))
 
-        for ps_name in event.parameters:
-            name = f'/{ps_name}' if not ps_name.startswith('/') else ps_name
-            matching_ns = [ns for ns in FIGGY_NAMESPACES if ps_name.startswith(ns)]
+        # Don't process other account's events.
+        originating_account = event.get('account')
+        if originating_account != ACCOUNT_ID:
+            log.info(f"Received event from account {originating_account}, only processing events from account with "
+                     f"id: {ACCOUNT_ID}. Skipping this event.")
+            continue
 
-            if matching_ns:
-                log.info(f"Found GET event for matching namespace: {matching_ns} and name: {name}")
-                usage_tracker.add_usage_log(name, event.user, event.time)
+        try:
+            event = SSMEvent(event)
+            log.info(f"Got user: {event.user}, action: {event.action} for parameter(s) {event.parameters}")
+            if "figgy" in event.user:
+                log.info(f'Found event from figgy, not logging.')
+                return
 
-    except SSMErrorDetected as e:
-        log.info(f'Not processing event due to error Message {event.error_message} and Code: {event.error_code}')
-        return
-    except Exception as e:
-        log.error(e)
-        message = f"The following error occurred in an the figgy-ssm-stream-replicator lambda. " \
-                  f"If this appears to be a bug with Figgy, please tell us by submitting a GitHub issue!" \
-                  f" \n\n{Utils.printable_exception(e)}"
+            for ps_name in event.parameters:
+                name = f'/{ps_name}' if not ps_name.startswith('/') else ps_name
+                matching_ns = [ns for ns in FIGGY_NAMESPACES if ps_name.startswith(ns)]
 
-        title = "Figgy experienced an irrecoverable error!"
-        message = SimpleSlackMessage(
-            title=title,
-            message=message,
-            color=SlackColor.RED
-        )
-        slack.send_message(message)
-        raise e
+                if matching_ns:
+                    log.info(f"Found GET event for matching namespace: {matching_ns} and name: {name}")
+                    usage_tracker.add_usage_log(name, event.user, event.time)
+
+        except SSMErrorDetected as e:
+            log.info(f'Not processing event due to error Message {event.error_message} and Code: {event.error_code}')
+            continue
+        except Exception as e:
+            log.error(e)
+            message = f"The following error occurred in an the figgy-ssm-stream-replicator lambda. " \
+                      f"If this appears to be a bug with Figgy, please tell us by submitting a GitHub issue!" \
+                      f" \n\n{Utils.printable_exception(e)}"
+
+            title = "Figgy experienced an irrecoverable error!"
+            message = SimpleSlackMessage(
+                title=title,
+                message=message,
+                color=SlackColor.RED
+            )
+            slack.send_message(message)
+            continue
 
 
 if __name__ == "__main__":
