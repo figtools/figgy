@@ -1,11 +1,15 @@
 module "dynamo_stream_replicator" {
-  source                  = "../figgy_lambda"
-  deploy_bucket           = local.lambda_bucket
-  description             = "Instantly replicates source -> destination configuration changes when someone uses figgy to alter replication mappings."
-  handler                 = "functions/dynamo_stream_replicator.handle"
-  lambda_name             = "figgy-dynamo-stream-replicator"
-  lambda_timeout          = 300
-  policies                = [aws_iam_policy.config_replication.arn, aws_iam_policy.lambda_default.arn, aws_iam_policy.lambda_read_configs.arn]
+  source         = "../figgy_lambda"
+  deploy_bucket  = local.lambda_bucket
+  description    = "Instantly replicates source -> destination configuration changes when someone uses figgy to alter replication mappings."
+  handler        = "functions/dynamo_stream_replicator.handle"
+  lambda_name    = "figgy-dynamo-stream-replicator"
+  lambda_timeout = 300
+  policies = [
+    aws_iam_policy.config_replication.arn,
+    aws_iam_policy.lambda_default.arn,
+    aws_iam_policy.lambda_read_figgy_specific_configs.arn
+  ]
   zip_path                = data.archive_file.figgy.output_path
   layers                  = [var.cfgs.aws_sdk_layer_map[var.region]]
   cw_lambda_log_retention = var.figgy_cw_log_retention

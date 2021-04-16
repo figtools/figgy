@@ -54,6 +54,11 @@ def handle(event, context):
 
         for ps_name in event.parameters:
             ps_name = f'/{ps_name}' if not ps_name.startswith('/') else ps_name
+            matching_ns = [ns for ns in FIGGY_NAMESPACES if ps_name.startswith(ns)]
+
+            if not matching_ns:
+                log.info(f'PS Name: {ps_name} - is not maintained by Figgy. Skipping..')
+                continue
 
             if event.action == DELETE_PARAM_ACTION or event.action == DELETE_PARAMS_ACTION:
                 audit.put_delete_log(event.user, event.action, ps_name, timestamp=event.time)

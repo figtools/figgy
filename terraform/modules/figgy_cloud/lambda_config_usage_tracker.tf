@@ -8,7 +8,7 @@ module "config_usage_tracker" {
   policies = [
     aws_iam_policy.config_usage_tracker.arn,
     aws_iam_policy.lambda_default.arn,
-    aws_iam_policy.lambda_read_configs.arn,
+    aws_iam_policy.lambda_read_figgy_specific_configs.arn,
   ]
   zip_path                = data.archive_file.figgy.output_path
   layers                  = [var.cfgs.aws_sdk_layer_map[var.region]]

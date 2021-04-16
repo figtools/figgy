@@ -183,8 +183,8 @@ data "aws_iam_policy_document" "config_replication_document" {
 
 
 # Read configs under /figgy namespace
-resource "aws_iam_policy" "lambda_read_configs" {
-  name        = "figgy-lambda-read-configs"
+resource "aws_iam_policy" "lambda_read_figgy_specific_configs" {
+  name        = "figgy-lambda-read-figgy-specific-configs"
   path        = "/"
   description = "IAM policy to enable figgy lambdas to read figgy-specific configurations"
   policy      = data.aws_iam_policy_document.lambda_read_figgy_configs.json
@@ -206,5 +206,37 @@ data "aws_iam_policy_document" "lambda_read_figgy_configs" {
     actions   = ["ssm:DescribeParameters"]
     resources = ["*"]
   }
+}
 
+# Read configs under /figgy namespace
+resource "aws_iam_policy" "lambda_read_all_figgy_configs" {
+  name        = "figgy-lambda-read-figgy-managed-configs"
+  path        = "/"
+  description = "IAM policy to enable figgy lambdas to read configurations in figgy-managed namespaces. Does not provide decrypt access for secrets."
+  policy      = data.aws_iam_policy_document.read_all_figgy_managed_configs.json
+}
+
+data "aws_iam_policy_document" "read_all_figgy_managed_configs" {
+  statement {
+    sid = "ReadAllFiggyManagedConfigs"
+    actions = [
+      "ssm:GetParameter",
+      "ssm:GetParameters",
+      "ssm:GetParameterHistory",
+      "ssm:GetParametersByPath",
+    ]
+
+    # EVERYONE gets access to /shared, it is our global namespace.
+    resources = concat([
+      for ns in var.cfgs.root_namespaces :
+      "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter${ns}/*"
+      ]
+    )
+  }
+
+  statement {
+    sid       = "SSMDescribe"
+    actions   = ["ssm:DescribeParameters"]
+    resources = ["*"]
+  }
 }

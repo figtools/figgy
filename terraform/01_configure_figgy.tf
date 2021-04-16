@@ -20,7 +20,7 @@ locals {
 
     # List of namespaces at the root level of your parameter store namespace. Figgy (and its users)
     # will ONLY have access to _AT MOST_ configs under these namespaces.
-    # ** /shared is required by figgy, all otheres are optional
+    # ** /shared is required by figgy, all others are optional
     root_namespaces = ["/shared", "/app", "/data", "/devops", "/sre", "/dba"]
 
     # This namespace is where _all_ service specific configurations will be stored. Must be one of the above listed
