@@ -16,13 +16,18 @@ terraform {
       prefix = "figgy-"
     }
   }
+
+required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      version = "~>3.0"
+    }
+  }
 }
 
 # TODO: You will need to configure this to point to YOUR environment. Use profiles, role assumption, whatever makes
 # TODO: sense for your terraform environment. Docs: https://www.terraform.io/docs/providers/aws/index.html
 provider "aws" {
-  source = "hashicorp/aws"
-  version = "~>3.0"
   region = var.region
 
   assume_role {
@@ -31,4 +36,6 @@ provider "aws" {
     role_arn     = "arn:aws:iam::${var.aws_account_id}:role/figgy-admin"
   }
 }
+
+
 
