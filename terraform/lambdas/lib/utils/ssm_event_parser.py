@@ -32,20 +32,19 @@ class SSMEvent:
 
     def __init__(self, event: Dict):
         log.debug(f'Parsing event: {event}')
-        self.event: Dict = event
-        self.detail = event["detail"]
+        self.event = event
         self.validate()
 
-        self.user_arn = self.detail.get("userIdentity", {}).get("arn", "UserArnUnknown")
+        self.user_arn = self.event.get("userIdentity", {}).get("arn", "UserArnUnknown")
         self.user = self.user_arn.split("/")[-1:][0]
-        self.action = self.detail.get("eventName")
-        self.request_params = self.detail.get('requestParameters', {})
-        self.response_elements = self.detail.get("responseElements", {})
+        self.action = self.event.get("eventName")
+        self.request_params = self.event.get('requestParameters', {})
+        self.response_elements = self.event.get("responseElements", {})
 
         ps_names = self.request_params.get('names', [])
         ps_name = [self.request_params['name']] if 'name' in self.request_params else []
         self.parameters = ps_names + ps_name
-        event_time = self.detail.get('eventTime')
+        event_time = self.event.get('eventTime')
 
         if self.response_elements:
             log.info(f'Got response elements, getting version')
@@ -65,11 +64,11 @@ class SSMEvent:
 
     def validate(self):
         throw = False
-        if 'errorMessage' in self.detail:
-            self.error_message = self.detail['errorMessage']
+        if 'errorMessage' in self.event:
+            self.error_message = self.event['errorMessage']
             throw = True
-        elif 'errorCode' in self.detail:
-            self.error_code = self.detail['errorCode']
+        elif 'errorCode' in self.event:
+            self.error_code = self.event['errorCode']
             throw = True
 
         if throw:
