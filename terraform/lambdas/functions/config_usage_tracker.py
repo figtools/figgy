@@ -4,7 +4,7 @@ from typing import Dict
 
 import boto3
 import base64
-import zlib
+import gzip
 
 from config.constants import *
 from lib.data.dynamo.usage_tracker_dao import UsageTrackerDao
@@ -39,7 +39,7 @@ def handle(event, context):
     data = event.get('data')
 
     if data:
-        data: Dict = json.loads(zlib.decompress(base64.b64decode(data)))
+        data: Dict = json.loads(gzip.decompress(base64.b64decode(data)))
     else:
         raise ValueError(f"Unable decode and decompress event data: {event.get(data)}")
 
