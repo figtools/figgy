@@ -1,8 +1,9 @@
 
 resource "aws_cloudwatch_log_group" "figgy_trail_log_group" {
   name = "/figgy/cloudtrail/default-trail"
-  # We do not want to retain cloudtrail logs for a long time.
+  # We do not want to retain cloudtrail logs, we only need them long enough for our lambda
   # We parse SSM related Get/List/Describe events immediately then discard.
+  # For exact details on cloudtrail event consumption, see modules/figgy_cloud/figgy_config_usage_tracker.tf
   retention_in_days = 1
 }
 

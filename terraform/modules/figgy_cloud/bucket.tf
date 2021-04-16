@@ -21,10 +21,12 @@ resource "aws_s3_bucket" "figgy_bucket" {
     created_by = "figgy"
   }
 
-  lifecycle_rule {
-    enabled = false
 
-    # Cloudtrail logs should be auto-expired after 1 day, we don't need to keep them, they ain't our business!
+  # Cloudtrail logs should be auto-expired after 1 day. If we avoid writing to S3 altogether we would.
+  lifecycle_rule {
+    enabled = true
+    prefix = 'AWSLogs/'
+
     expiration {
       days = 1
     }

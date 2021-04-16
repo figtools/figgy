@@ -20,7 +20,8 @@ module "config_usage_tracker" {
 }
 
 # We do not want to consume all Cloudtrail events, instead we only want the ones relevant to ParameterStore. This CW
-# filter will ensure we only process relevant events.
+# filter will ensure we only process relevant events. In the future, once AWS allows us to only publish cloudtrail
+# events to the log group that are SSM events, we can limit this filter.
 locals {
   is_get_param_event = "$.eventName = \"GetParameterHistory\" || $.eventName = \"GetParameter\" || $.eventName = \"GetParameters\" || $.eventName = \"GetParametersByPath\""
   is_api_call        = "$.eventType = \"AwsApiCall\""
