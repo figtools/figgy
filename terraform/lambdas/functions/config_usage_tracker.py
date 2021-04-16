@@ -50,7 +50,7 @@ def handle(event, context):
     log.info(f'Got events: {log_events}')
     for log_event in log_events:
         log.info(f'Processing event: {log_event}')
-        message = log_event.get('message')
+        message = json.loads(log_event.get('message'))
 
         # Don't process other account's events.
         originating_account = message.get('userIdentity', {}).get('account')
