@@ -33,8 +33,8 @@ class SSMEvent:
     def __init__(self, event: Dict):
         log.info(f'Parsing event: {event}')
         self.event = event
-        self.validate()
-
+        self.error_message = self.event.get('errorMessage')
+        self.error_code = self.event.get('errorCode')
         self.user_arn = self.event.get("userIdentity", {}).get("arn", "UserArnUnknown")
         self.user = self.user_arn.split("/")[-1:][0]
         self.action = self.event.get("eventName")
@@ -62,14 +62,5 @@ class SSMEvent:
             self.description = self.request_params.get("description")
             self.key_id = self.request_params.get("keyId")
 
-    def validate(self):
-        throw = False
-        if 'errorMessage' in self.event:
-            self.error_message = self.event['errorMessage']
-            throw = True
-        elif 'errorCode' in self.event:
-            self.error_code = self.event['errorCode']
-            throw = True
-
-        if throw:
-            raise SSMErrorDetected("Detected errorMessage in event details")
+    def is_error(self):
+        return self.error_code or self.error_message

@@ -62,6 +62,12 @@ def handle(event, context):
 
         try:
             ssm_event = SSMEvent(message)
+
+            if ssm_event.is_error():
+                log.info(f'Not processing event due to error Message {ssm_event.error_message} '
+                         f'and Code: {ssm_event.error_code}')
+                continue
+
             log.info(f"Got user: {ssm_event.user}, action: {ssm_event.action} for parameter(s) {ssm_event.parameters}")
             if "figgy" in ssm_event.user:
                 log.info(f'Found event from figgy, not logging.')
@@ -75,9 +81,7 @@ def handle(event, context):
                     log.info(f"Found GET event for matching namespace: {matching_ns} and name: {name}")
                     usage_tracker.add_usage_log(name, ssm_event.user, ssm_event.time)
 
-        except SSMErrorDetected as e:
-            log.info(f'Not processing event due to error Message {ssm_event.error_message} and Code: {ssm_event.error_code}')
-            continue
+
         except Exception as e:
             log.error(e)
             message = f"The following error occurred in an the figgy-ssm-stream-replicator lambda. " \
