@@ -49,33 +49,33 @@ def handle(event, context):
     log_events = data.get('logEvents')
     log.info(f'Got events: {log_events}')
     for log_event in log_events:
-        log.info(f'Processing event: {event}')
-        event = log_event.get('message')
+        log.info(f'Processing event: {log_event}')
+        message = log_event.get('message')
 
         # Don't process other account's events.
-        originating_account = event.get('userIdentity', {}).get('account')
+        originating_account = message.get('userIdentity', {}).get('account')
         if originating_account != ACCOUNT_ID:
             log.info(f"Received event from account {originating_account}, only processing events from account with "
                      f"id: {ACCOUNT_ID}. Skipping this event.")
             continue
 
         try:
-            event = SSMEvent(event)
-            log.info(f"Got user: {event.user}, action: {event.action} for parameter(s) {event.parameters}")
-            if "figgy" in event.user:
+            ssm_event = SSMEvent(message)
+            log.info(f"Got user: {ssm_event.user}, action: {ssm_event.action} for parameter(s) {ssm_event.parameters}")
+            if "figgy" in ssm_event.user:
                 log.info(f'Found event from figgy, not logging.')
                 return
 
-            for ps_name in event.parameters:
+            for ps_name in ssm_event.parameters:
                 name = f'/{ps_name}' if not ps_name.startswith('/') else ps_name
                 matching_ns = [ns for ns in FIGGY_NAMESPACES if ps_name.startswith(ns)]
 
                 if matching_ns:
                     log.info(f"Found GET event for matching namespace: {matching_ns} and name: {name}")
-                    usage_tracker.add_usage_log(name, event.user, event.time)
+                    usage_tracker.add_usage_log(name, ssm_event.user, ssm_event.time)
 
         except SSMErrorDetected as e:
-            log.info(f'Not processing event due to error Message {event.error_message} and Code: {event.error_code}')
+            log.info(f'Not processing event due to error Message {ssm_event.error_message} and Code: {ssm_event.error_code}')
             continue
         except Exception as e:
             log.error(e)
