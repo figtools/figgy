@@ -31,7 +31,7 @@ class SSMEvent:
     name: str
 
     def __init__(self, event: Dict):
-        log.debug(f'Parsing event: {event}')
+        log.info(f'Parsing event: {event}')
         self.event = event
         self.validate()
 
