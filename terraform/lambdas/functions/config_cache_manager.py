@@ -41,10 +41,12 @@ def handle(event, context):
         event_time = detail.get('eventTime')
 
         # Convert to millis since epoch
-        # if event_time:
-        #     event_time = int(datetime.strptime(event_time, "%Y-%m-%dT%H:%M:%SZ").timestamp() * 1000)
-        # else:
-        #     event_time = int(time.time() * 1000)
+        if event_time:
+            event_time = int(datetime.strptime(event_time, "%Y-%m-%dT%H:%M:%SZ").timestamp() * 1000)
+        else:
+            event_time = int(time.time() * 1000)
+
+        log.info(f'Calculated event time: {event_time} for parameter {ps_name} with action {action}')
 
         if not ps_name:
             log.info(f"Received an event missing parameterStore path: {event}")
