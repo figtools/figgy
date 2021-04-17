@@ -99,6 +99,11 @@ resource "aws_dynamodb_table" "user_tracker" {
     type = "N"
   }
 
+  attribute {
+    name = "empty_indexable_key"
+    type = "S"
+  }
+
   global_secondary_index {
     name               = "UserLastUpdatedIndex"
     hash_key           = "user"

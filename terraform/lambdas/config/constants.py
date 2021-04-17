@@ -37,6 +37,7 @@ CONFIG_USAGE_TABLE_NAME = "figgy-config-usage-tracker"
 CONFIG_USAGE_PARAMETER_KEY = "parameter_name"
 CONFIG_USAGE_LAST_UPDATED_KEY = "last_updated"
 CONFIG_USAGE_USER_KEY = "user"
+CONFIG_USAGE_EMPTY_KEY = "empty_indexable_key"
 
 
 # Generic
