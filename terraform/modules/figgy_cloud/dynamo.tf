@@ -78,7 +78,7 @@ resource "aws_dynamodb_table" "config_cache" {
 }
 
 
-resource "aws_dynamodb_table" "config_usage_tracker" {
+resource "aws_dynamodb_table" "user_tracker" {
   name         = "figgy-config-usage-tracker"
   hash_key     = "parameter_name"
   range_key    = "user"
@@ -99,10 +99,19 @@ resource "aws_dynamodb_table" "config_usage_tracker" {
     type = "N"
   }
 
-  local_secondary_index {
-    projection_type = "ALL"
-    range_key = "last_updated"
-    name = "last-updated"
+  global_secondary_index {
+    name               = "UserLastUpdatedIndex"
+    hash_key           = "user"
+    range_key          = "last_updated"
+    projection_type    = "ALL"
+  }
+
+  global_secondary_index {
+    name               = "LastUpdateOnlyIdx"
+    hash_key           = "empty_indexable_key"
+    range_key          = "last_updated"
+    projection_type    = "INCLUDES"
+    non_key_attributes = ["parameter_name"]
   }
 
   tags = {
