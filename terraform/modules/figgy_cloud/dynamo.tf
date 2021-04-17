@@ -115,7 +115,7 @@ resource "aws_dynamodb_table" "config_usage_tracker" {
     name               = "LastUpdateOnlyIdx"
     hash_key           = "empty_indexable_key"
     range_key          = "last_updated"
-    projection_type    = "INCLUDES"
+    projection_type    = "INCLUDE"
     non_key_attributes = ["parameter_name"]
   }
 
