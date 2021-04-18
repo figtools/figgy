@@ -113,7 +113,8 @@ data "aws_iam_policy_document" "dynamic_policy" {
       aws_dynamodb_table.config_replication.arn,
       aws_dynamodb_table.config_auditor.arn,
       aws_dynamodb_table.config_cache.arn,
-      aws_dynamodb_table.config_usage_tracker.arn
+      aws_dynamodb_table.config_usage_tracker.arn,
+      "${aws_dynamodb_table.config_usage_tracker.arn}/*"
     ]
   }
 
