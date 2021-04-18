@@ -17,7 +17,7 @@ class UsageTrackerDao:
             CONFIG_USAGE_PARAMETER_KEY: parameter_name,
             CONFIG_USAGE_USER_KEY: user,
             CONFIG_USAGE_LAST_UPDATED_KEY: timestamp,
-            CONFIG_USAGE_EMPTY_KEY: "empty",
+            CONFIG_USAGE_EMPTY_KEY: CONFIG_USAGE_EMPTY_IDX_VALUE,
         }
 
         self._table.put_item(Item=item)
