@@ -137,12 +137,7 @@ resource "aws_dynamodb_table" "user_cache" {
     name = "user_name"
     type = "S"
   }
-
-  attribute {
-    name = "last_updated"
-    type = "N"
-  }
-
+  
   tags = {
     Name        = "figgy-user-cache"
     Environment = var.env_alias
