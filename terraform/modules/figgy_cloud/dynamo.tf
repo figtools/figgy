@@ -131,7 +131,6 @@ resource "aws_dynamodb_table" "config_usage_tracker" {
 resource "aws_dynamodb_table" "user_cache" {
   name         = "figgy-user-cache"
   hash_key     = "user_name"
-  range_key    = "last_updated"
   billing_mode = "PAY_PER_REQUEST"
 
   attribute {
