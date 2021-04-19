@@ -64,7 +64,10 @@ data "aws_iam_policy_document" "config_usage_tracker" {
       "dynamodb:UpdateItem",
       "dynamodb:UpdateTimeToLive"
     ]
-    resources = [aws_dynamodb_table.config_usage_tracker.arn]
+    resources = [
+      aws_dynamodb_table.config_usage_tracker.arn,
+      aws_dynamodb_table.user_cache.arn
+    ]
   }
 }
 

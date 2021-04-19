@@ -8,18 +8,24 @@ import gzip
 
 from config.constants import *
 from lib.data.dynamo.usage_tracker_dao import UsageTrackerDao
+from lib.data.dynamo.user_cache_dao import UserCacheDao
 from lib.data.ssm import SsmDao
 from lib.models.slack import SlackColor, SimpleSlackMessage
 from lib.svcs.slack import SlackService
-from lib.utils.ssm_event_parser import SSMEvent, SSMErrorDetected
+from lib.utils.ssm_event_parser import SSMEvent
 from lib.utils.utils import Utils
 
 log = Utils.get_logger(__name__, logging.INFO)
 
+# Boto3 resources
 dynamo_resource = boto3.resource("dynamodb")
-usage_tracker: UsageTrackerDao = UsageTrackerDao(dynamo_resource)
 ssm_client = boto3.client('ssm')
+
+# Daos
+usage_tracker: UsageTrackerDao = UsageTrackerDao(dynamo_resource)
+user_cache: UserCacheDao = UserCacheDao(dynamo_resource)
 ssm = SsmDao(ssm_client)
+
 webhook_url = ssm.get_parameter_value(FIGGY_WEBHOOK_URL_PATH)
 slack: SlackService = SlackService(webhook_url=webhook_url)
 
@@ -80,13 +86,14 @@ def handle(event, context):
                 if matching_ns:
                     log.info(f"Found GET event for matching namespace: {matching_ns} and name: {name}")
                     usage_tracker.add_usage_log(name, ssm_event.user, ssm_event.time)
+                    user_cache.add_user_to_cache(ssm_event.user, state=USER_CACHE_STATE_ACTIVE)
                 else:
                     log.info(f'PS Name: {name} - {FIGGY_NAMESPACES} - no match found. ')
 
 
         except Exception as e:
             log.error(e)
-            message = f"The following error occurred in an the figgy-ssm-stream-replicator lambda. " \
+            message = f"The following error occurred in an the figgy-config-usage-tracker lambda. " \
                       f"If this appears to be a bug with Figgy, please tell us by submitting a GitHub issue!" \
                       f" \n\n{Utils.printable_exception(e)}"
 

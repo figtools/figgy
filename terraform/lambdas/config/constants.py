@@ -40,6 +40,14 @@ CONFIG_USAGE_USER_KEY = "user"
 CONFIG_USAGE_EMPTY_KEY = "empty_indexable_key"
 CONFIG_USAGE_EMPTY_IDX_VALUE = "empty"
 
+# User cache table
+USER_CACHE_TABLE_NAME = "figgy-user-cache"
+USER_CACHE_PARAM_NAME_KEY = "user_name"
+USER_CACHE_STATE_ATTR_NAME = "state"
+USER_CACHE_LAST_UPDATED_KEY = "last_updated"
+USER_CACHE_STATE_DELETED = 'DELETED'
+USER_CACHE_STATE_ACTIVE = 'ACTIVE'
+
 
 # Generic
 PUT_PARAM_ACTION = "PutParameter"
