@@ -109,9 +109,11 @@ data "aws_iam_policy_document" "dynamic_policy" {
       "dynamodb:Scan"
     ]
 
+    # The arns ending in /* allow access to Global Secondary Indices
     resources = [
       aws_dynamodb_table.config_replication.arn,
       aws_dynamodb_table.config_auditor.arn,
+      "${aws_dynamodb_table.config_auditor.arn}/*",
       aws_dynamodb_table.config_cache.arn,
       aws_dynamodb_table.user_cache.arn,
       aws_dynamodb_table.config_usage_tracker.arn,
