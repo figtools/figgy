@@ -43,6 +43,18 @@ resource "aws_dynamodb_table" "config_auditor" {
     type = "N"
   }
 
+  attribute {
+    name = "user"
+    type = "S"
+  }
+
+  global_secondary_index {
+    name               = "AuditByUserIdx"
+    hash_key           = "user"
+    range_key          = "time"
+    projection_type    = "ALL"
+  }
+
   tags = {
     Name        = "figgy-config-auditor"
     Environment = var.env_alias
@@ -137,7 +149,7 @@ resource "aws_dynamodb_table" "user_cache" {
     name = "user_name"
     type = "S"
   }
-  
+
   tags = {
     Name        = "figgy-user-cache"
     Environment = var.env_alias
