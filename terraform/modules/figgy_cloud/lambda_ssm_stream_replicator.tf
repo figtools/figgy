@@ -1,16 +1,14 @@
 locals {
   # Cannot pass direct reference because these policy may be created by a different region's build
-  stream_replicator_policies = [
+  stream_replicator_policies = var.primary_region ? [
+    aws_iam_policy.config_replication.arn,
+    aws_iam_policy.lambda_default.arn,
+    aws_iam_policy.lambda_read_figgy_specific_configs.arn
+  ] : [
     "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.config_replication_policy_name}",
     "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.lambda_default_policy_name}",
     "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.read_figgy_configs_policy_name}",
   ]
-
-  stream_replicator_depends_on = var.primary_region ? [
-    aws_iam_policy.config_replication,
-    aws_iam_policy.lambda_default,
-    aws_iam_policy.lambda_read_figgy_specific_configs
-  ]: []
 }
 
 module "ssm_stream_replicator" {
@@ -28,7 +26,6 @@ module "ssm_stream_replicator" {
   sha256                  = data.archive_file.figgy.output_base64sha256
   memory_size             = 256
   concurrent_executions   = 5
-  depends_on = stream_replicator_depends_on
 }
 
 module "ssm_stream_replicator_trigger" {

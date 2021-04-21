@@ -1,17 +1,15 @@
 
 locals {
   # Cannot pass direct reference because these policy may be created by a different region's build
-  cache_manager_policies = [
+  cache_manager_policies = var.primary_region ? [
+    aws_iam_policy.config_cache_manager.arn,
+    aws_iam_policy.lambda_default.arn,
+    aws_iam_policy.lambda_read_figgy_specific_configs.arn
+  ] : [
     "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.config_cache_manager_name}",
     "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.lambda_default_policy_name}",
     "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.read_figgy_configs_policy_name}",
   ]
-
-  cache_manager_depends_on = var.primary_region ? [
-    aws_iam_policy.config_cache_manager,
-    aws_iam_policy.lambda_default,
-    aws_iam_policy.lambda_read_figgy_specific_configs
-  ]: []
 }
 
 module "config_cache_manager" {
@@ -29,7 +27,6 @@ module "config_cache_manager" {
   sha256                  = data.archive_file.figgy.output_base64sha256
   memory_size             = 256
   concurrent_executions   = 1
-  depends_on = cache_manager_depends_on
 }
 
 module "config_cache_manager_trigger" {

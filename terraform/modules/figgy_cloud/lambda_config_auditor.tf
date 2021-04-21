@@ -4,17 +4,16 @@ data aws_iam_policy "config_auditor" {
 
 locals {
   # Cannot pass direct reference because these policy may be created by a different region's build
-  auditor_policies = [
+  auditor_policies = var.primary_region ? [
+    aws_iam_policy.config_auditor.arn,
+    aws_iam_policy.lambda_default.arn,
+    aws_iam_policy.lambda_read_figgy_specific_configs.arn
+  ] : [
     "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.config_auditor_name}",
     "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.lambda_default_policy_name}",
     "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.read_figgy_configs_policy_name}",
   ]
 
-  auditor_depends_on = var.primary_region ? [
-    aws_iam_policy.config_auditor,
-    aws_iam_policy.lambda_default,
-    aws_iam_policy.lambda_read_figgy_specific_configs
-  ]: []
 }
 
 module "config_auditor" {
@@ -32,7 +31,6 @@ module "config_auditor" {
   sha256                  = data.archive_file.figgy.output_base64sha256
   memory_size             = 256
   concurrent_executions   = 5
-  depends_on = auditor_depends_on
 }
 
 module "config_auditor_trigger" {

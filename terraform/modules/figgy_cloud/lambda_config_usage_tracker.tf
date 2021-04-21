@@ -1,17 +1,15 @@
 locals {
   # Cannot pass direct reference because these policy may be created by a different region's build
-  usage_tracker_policies = [
+  usage_tracker_policies = var.primary_region ? [
+    aws_iam_policy.config_usage_tracker.arn,
+    aws_iam_policy.lambda_default.arn,
+    aws_iam_policy.lambda_read_figgy_specific_configs.arn
+  ] : [
     # Syncer leverages cache manager policy too
     "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.config_usage_tracker_name}",
     "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.lambda_default_policy_name}",
     "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.read_figgy_configs_policy_name}",
   ]
-
-  usage_tracker_depends_on = var.primary_region ? [
-    aws_iam_policy.config_usage_tracker,
-    aws_iam_policy.lambda_default,
-    aws_iam_policy.lambda_read_figgy_specific_configs
-  ]: []
 }
 
 module "config_usage_tracker" {
@@ -29,7 +27,6 @@ module "config_usage_tracker" {
   sha256                  = data.archive_file.figgy.output_base64sha256
   memory_size             = 256
   concurrent_executions   = 5
-  depends_on = usage_tracker_depends_on
 }
 
 # We do not want to consume all Cloudtrail events, instead we only want the ones relevant to ParameterStore. This CW
