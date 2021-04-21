@@ -18,7 +18,6 @@ resource "aws_kms_key" "encryption_key" {
 }
 
 resource "aws_kms_alias" "encryption_key_alias" {
-  count         = var.primary_region ? length(var.cfgs.encryption_keys): 0
   name          = "alias/${var.cfgs.encryption_keys[count.index]}${local.alias_suffix}"
   target_key_id = aws_kms_key.encryption_key[count.index].key_id
 }
