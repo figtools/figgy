@@ -1,15 +1,26 @@
+locals {
+  # Cannot pass direct reference because these policy may be created by a different region's build
+  stream_replicator_policies = [
+    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.config_replication_policy_name}",
+    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.lambda_default_policy_name}",
+    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.read_figgy_configs_policy_name}",
+  ]
+
+  stream_replicator_depends_on = var.primary_region ? [
+    aws_iam_policy.config_replication,
+    aws_iam_policy.lambda_default,
+    aws_iam_policy.lambda_read_figgy_specific_configs
+  ]: []
+}
+
 module "ssm_stream_replicator" {
   source         = "../figgy_lambda"
   deploy_bucket  = local.lambda_bucket
   description    = "Listens to the CW event stream for SSM events and triggers replication if replication sources are changed."
   handler        = "functions/ssm_stream_replicator.handle"
-  lambda_name    = "figgy-ssm-stream-replicator"
+  lambda_name    = local.ssm_stream_replicator_name
   lambda_timeout = 60
-  policies = [
-    aws_iam_policy.config_replication.arn,
-    aws_iam_policy.lambda_default.arn,
-    aws_iam_policy.lambda_read_figgy_specific_configs.arn
-  ]
+  policies = stream_replicator_policies
   zip_path                = data.archive_file.figgy.output_path
   layers                  = [var.cfgs.aws_sdk_layer_map[data.aws_region.current.name]]
   cw_lambda_log_retention = var.figgy_cw_log_retention
@@ -17,6 +28,7 @@ module "ssm_stream_replicator" {
   sha256                  = data.archive_file.figgy.output_base64sha256
   memory_size             = 256
   concurrent_executions   = 5
+  depends_on = stream_replicator_depends_on
 }
 
 module "ssm_stream_replicator_trigger" {
