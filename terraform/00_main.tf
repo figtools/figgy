@@ -10,7 +10,7 @@ terraform {
 
   backend "remote" {
     hostname = "app.terraform.io"
-    organization = "figgy"
+    organization = "your-org"
 
     workspaces {
       prefix = "figgy-"
@@ -41,14 +41,14 @@ provider "aws" {
 ### MULTI REGION DEPLOYMENT CONFIG BELOW ###
 ############################################
 
-# Comment out the below blocks if you are only deploying figgy across a single region.
+# Comment out the below block (and duplicate if necessary) if you intend to run Figgy across multiple regions.
 # Unfortunately terraform does not yet support count() inside of the provider blocks so
-# You will need to create N provider blocks for N regions as defined in your var.regions
-# variable.
+# You will need to create N provider blocks for the N regions as defined in your var.regions
+# variable -- hint, it's in your vars/*.tfvars files ;).
 
 //provider "aws" {
 //  region = "us-west-1"
-//  alias = "us-west-1"
+//  alias = "usw1"
 //
 //  assume_role {
 //    role_arn     = "arn:aws:iam::${var.aws_account_id}:role/figgy-admin"
