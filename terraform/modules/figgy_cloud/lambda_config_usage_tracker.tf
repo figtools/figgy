@@ -19,7 +19,7 @@ module "config_usage_tracker" {
   handler        = "functions/config_usage_tracker.handle"
   lambda_name    = local.config_usage_tracker_name
   lambda_timeout = 60
-  policies = usage_tracker_policies
+  policies = local.usage_tracker_policies
   zip_path                = data.archive_file.figgy.output_path
   layers                  = [var.cfgs.aws_sdk_layer_map[data.aws_region.current.name]]
   cw_lambda_log_retention = var.figgy_cw_log_retention

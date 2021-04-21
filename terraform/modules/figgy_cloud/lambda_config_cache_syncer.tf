@@ -19,7 +19,7 @@ module "config_cache_syncer" {
   handler        = "functions/config_cache_syncer.handle"
   lambda_name    = local.config_cache_syncer_name
   lambda_timeout = 500
-  policies = cache_syncer_policies
+  policies = local.cache_syncer_policies
   zip_path                = data.archive_file.figgy.output_path
   layers                  = [var.cfgs.aws_sdk_layer_map[data.aws_region.current.name]]
   cw_lambda_log_retention = var.figgy_cw_log_retention

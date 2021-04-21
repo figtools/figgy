@@ -18,7 +18,7 @@ module "ssm_stream_replicator" {
   handler        = "functions/ssm_stream_replicator.handle"
   lambda_name    = local.ssm_stream_replicator_name
   lambda_timeout = 60
-  policies = stream_replicator_policies
+  policies = local.stream_replicator_policies
   zip_path                = data.archive_file.figgy.output_path
   layers                  = [var.cfgs.aws_sdk_layer_map[data.aws_region.current.name]]
   cw_lambda_log_retention = var.figgy_cw_log_retention

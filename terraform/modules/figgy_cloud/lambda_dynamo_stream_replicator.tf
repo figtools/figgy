@@ -19,7 +19,7 @@ module "dynamo_stream_replicator" {
   handler        = "functions/dynamo_stream_replicator.handle"
   lambda_name    = local.dynamo_stream_replicator_name
   lambda_timeout = 300
-  policies = dynamo_stream_replication_policies
+  policies = local.dynamo_stream_replication_policies
   zip_path                = data.archive_file.figgy.output_path
   layers                  = [var.cfgs.aws_sdk_layer_map[data.aws_region.current.name]]
   cw_lambda_log_retention = var.figgy_cw_log_retention

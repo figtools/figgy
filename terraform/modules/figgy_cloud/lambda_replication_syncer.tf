@@ -18,7 +18,7 @@ module "replication_syncer" {
   handler        = "functions/replication_syncer.handle"
   lambda_name    = local.replication_syncer_name
   lambda_timeout = 300
-  policies = replication_syncer_policies
+  policies = local.replication_syncer_policies
   zip_path                = data.archive_file.figgy.output_path
   layers                  = [var.cfgs.aws_sdk_layer_map[data.aws_region.current.name]]
   cw_lambda_log_retention = var.figgy_cw_log_retention

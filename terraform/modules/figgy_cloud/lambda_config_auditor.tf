@@ -23,7 +23,7 @@ module "config_auditor" {
   handler        = "functions/config_auditor.handle"
   lambda_name    = local.config_auditor_name
   lambda_timeout = 60
-  policies = auditor_policies
+  policies = local.auditor_policies
   zip_path                = data.archive_file.figgy.output_path
   layers                  = [var.cfgs.aws_sdk_layer_map[data.aws_region.current.name]]
   cw_lambda_log_retention = var.figgy_cw_log_retention
