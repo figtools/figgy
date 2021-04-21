@@ -158,3 +158,22 @@ resource "aws_dynamodb_table" "user_cache" {
     created_by  = "figgy"
   }
 }
+
+//resource "aws_dynamodb_table" "secret_sharer" {
+//  name         = "figgy-secret-sharer"
+//  hash_key     = "id"
+//  billing_mode = "PAY_PER_REQUEST"
+//
+//  attribute {
+//    name = "id"
+//    type = "S"
+//  }
+//
+//  tags = {
+//    Name        = "figgy-secret-sharer"
+//    Environment = var.env_alias
+//    owner       = "devops"
+//    application = "figgy"
+//    created_by  = "figgy"
+//  }
+//}

@@ -138,6 +138,14 @@ resource "aws_ssm_parameter" "env_alias" {
   overwrite   = true
 }
 
+resource "aws_ssm_parameter" "env_alias" {
+  name        = "/figgy/regions"
+  type        = "String"
+  value       = jsonencode(var.regions)
+  description = "All regions figgy is deployed across for this environment."
+  overwrite   = true
+}
+
 ## Slack Configurations
 resource "aws_ssm_parameter" "notify_deletes" {
   name        = "/figgy/integrations/slack/notify-deletes"

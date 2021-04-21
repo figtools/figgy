@@ -33,3 +33,7 @@ variable "notify_deletes" {
 variable "cfgs" {
   description = "Local configurations from the caller."
 }
+
+variable "regions" {
+  description = "All AWS regions figgy is deployed in across this account."
+}
