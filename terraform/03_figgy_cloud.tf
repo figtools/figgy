@@ -20,7 +20,7 @@ module "figgy_cloud" {
 # Be sure to update the providers {} block.
 
 //
-//module "figgy_cloud" {
+//module "figgy_cloud_us_west" {
 //  source = "./modules/figgy_cloud"
 //  aws_account_id = var.aws_account_id
 //  region = var.regions[count.index]
