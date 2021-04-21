@@ -28,7 +28,7 @@ terraform {
 # TODO: You will need to configure this to point to YOUR environment. Use profiles, role assumption, whatever makes
 # TODO: sense for your terraform environment. Docs: https://www.terraform.io/docs/providers/aws/index.html
 provider "aws" {
-  region = var.region
+  region = "us-east-1"
 
   assume_role {
     ## Todo: Update this to your own role, or remove this block and provide credentials to
@@ -37,5 +37,22 @@ provider "aws" {
   }
 }
 
+############################################
+### MULTI REGION DEPLOYMENT CONFIG BELOW ###
+############################################
 
+# Comment out the below blocks if you are only deploying figgy across a single region.
+# Unfortunately terraform does not yet support count() inside of the provider blocks so
+# You will need to create N provider blocks for N regions as defined in your var.regions
+# variable.
+
+//provider "aws" {
+//  region = "us-west-1"
+//  alias = "us-west-1"
+//
+//  assume_role {
+//    role_arn     = "arn:aws:iam::${var.aws_account_id}:role/figgy-admin"
+//  }
+//}
+//
 

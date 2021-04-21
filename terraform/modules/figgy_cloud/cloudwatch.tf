@@ -33,7 +33,7 @@ resource "aws_cloudwatch_event_target" "push_event" {
   count     = var.sandbox_deploy && var.cfgs.bastion_account_number != data.aws_caller_identity.current.account_id ? 1 : 0
   rule      = aws_cloudwatch_event_rule.push_ps_events[0].name
   target_id = "push-ps-events"
-  arn       = "arn:aws:events:${var.region}:${var.cfgs.bastion_account_number}:event-bus/default"
+  arn       = "arn:aws:events:${data.aws_region.current.name}:${var.cfgs.bastion_account_number}:event-bus/default"
 }
 
 

@@ -11,7 +11,7 @@ module "config_cache_manager" {
     aws_iam_policy.lambda_read_figgy_specific_configs.arn
   ]
   zip_path                = data.archive_file.figgy.output_path
-  layers                  = [var.cfgs.aws_sdk_layer_map[var.region]]
+  layers                  = [var.cfgs.aws_sdk_layer_map[data.aws_region.current.name]]
   cw_lambda_log_retention = var.figgy_cw_log_retention
   sns_alarm_topic         = aws_sns_topic.figgy_alarms.arn
   sha256                  = data.archive_file.figgy.output_base64sha256
