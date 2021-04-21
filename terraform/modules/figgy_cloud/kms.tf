@@ -11,7 +11,6 @@ locals {
 
 ## 1 Key Per User Type
 resource "aws_kms_key" "encryption_key" {
-  count       = var.primary_region ? length(var.cfgs.encryption_keys): 0
   description = "Key used for encryption / decryption of ${var.cfgs.encryption_keys[count.index]} secrets"
   tags = {
     "created_by" : "figgy"
@@ -27,7 +26,6 @@ resource "aws_kms_alias" "encryption_key_alias" {
 
 ## Replication encryption key - this is required by figgy for the configuration sharing features (essential)
 resource "aws_kms_key" "replication_key" {
-  count = var.primary_region ? 1 : 0
   description = "Key used for encryption / decryption of replicated secrets"
   tags = {
     "created_by" : "figgy"
@@ -35,7 +33,6 @@ resource "aws_kms_key" "replication_key" {
 }
 
 resource "aws_kms_alias" "replication_key_alias" {
-  count = var.primary_region ? 1 : 0
   name          = local.replication_key_alias
   target_key_id = aws_kms_key.replication_key.key_id
 }
