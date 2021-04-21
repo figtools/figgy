@@ -11,6 +11,9 @@ module "figgy_cloud" {
   sandbox_deploy = var.sandbox_deploy
   regions = var.regions
   primary_region = true
+  providers = {
+    aws = aws.default
+  }
 }
 
 ############################################

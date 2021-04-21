@@ -6,7 +6,7 @@
 resource "aws_cloudwatch_event_rule" "push_ps_events" {
   count         = var.sandbox_deploy && var.cfgs.bastion_account_number != data.aws_caller_identity.current.account_id ? 1 : 0
   name          = "push-ssm-events"
-  description   = "This CW Event Pushes ParameterSTore events to another account's event bus. This is off by default and totally optional."
+  description   = "This CW Event Pushes ParameterStore events to another account's event bus. This is off by default and totally optional."
   event_pattern = <<PATTERN
 {
   "source": [

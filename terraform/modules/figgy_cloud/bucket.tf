@@ -8,6 +8,7 @@ locals {
 # If you comment this out, ensure your bucket exists, and then comment out delete the `depends_on` blocks  referencing
 # `aws_s3_bucket.figgy_bucket` in the files prefixed with `lambda_`
 resource "aws_s3_bucket" "figgy_bucket" {
+  count = var.primary_region ? 1 : 0
   bucket = local.bucket_name
   acl    = "private"
 
