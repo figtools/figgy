@@ -138,7 +138,7 @@ resource "aws_ssm_parameter" "env_alias" {
   overwrite   = true
 }
 
-resource "aws_ssm_parameter" "env_alias" {
+resource "aws_ssm_parameter" "regions" {
   name        = "/figgy/regions"
   type        = "String"
   value       = jsonencode(var.regions)
