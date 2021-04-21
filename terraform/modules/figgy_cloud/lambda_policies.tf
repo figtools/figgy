@@ -107,6 +107,7 @@ data "aws_iam_policy_document" "config_cache_manager_document" {
 
 # Replication lambdas policy
 resource "aws_iam_policy" "config_replication" {
+  count = var.primary_region ? 1 : 0
   name        = local.config_replication_policy_name
   path        = "/"
   description = "IAM policy for figgy replication management lambdas"
