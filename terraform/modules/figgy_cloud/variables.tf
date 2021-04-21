@@ -35,5 +35,6 @@ variable "cfgs" {
 }
 
 variable "regions" {
+  type = list(string)
   description = "All AWS regions figgy is deployed in across this account."
 }

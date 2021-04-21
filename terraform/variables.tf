@@ -3,7 +3,7 @@ variable "env_alias" {
 }
 
 variable "regions" {
-  type = "list"
+  type = list(string)
   description = "AWS regions to deploy figgy-cloud to for the specified account."
 }
 
