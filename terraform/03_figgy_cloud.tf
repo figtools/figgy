@@ -10,6 +10,7 @@ module "figgy_cloud" {
   webhook_url = var.webhook_url
   sandbox_deploy = var.sandbox_deploy
   regions = var.regions
+  primary_region = true
 }
 
 ############################################
@@ -31,7 +32,7 @@ module "figgy_cloud" {
 //  webhook_url = var.webhook_url
 //  sandbox_deploy = var.sandbox_deploy
 //  regions = var.regions
-//
+//  primary_region = false
 //  providers = {
 //    aws = aws.us-west-1   # <--- update this as needed.
 //  }
