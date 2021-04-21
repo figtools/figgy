@@ -23,7 +23,6 @@ module "figgy_cloud" {
 //module "figgy_cloud_us_west" {
 //  source = "./modules/figgy_cloud"
 //  aws_account_id = var.aws_account_id
-//  region = var.regions[count.index]
 //  env_alias = var.env_alias
 //  cfgs = merge(local.cfgs, local.bastion_cfgs, local.other_cfgs)
 //  figgy_cw_log_retention = var.figgy_cw_log_retention
