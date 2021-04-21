@@ -1,7 +1,3 @@
-data aws_iam_policy "config_auditor" {
-  arn = ""
-}
-
 locals {
   # Cannot pass direct reference because these policy may be created by a different region's build
   auditor_policies = var.primary_region ? [
