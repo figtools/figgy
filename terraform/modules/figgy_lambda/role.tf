@@ -5,7 +5,7 @@ data "aws_region" "current" {}
 
 
 locals {
-  role_name = "${var.lambda_name}"
+  role_name = var.lambda_name
   role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.lambda_name}"
 }
 
