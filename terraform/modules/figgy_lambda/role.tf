@@ -13,6 +13,7 @@ resource "aws_iam_role" "figgy_role" {
   name = local.role_name
   assume_role_policy = data.aws_iam_policy_document.assume_policy.json
 
+  # Prevents TF from always detecting changes in the name even when there are none, causing resource recreation.
   lifecycle {
     ignore_changes = [name]
   }
