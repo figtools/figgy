@@ -11,8 +11,6 @@ resource "aws_iam_policy" "figgy_access_policy" {
   policy      = data.aws_iam_policy_document.dynamic_policy[count.index].json
 }
 
-
-
 # Dynamically assembled policy based on user provided configurations
 data "aws_iam_policy_document" "dynamic_policy" {
   count = local.num_role_resources
@@ -114,13 +112,13 @@ data "aws_iam_policy_document" "dynamic_policy" {
 
     # The arns ending in /* allow access to Global Secondary Indices
     resources = [
-      aws_dynamodb_table.config_replication.arn,
-      aws_dynamodb_table.config_auditor.arn,
-      "${aws_dynamodb_table.config_auditor.arn}/*",
-      aws_dynamodb_table.config_cache.arn,
-      aws_dynamodb_table.user_cache.arn,
-      aws_dynamodb_table.config_usage_tracker.arn,
-      "${aws_dynamodb_table.config_usage_tracker.arn}/*"
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_replication.name}",
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_auditor.name}",
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_auditor.name}/*",
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_cache.name}",
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.user_cache.name}",
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_usage_tracker.name}",
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_usage_tracker.name}/*",
     ]
   }
 
@@ -139,7 +137,7 @@ data "aws_iam_policy_document" "dynamic_policy" {
   }
 }
 
-# Policy created by
+
 resource "aws_iam_policy" "figgy_write_cw_logs" {
   count = var.primary_region ? 1 : 0
   name        = "figgy-cw-logs-write"
@@ -171,6 +169,6 @@ data "aws_iam_policy_document" "cloudwatch_logs_write" {
 
     # Ideally, all figgy logs should all be written to the /figgy CW log namespace, however at this time it is not
     # possible to have lambdas write to anywhere but /aws/lambda/${lambda_name}/ namespace.
-    resources = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:*"]
+    resources = ["arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:*"]
   }
 }

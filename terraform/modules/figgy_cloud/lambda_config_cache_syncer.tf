@@ -1,14 +1,9 @@
 locals {
   # Cannot pass direct reference because these policy may be created by a different region's build
-  cache_syncer_policies = var.primary_region ? [
-    aws_iam_policy.config_cache_manager[0].arn,
-    aws_iam_policy.lambda_default[0].arn,
-    aws_iam_policy.lambda_read_figgy_specific_configs[0].arn
-  ] : [
-    # Syncer leverages cache manager policy too
-    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.config_cache_manager_name}",
-    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.lambda_default_policy_name}",
-    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.read_figgy_configs_policy_name}",
+  cache_syncer_policies = [
+    aws_iam_policy.config_cache_manager.arn,
+    aws_iam_policy.lambda_default.arn,
+    aws_iam_policy.lambda_read_figgy_specific_configs.arn
   ]
 }
 

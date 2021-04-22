@@ -1,15 +1,10 @@
 locals {
   # Cannot pass direct reference because these policy may be created by a different region's build
-  auditor_policies = var.primary_region ? [
-    aws_iam_policy.config_auditor[0].arn,
-    aws_iam_policy.lambda_default[0].arn,
-    aws_iam_policy.lambda_read_figgy_specific_configs[0].arn
-  ] : [
-    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.config_auditor_name}",
-    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.lambda_default_policy_name}",
-    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.read_figgy_configs_policy_name}",
+  auditor_policies = [
+    aws_iam_policy.config_auditor.arn,
+    aws_iam_policy.lambda_default.arn,
+    aws_iam_policy.lambda_read_figgy_specific_configs.arn
   ]
-
 }
 
 module "config_auditor" {

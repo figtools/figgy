@@ -1,4 +1,4 @@
-## Only used for "Figgy Standard" deployments (NOT RECOMMENDED)
+## Only used for "Figgy Standard" deployments
 
 resource "aws_iam_group" "figgy_groups" {
   count = var.cfgs.standard_install ? length(var.cfgs.role_types) : 0

@@ -1,7 +1,6 @@
 # Default lambda policy
 resource "aws_iam_policy" "lambda_default" {
-  count = var.primary_region ? 1 : 0
-  name        = local.lambda_default_policy_name
+  name        = "${local.lambda_default_policy_name}-${local.region}"
   path        = "/"
   description = "Default IAM policy for figgy lambda. Provides basic Lambda access, such as writing logs to CW."
   policy      = data.aws_iam_policy_document.cloudwatch_logs_write.json
@@ -10,8 +9,7 @@ resource "aws_iam_policy" "lambda_default" {
 
 # Config Auditor Lambda
 resource "aws_iam_policy" "config_auditor" {
-  count = var.primary_region ? 1 : 0
-  name        = local.config_auditor_name
+  name        = "${local.config_auditor_name}-${local.region}"
   path        = "/"
   description = "IAM policy for figgy config-auditor lambda"
   policy      = data.aws_iam_policy_document.config_auditor_document.json
@@ -47,8 +45,7 @@ data "aws_iam_policy_document" "config_auditor_document" {
 
 # Usage Tracker
 resource "aws_iam_policy" "config_usage_tracker" {
-  count = var.primary_region ? 1 : 0
-  name        = local.config_usage_tracker_name
+  name        = "${local.config_usage_tracker_name}-${local.region}"
   path        = "/"
   description = "IAM policy for figgy config-usage-tracker lambda"
   policy      = data.aws_iam_policy_document.config_usage_tracker.json
@@ -76,8 +73,7 @@ data "aws_iam_policy_document" "config_usage_tracker" {
 
 # Config cache manager / syncer lambdas
 resource "aws_iam_policy" "config_cache_manager" {
-  count = var.primary_region ? 1 : 0
-  name        = local.config_cache_manager_name
+  name        = "${local.config_cache_manager_name}-${local.region}"
   path        = "/"
   description = "IAM policy for figgy config_cache_manager/syncer lambdas"
   policy      = data.aws_iam_policy_document.config_cache_manager_document.json
@@ -107,8 +103,7 @@ data "aws_iam_policy_document" "config_cache_manager_document" {
 
 # Replication lambdas policy
 resource "aws_iam_policy" "config_replication" {
-  count = var.primary_region ? 1 : 0
-  name        = local.config_replication_policy_name
+  name        = "${local.config_replication_policy_name}-${local.region}"
   path        = "/"
   description = "IAM policy for figgy replication management lambdas"
   policy      = data.aws_iam_policy_document.config_replication_document.json
@@ -178,7 +173,7 @@ data "aws_iam_policy_document" "config_replication_document" {
       ],
       [
         for ns in var.cfgs.global_read_namespaces :
-        "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter${ns}/*"
+        "arn:aws:ssm:${local.region}:${data.aws_caller_identity.current.account_id}:parameter${ns}/*"
       ]
     ))
   }
@@ -193,8 +188,7 @@ data "aws_iam_policy_document" "config_replication_document" {
 
 # Read configs under /figgy namespace
 resource "aws_iam_policy" "lambda_read_figgy_specific_configs" {
-  count = var.primary_region ? 1 : 0
-  name        = local.read_figgy_configs_policy_name
+  name        = "${local.read_figgy_configs_policy_name}-${local.region}"
   path        = "/"
   description = "IAM policy to enable figgy lambdas to read figgy-specific configurations"
   policy      = data.aws_iam_policy_document.lambda_read_figgy_configs.json
@@ -209,7 +203,7 @@ data "aws_iam_policy_document" "lambda_read_figgy_configs" {
       "ssm:GetParameterHistory",
       "ssm:GetParametersByPath"
     ]
-    resources = ["arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter/figgy/*"]
+    resources = ["arn:aws:ssm:${local.region}:${data.aws_caller_identity.current.account_id}:parameter/figgy/*"]
   }
 
   statement {
