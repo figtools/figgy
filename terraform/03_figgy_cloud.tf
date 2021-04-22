@@ -22,7 +22,7 @@ module "figgy_cloud" {
 # Duplicate the below block for each extra region you want to deploy Figgy into.
 # Be sure to update the providers {} block.
 
-//
+
 //module "figgy_cloud_us_west" {
 //  source = "./modules/figgy_cloud"
 //  aws_account_id = var.aws_account_id
@@ -35,7 +35,7 @@ module "figgy_cloud" {
 //  sandbox_deploy = var.sandbox_deploy
 //  regions = var.regions
 //  providers = {
-//    aws.region = aws.usw1
+//    aws.region = aws.usw1     # <--- Update this to map to your other region blocks in 00_main.tf
 //  }
 //
 //  depends_on = [
