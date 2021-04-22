@@ -42,7 +42,7 @@ data "aws_iam_policy_document" "config_auditor_document" {
       "dynamodb:UpdateTimeToLive"
     ]
     resources = [
-      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_replication.name}"
+      "arn:aws:dynamodb::${local.account_id}:table/${aws_dynamodb_table.config_replication.name}"
     ]
   }
 
@@ -88,8 +88,8 @@ data "aws_iam_policy_document" "config_usage_tracker" {
       "dynamodb:UpdateTimeToLive"
     ]
     resources = [
-      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_usage_tracker.name}",
-      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.user_cache.name}"
+      "arn:aws:dynamodb::${local.account_id}:table/${aws_dynamodb_table.config_usage_tracker.name}",
+      "arn:aws:dynamodb::${local.account_id}:table/${aws_dynamodb_table.user_cache.name}"
     ]
   }
 }
@@ -122,7 +122,7 @@ data "aws_iam_policy_document" "config_cache_manager_document" {
       "dynamodb:UpdateItem",
       "dynamodb:UpdateTimeToLive"
     ]
-    resources = ["arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_cache.name}"]
+    resources = ["arn:aws:dynamodb::${local.account_id}:table/${aws_dynamodb_table.config_cache.name}"]
   }
 
   statement {
@@ -161,7 +161,7 @@ data "aws_iam_policy_document" "config_replication_document" {
       "dynamodb:UpdateItem",
       "dynamodb:UpdateTimeToLive"
     ]
-    resources = ["arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_replication.name}"]
+    resources = ["arn:aws:dynamodb::${local.account_id}:table/${aws_dynamodb_table.config_replication.name}"]
   }
 
   statement {
@@ -173,7 +173,7 @@ data "aws_iam_policy_document" "config_replication_document" {
       "dynamodb:ListShards",
       "dynamodb:DescribeStream"
     ]
-    resources = ["arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_replication.name}"]
+    resources = ["arn:aws:dynamodb::${local.account_id}:table/${aws_dynamodb_table.config_replication.name}"]
   }
 
   statement {
@@ -208,7 +208,7 @@ data "aws_iam_policy_document" "config_replication_document" {
     resources = distinct(concat(
       [
         for x in var.cfgs.root_namespaces :
-        format("arn:aws:ssm:*:%s:parameter%s/*", data.aws_caller_identity.current.account_id, x)
+        format("arn:aws:ssm::%s:parameter%s/*", data.aws_caller_identity.current.account_id, x)
       ],
       [
         for ns in var.cfgs.global_read_namespaces :
