@@ -19,6 +19,7 @@ resource "aws_iam_role_policy_attachment" "role_policy_attachment" {
   role       = aws_iam_role.figgy_role[0].name
   count      = var.create_role ? length(var.policies) : 0
   policy_arn = var.policies[count.index]
+  depends_on = [aws_iam_role.figgy_role]
 }
 
 data "aws_iam_policy_document" "assume_policy" {
