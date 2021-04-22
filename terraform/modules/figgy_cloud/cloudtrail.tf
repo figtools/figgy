@@ -8,6 +8,8 @@ resource "aws_cloudwatch_log_group" "figgy_trail_log_group" {
 }
 
 resource "aws_iam_role" "figgy_trail_to_cw_logs" {
+  count = var.primary_region ? 1 : 0
+  name = "figgy-cloudtrail"
   assume_role_policy = data.aws_iam_policy_document.figgy_trail_role_assume_policy.json
 }
 
@@ -22,13 +24,10 @@ data "aws_iam_policy_document" "figgy_trail_role_assume_policy" {
   }
 }
 
-locals {
-  write_cw_logs_policy_arn = var.primary_region ? aws_iam_policy.figgy_write_cw_logs[0].arn : "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${local.config_auditor_name}"
-}
-
 resource "aws_iam_role_policy_attachment" "figgy_trail_to_cw_logs" {
-  policy_arn = local.write_cw_logs_policy_arn
-  role       = aws_iam_role.figgy_trail_to_cw_logs.name
+  count = var.primary_region ? 1 : 0
+  policy_arn = aws_iam_policy.figgy_write_cw_logs[0].arn
+  role       = aws_iam_role.figgy_trail_to_cw_logs[0].name
 }
 
 # At this time it is not possible to limit our cloudtrail to only select SSM events, but we can auto-clean the cloudwatch log group
