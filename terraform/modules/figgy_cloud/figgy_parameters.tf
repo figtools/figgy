@@ -160,6 +160,15 @@ resource "aws_ssm_parameter" "regions" {
   overwrite   = true
 }
 
+resource "aws_ssm_parameter" "regions" {
+  provider = aws.region
+  name        = "/figgy/region"
+  type        = "String"
+  value       = jsonencode(local.region)
+  description = "Current active region."
+  overwrite   = true
+}
+
 ## Slack Configurations
 resource "aws_ssm_parameter" "notify_deletes" {
   provider = aws.region
