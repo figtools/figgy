@@ -8,7 +8,7 @@ locals {
 
     # Figgy needs to create a S3 bucket to deploy its lambdas and to store temporary logs (that are cleaned up after one day).
     # Add something here if you want to prefix the bucket with a friendly name, otherwise leave empty. The default bucket name will be:
-    # 'figgy-${random-str}'
+    # 'figgy-${aws_region}-${random-str}'
     s3_bucket_prefix = ""
 
     # How many unique roles will figgy users need? Each of these types should map to a particular figgy user story.

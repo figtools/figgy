@@ -32,6 +32,11 @@ resource "aws_s3_bucket" "figgy_bucket" {
     }
   }
 
+  # Regenerated bucket_name will not force bucket destruction / recreation.
+  lifecycle {
+    ignore_changes = [bucket]
+  }
+
   provisioner "local-exec" {
     command = "echo \"Sleeping for 15s to address potential race condition\" && sleep 15"
   }
