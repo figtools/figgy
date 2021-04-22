@@ -39,7 +39,7 @@ resource "aws_s3_bucket" "figgy_bucket" {
 }
 
 resource "aws_s3_bucket_policy" "cloudtrail_bucket_policy" {
-  bucket = aws_s3_bucket.figgy_bucket[0].id
+  bucket = local.bucket_name
   depends_on = [aws_s3_bucket.figgy_bucket]
   policy = <<POLICY
 {
@@ -52,7 +52,7 @@ resource "aws_s3_bucket_policy" "cloudtrail_bucket_policy" {
               "Service": "cloudtrail.amazonaws.com"
             },
             "Action": "s3:GetBucketAcl",
-            "Resource": "arn:aws:s3:::${aws_s3_bucket.figgy_bucket[0].id}"
+            "Resource": "arn:aws:s3:::${local.bucket_name}"
         },
         {
             "Sid": "AWSCloudTrailWrite",
@@ -61,7 +61,7 @@ resource "aws_s3_bucket_policy" "cloudtrail_bucket_policy" {
               "Service": "cloudtrail.amazonaws.com"
             },
             "Action": "s3:PutObject",
-            "Resource": "arn:aws:s3:::${aws_s3_bucket.figgy_bucket[0].id}/AWSLogs/*",
+            "Resource": "arn:aws:s3:::${local.bucket_name}/AWSLogs/*",
             "Condition": {
                 "StringEquals": {
                     "s3:x-amz-acl": "bucket-owner-full-control"
