@@ -5,7 +5,7 @@ locals {
 
 # Policy created by
 resource "aws_iam_policy" "figgy_access_policy" {
-  count       = local.num_role_resources
+  count       = var.primary_region ? local.num_role_resources : 0
   name        = "figgy_${var.cfgs.role_types[count.index]}_access"
   description = "Dynamic figgy access policy for role: ${var.cfgs.role_types[count.index]}"
   policy      = data.aws_iam_policy_document.dynamic_policy[count.index].json
@@ -14,6 +14,7 @@ resource "aws_iam_policy" "figgy_access_policy" {
 # Dynamically assembled policy based on user provided configurations
 data "aws_iam_policy_document" "dynamic_policy" {
   count = local.num_role_resources
+
   statement {
     sid = "KmsDecryptPermissions"
     actions = [

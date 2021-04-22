@@ -1,6 +1,6 @@
 locals {
   # Cannot pass direct reference because these policy may be created by a different region's build
-  usage_tracker_policies = var.primary_region ? [
+  usage_tracker_policies = [
     aws_iam_policy.config_usage_tracker.arn,
     aws_iam_policy.lambda_default.arn,
     aws_iam_policy.lambda_read_figgy_specific_configs.arn
