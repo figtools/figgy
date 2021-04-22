@@ -5,11 +5,12 @@ data "aws_region" "current" {}
 
 
 locals {
+  role_name = "${var.lambda_name}-${data.aws_region.current.name}"
   role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.lambda_name}"
 }
 
 resource "aws_iam_role" "figgy_role" {
-  name = "${var.lambda_name}-${data.aws_region.current.name}"
+  name = local.role_name
   assume_role_policy = data.aws_iam_policy_document.assume_policy.json
 }
 
