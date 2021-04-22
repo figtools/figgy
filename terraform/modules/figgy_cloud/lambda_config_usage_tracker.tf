@@ -1,9 +1,9 @@
 locals {
   # Cannot pass direct reference because these policy may be created by a different region's build
   usage_tracker_policies = [
-    aws_iam_policy.config_usage_tracker.arn,
-    aws_iam_policy.lambda_default.arn,
-    aws_iam_policy.lambda_read_figgy_specific_configs.arn
+    "arn:aws:iam::${local.account_id}:policy/${local.config_usage_tracker_name}",
+    "arn:aws:iam::${local.account_id}:policy/${local.lambda_default_policy_name}",
+    "arn:aws:iam::${local.account_id}:policy/${local.read_figgy_configs_policy_name}",
   ]
 }
 

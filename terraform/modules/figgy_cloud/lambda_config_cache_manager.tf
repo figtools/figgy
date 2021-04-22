@@ -2,9 +2,9 @@
 locals {
   # Cannot pass direct reference because these policy may be created by a different region's build
   cache_manager_policies = [
-    aws_iam_policy.config_cache_manager.arn,
-    aws_iam_policy.lambda_default.arn,
-    aws_iam_policy.lambda_read_figgy_specific_configs.arn
+    "arn:aws:iam::${local.account_id}:policy/${local.config_cache_manager_name}",
+    "arn:aws:iam::${local.account_id}:policy/${local.lambda_default_policy_name}",
+    "arn:aws:iam::${local.account_id}:policy/${local.read_figgy_configs_policy_name}",
   ]
 }
 
