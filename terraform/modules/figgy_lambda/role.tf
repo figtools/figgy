@@ -12,6 +12,10 @@ locals {
 resource "aws_iam_role" "figgy_role" {
   name = local.role_name
   assume_role_policy = data.aws_iam_policy_document.assume_policy.json
+
+  lifecycle {
+    ignore_changes = [name]
+  }
 }
 
 # Then parse through the list using count
