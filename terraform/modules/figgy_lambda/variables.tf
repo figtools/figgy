@@ -22,6 +22,16 @@ variable "policies" {
   description = "List of policy ARNs to attach to this lambda"
 }
 
+variable "create_role" {
+  description = "If true, create the IAM role to attach to this lambda, otherwise assume it was created by a lambda in a different region"
+  default = true
+}
+
+variable "role_arn" {
+  description = "Optional: pass in a role_arn override."
+  default = null
+}
+
 variable "zip_path" {
   description = "Path to the Figgy zip artifact."
 }

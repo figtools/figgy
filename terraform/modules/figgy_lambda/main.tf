@@ -7,13 +7,13 @@ resource "aws_lambda_function" "figgy_lambda" {
   s3_key                         = local.deploy_path
   function_name                  = var.lambda_name
   handler                        = var.handler
-  role                           = aws_iam_role.figgy_role.arn
+  role                           = var.role_arn == null ? local.role_arn : var.role_arn
   runtime                        = "python3.7"
   description                    = var.description
   timeout                        = var.lambda_timeout
   source_code_hash               = var.sha256
   reserved_concurrent_executions = var.concurrent_executions
-  depends_on                     = [aws_iam_role.figgy_role, aws_s3_bucket_object.figgy_deploy]
+  depends_on                     = [aws_s3_bucket_object.figgy_deploy]
   layers                         = var.layers
   memory_size                    = var.memory_size
 }
