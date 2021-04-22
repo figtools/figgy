@@ -3,7 +3,7 @@ locals {
   cache_syncer_policies = var.primary_region ? [
     aws_iam_policy.config_cache_manager[0].arn,
     aws_iam_policy.lambda_default[0].arn,
-    aws_iam_policy.read_figgy_configs[0].arn
+    aws_iam_policy.lambda_read_figgy_specific_configs[0].arn
   ] :  [
     "arn:aws:iam::${local.account_id}:policy/${local.config_cache_manager_name}",
     "arn:aws:iam::${local.account_id}:policy/${local.lambda_default_policy_name}",
