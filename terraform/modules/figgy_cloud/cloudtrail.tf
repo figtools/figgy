@@ -48,7 +48,7 @@ resource "aws_cloudtrail" "figgy_cloudtrail" {
 
   # CloudTrail requires the Log Stream wildcard
   cloud_watch_logs_group_arn = "${aws_cloudwatch_log_group.figgy_trail_log_group.arn}:*"
-  cloud_watch_logs_role_arn  = aws_iam_role.figgy_trail_to_cw_logs[0].arn
+  cloud_watch_logs_role_arn  = local.trail_to_cw_role_arn
   depends_on                 = [
     aws_s3_bucket.figgy_bucket,
     aws_s3_bucket_policy.cloudtrail_bucket_policy,
