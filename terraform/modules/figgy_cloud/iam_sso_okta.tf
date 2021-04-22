@@ -2,7 +2,7 @@
 # If you already use SSO for OKTA with AWS, you probably don't need to do this and can avoid provisioning this user
 
 locals {
-  okta_enabled = var.cfgs.enable_sso && contains(var.cfgs.auth_types, "okta")
+  okta_enabled = var.cfgs.enable_sso && var.primary_region && contains(var.cfgs.auth_types, "okta")
 }
 
 resource "aws_iam_user" "sso_user" {
