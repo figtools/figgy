@@ -14,7 +14,7 @@ resource "aws_iam_role" "figgy_role" {
 
 # Then parse through the list using count
 resource "aws_iam_role_policy_attachment" "role_policy_attachment" {
-  role       = aws_iam_role.figgy_role.name
+  role       = aws_iam_role.figgy_role[0].name
   count      = var.create_role ? length(var.policies) : 0
   policy_arn = var.policies[count.index]
 }
