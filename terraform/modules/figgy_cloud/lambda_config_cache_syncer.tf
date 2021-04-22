@@ -21,6 +21,10 @@ module "config_cache_syncer" {
   sns_alarm_topic         = aws_sns_topic.figgy_alarms.arn
   sha256                  = data.archive_file.figgy.output_base64sha256
   memory_size             = 256
+
+  providers = {
+    aws = aws.region
+  }
 }
 
 module "config_cache_syncer_trigger" {
@@ -28,4 +32,8 @@ module "config_cache_syncer_trigger" {
   lambda_name         = module.config_cache_syncer.name
   lambda_arn          = module.config_cache_syncer.arn
   schedule_expression = "rate(30 minutes)"
+
+  providers = {
+    aws = aws.region
+  }
 }

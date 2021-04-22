@@ -22,12 +22,21 @@ module "config_auditor" {
   sha256                  = data.archive_file.figgy.output_base64sha256
   memory_size             = 256
   concurrent_executions   = 5
+
+  providers = {
+    aws = aws.region
+  }
 }
 
 module "config_auditor_trigger" {
   source           = "../triggers/cw_trigger"
   lambda_name      = module.config_auditor.name
   lambda_arn       = module.config_auditor.arn
+
+  providers = {
+    aws = aws.region
+  }
+
   cw_event_pattern = <<PATTERN
 {
   "source": [

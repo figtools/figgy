@@ -23,12 +23,21 @@ module "config_cache_manager" {
   sha256                  = data.archive_file.figgy.output_base64sha256
   memory_size             = 256
   concurrent_executions   = 1
+
+  providers = {
+    aws = aws.region
+  }
 }
 
 module "config_cache_manager_trigger" {
   source           = "../triggers/cw_trigger"
   lambda_name      = module.config_cache_manager.name
   lambda_arn       = module.config_cache_manager.arn
+
+  providers = {
+    aws = aws.region
+  }
+
   cw_event_pattern = <<PATTERN
 {
   "source": [

@@ -22,6 +22,10 @@ module "dynamo_stream_replicator" {
   sns_alarm_topic         = aws_sns_topic.figgy_alarms.arn
   sha256                  = data.archive_file.figgy.output_base64sha256
   memory_size             = 256
+
+  providers = {
+    aws = aws.region
+  }
 }
 
 module "dynamo_stream_replicator_trigger" {
@@ -29,4 +33,8 @@ module "dynamo_stream_replicator_trigger" {
   lambda_name       = module.dynamo_stream_replicator.name
   dynamo_stream_arn = aws_dynamodb_table.config_replication.stream_arn
   depends_on = [module.dynamo_stream_replicator]
+
+  providers = {
+    aws = aws.region
+  }
 }

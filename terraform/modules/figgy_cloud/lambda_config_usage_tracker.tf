@@ -22,6 +22,10 @@ module "config_usage_tracker" {
   sha256                  = data.archive_file.figgy.output_base64sha256
   memory_size             = 256
   concurrent_executions   = 5
+
+  providers = {
+    aws = aws.region
+  }
 }
 
 # We do not want to consume all Cloudtrail events, instead we only want the ones relevant to ParameterStore. This CW
@@ -40,5 +44,9 @@ module "config_usage_tracker_trigger" {
   log_group_name       = aws_cloudwatch_log_group.figgy_trail_log_group.name
   log_group_arn        = aws_cloudwatch_log_group.figgy_trail_log_group.arn
   cw_filter_expression = "{ ${local.is_api_call} && ${local.is_ssm_event} && ( ${local.is_get_param_event} ) }"
+
+  providers = {
+    aws = aws.region
+  }
 }
 

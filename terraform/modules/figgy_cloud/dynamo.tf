@@ -1,4 +1,5 @@
 resource "aws_dynamodb_table" "config_replication" {
+  provider = aws.region
   name             = "figgy-config-replication"
   hash_key         = "destination"
   billing_mode     = "PAY_PER_REQUEST"
@@ -24,6 +25,7 @@ resource "aws_dynamodb_table" "config_replication" {
 }
 
 resource "aws_dynamodb_table" "config_auditor" {
+  provider = aws.region
   name         = "figgy-config-auditor"
   hash_key     = "parameter_name"
   range_key    = "time"
@@ -65,6 +67,7 @@ resource "aws_dynamodb_table" "config_auditor" {
 }
 
 resource "aws_dynamodb_table" "config_cache" {
+  provider = aws.region
   name         = "figgy-config-cache"
   hash_key     = "parameter_name"
   range_key    = "last_updated"
@@ -91,6 +94,7 @@ resource "aws_dynamodb_table" "config_cache" {
 
 
 resource "aws_dynamodb_table" "config_usage_tracker" {
+  provider = aws.region
   name         = "figgy-config-usage-tracker"
   hash_key     = "parameter_name"
   range_key    = "user"
@@ -141,6 +145,7 @@ resource "aws_dynamodb_table" "config_usage_tracker" {
 }
 
 resource "aws_dynamodb_table" "user_cache" {
+  provider = aws.region
   name         = "figgy-user-cache"
   hash_key     = "user_name"
   billing_mode = "PAY_PER_REQUEST"

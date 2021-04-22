@@ -1,5 +1,5 @@
 locals {
-  bastion_enabled = var.cfgs.bastion_enabled && var.primary_region
+  bastion_enabled = var.cfgs.bastion_enabled
 }
 
 

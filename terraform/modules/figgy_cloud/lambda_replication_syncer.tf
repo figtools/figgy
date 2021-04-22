@@ -21,6 +21,10 @@ module "replication_syncer" {
   sns_alarm_topic         = aws_sns_topic.figgy_alarms.arn
   sha256                  = data.archive_file.figgy.output_base64sha256
   memory_size             = 256
+
+  providers = {
+    aws = aws.region
+  }
 }
 
 module "replication_syncer_trigger" {
@@ -28,4 +32,8 @@ module "replication_syncer_trigger" {
   lambda_name         = module.replication_syncer.name
   lambda_arn          = module.replication_syncer.arn
   schedule_expression = "rate(30 minutes)"
+
+  providers = {
+    aws = aws.region
+  }
 }

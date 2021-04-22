@@ -44,6 +44,7 @@ resource "aws_s3_bucket" "figgy_bucket" {
 }
 
 resource "aws_s3_bucket_policy" "cloudtrail_bucket_policy" {
+  provider = aws.region
   bucket = aws_s3_bucket.figgy_bucket.id
   policy = <<POLICY
 {

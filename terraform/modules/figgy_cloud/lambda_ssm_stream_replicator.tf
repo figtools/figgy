@@ -22,12 +22,21 @@ module "ssm_stream_replicator" {
   sha256                  = data.archive_file.figgy.output_base64sha256
   memory_size             = 256
   concurrent_executions   = 5
+
+  providers = {
+    aws = aws.region
+  }
 }
 
 module "ssm_stream_replicator_trigger" {
   source           = "../triggers/cw_trigger"
   lambda_name      = module.ssm_stream_replicator.name
   lambda_arn       = module.ssm_stream_replicator.arn
+
+  providers = {
+    aws = aws.region
+  }
+
   cw_event_pattern = <<PATTERN
 {
   "source": [
