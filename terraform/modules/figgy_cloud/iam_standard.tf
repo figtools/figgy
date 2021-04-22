@@ -7,7 +7,7 @@ resource "aws_iam_group" "figgy_groups" {
 }
 
 resource "aws_iam_group_policy_attachment" "figgy_ssm_access" {
-  count      = var.cfgs.standard_install && var.primary_region ? length(var.cfgs.role_types) : 0
+  count      = var.cfgs.standard_install ? length(var.cfgs.role_types) : 0
   group      = aws_iam_group.figgy_groups[count.index].name
   policy_arn = aws_iam_policy.figgy_access_policy[count.index].arn
 }

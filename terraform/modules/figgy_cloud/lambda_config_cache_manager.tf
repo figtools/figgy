@@ -23,6 +23,7 @@ module "config_cache_manager" {
   sha256                  = data.archive_file.figgy.output_base64sha256
   memory_size             = 256
   concurrent_executions   = 1
+  create_role = var.primary_region
 
   providers = {
     aws = aws.region

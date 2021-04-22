@@ -1,7 +1,7 @@
 # Default lambda policy
 resource "aws_iam_policy" "lambda_default" {
-  provider = aws.region
-  name        = "${local.lambda_default_policy_name}-${local.region}"
+  count = var.primary_region ? 1 : 0
+  name        = local.lambda_default_policy_name
   path        = "/"
   description = "Default IAM policy for figgy lambda. Provides basic Lambda access, such as writing logs to CW."
   policy      = data.aws_iam_policy_document.cloudwatch_logs_write.json
@@ -15,8 +15,8 @@ resource "aws_iam_policy" "lambda_default" {
 
 # Config Auditor Lambda
 resource "aws_iam_policy" "config_auditor" {
-  provider = aws.region
-  name        = "${local.config_auditor_name}-${local.region}"
+  count = var.primary_region ? 1 : 0
+  name        = local.config_auditor_name
   path        = "/"
   description = "IAM policy for figgy config-auditor lambda"
   policy      = data.aws_iam_policy_document.config_auditor_document.json
@@ -28,6 +28,7 @@ resource "aws_iam_policy" "config_auditor" {
 }
 
 data "aws_iam_policy_document" "config_auditor_document" {
+  count = var.primary_region ? 1 : 0
   statement {
     sid = "AuditTableDDBAccess"
     actions = [
@@ -40,7 +41,9 @@ data "aws_iam_policy_document" "config_auditor_document" {
       "dynamodb:UpdateItem",
       "dynamodb:UpdateTimeToLive"
     ]
-    resources = [aws_dynamodb_table.config_auditor.arn]
+    resources = [
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_replication.name}"
+    ]
   }
 
   statement {
@@ -57,8 +60,8 @@ data "aws_iam_policy_document" "config_auditor_document" {
 
 # Usage Tracker
 resource "aws_iam_policy" "config_usage_tracker" {
-  provider = aws.region
-  name        = "${local.config_usage_tracker_name}-${local.region}"
+  count = var.primary_region ? 1 : 0
+  name        = local.config_usage_tracker_name
   path        = "/"
   description = "IAM policy for figgy config-usage-tracker lambda"
   policy      = data.aws_iam_policy_document.config_usage_tracker.json
@@ -70,6 +73,8 @@ resource "aws_iam_policy" "config_usage_tracker" {
 }
 
 data "aws_iam_policy_document" "config_usage_tracker" {
+  count = var.primary_region ? 1 : 0
+
   statement {
     sid = "UsageTrackerTableDDBAccess"
     actions = [
@@ -83,16 +88,16 @@ data "aws_iam_policy_document" "config_usage_tracker" {
       "dynamodb:UpdateTimeToLive"
     ]
     resources = [
-      aws_dynamodb_table.config_usage_tracker.arn,
-      aws_dynamodb_table.user_cache.arn
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_usage_tracker.name}",
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.user_cache.name}"
     ]
   }
 }
 
 # Config cache manager / syncer lambdas
 resource "aws_iam_policy" "config_cache_manager" {
-  provider = aws.region
-  name        = "${local.config_cache_manager_name}-${local.region}"
+  count = var.primary_region ? 1 : 0
+  name        = local.config_cache_manager_name
   path        = "/"
   description = "IAM policy for figgy config_cache_manager/syncer lambdas"
   policy      = data.aws_iam_policy_document.config_cache_manager_document.json
@@ -104,6 +109,8 @@ resource "aws_iam_policy" "config_cache_manager" {
 }
 
 data "aws_iam_policy_document" "config_cache_manager_document" {
+  count = var.primary_region ? 1 : 0
+
   statement {
     actions = [
       "dynamodb:Get*",
@@ -115,7 +122,7 @@ data "aws_iam_policy_document" "config_cache_manager_document" {
       "dynamodb:UpdateItem",
       "dynamodb:UpdateTimeToLive"
     ]
-    resources = [aws_dynamodb_table.config_cache.arn]
+    resources = ["arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_cache.name}"]
   }
 
   statement {
@@ -127,8 +134,8 @@ data "aws_iam_policy_document" "config_cache_manager_document" {
 
 # Replication lambdas policy
 resource "aws_iam_policy" "config_replication" {
-  provider = aws.region
-  name        = "${local.config_replication_policy_name}-${local.region}"
+  count = var.primary_region ? 1 : 0
+  name        = local.config_replication_policy_name
   path        = "/"
   description = "IAM policy for figgy replication management lambdas"
   policy      = data.aws_iam_policy_document.config_replication_document.json
@@ -140,6 +147,8 @@ resource "aws_iam_policy" "config_replication" {
 }
 
 data "aws_iam_policy_document" "config_replication_document" {
+  count = var.primary_region ? 1 : 0
+
   statement {
     sid = "ReplicationTableFullAccess"
     actions = [
@@ -152,7 +161,7 @@ data "aws_iam_policy_document" "config_replication_document" {
       "dynamodb:UpdateItem",
       "dynamodb:UpdateTimeToLive"
     ]
-    resources = [aws_dynamodb_table.config_replication.arn]
+    resources = ["arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_replication.name}"]
   }
 
   statement {
@@ -164,7 +173,7 @@ data "aws_iam_policy_document" "config_replication_document" {
       "dynamodb:ListShards",
       "dynamodb:DescribeStream"
     ]
-    resources = [aws_dynamodb_table.config_replication.stream_arn]
+    resources = ["arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_replication.name}"]
   }
 
   statement {
@@ -203,7 +212,7 @@ data "aws_iam_policy_document" "config_replication_document" {
       ],
       [
         for ns in var.cfgs.global_read_namespaces :
-        "arn:aws:ssm:${local.region}:${data.aws_caller_identity.current.account_id}:parameter${ns}/*"
+        "arn:aws:ssm::${data.aws_caller_identity.current.account_id}:parameter${ns}/*"
       ]
     ))
   }
@@ -218,8 +227,8 @@ data "aws_iam_policy_document" "config_replication_document" {
 
 # Read configs under /figgy namespace
 resource "aws_iam_policy" "lambda_read_figgy_specific_configs" {
-  provider = aws.region
-  name        = "${local.read_figgy_configs_policy_name}-${local.region}"
+  count = var.primary_region ? 1 : 0
+  name        = local.read_figgy_configs_policy_name
   path        = "/"
   description = "IAM policy to enable figgy lambdas to read figgy-specific configurations"
   policy      = data.aws_iam_policy_document.lambda_read_figgy_configs.json
@@ -231,6 +240,8 @@ resource "aws_iam_policy" "lambda_read_figgy_specific_configs" {
 }
 
 data "aws_iam_policy_document" "lambda_read_figgy_configs" {
+  count = var.primary_region ? 1 : 0
+
   statement {
     sid = "FiggySSMAccess"
     actions = [
@@ -239,7 +250,7 @@ data "aws_iam_policy_document" "lambda_read_figgy_configs" {
       "ssm:GetParameterHistory",
       "ssm:GetParametersByPath"
     ]
-    resources = ["arn:aws:ssm:${local.region}:${data.aws_caller_identity.current.account_id}:parameter/figgy/*"]
+    resources = ["arn:aws:ssm::${data.aws_caller_identity.current.account_id}:parameter/figgy/*"]
   }
 
   statement {

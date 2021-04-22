@@ -5,8 +5,9 @@ locals {
 
 # Policy created by
 resource "aws_iam_policy" "figgy_access_policy" {
+  provider = aws.region
   count       = local.num_role_resources
-  name        = "figgy_${var.cfgs.role_types[count.index]}_access"
+  name        = "figgy_${var.cfgs.role_types[count.index]}_access_${local.region}"
   description = "Dynamic figgy access policy for role: ${var.cfgs.role_types[count.index]}"
   policy      = data.aws_iam_policy_document.dynamic_policy[count.index].json
 }

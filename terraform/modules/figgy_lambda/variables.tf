@@ -52,3 +52,7 @@ variable "memory_size" {
   description = "Amount of memory to provision for this lambda"
   default = 128
 }
+
+variable "create_role" {
+  description = "Create the specified role, or only attach an existing one"
+}

@@ -22,6 +22,7 @@ module "dynamo_stream_replicator" {
   sns_alarm_topic         = aws_sns_topic.figgy_alarms.arn
   sha256                  = data.archive_file.figgy.output_base64sha256
   memory_size             = 256
+  create_role = var.primary_region
 
   providers = {
     aws = aws.region
