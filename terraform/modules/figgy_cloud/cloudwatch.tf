@@ -4,7 +4,7 @@
 # Off by default - ship matching ParameterStore cloudwatch events to another
 # account for global tracking.
 resource "aws_cloudwatch_event_rule" "push_ps_events" {
-  count         = var.sandbox_deploy && var.cfgs.bastion_account_number != data.aws_caller_identity.current.account_id ? 1 : 0
+  count         = var.sandbox_deploy && var.cfgs.bastion_account_number != var.aws_account_id ? 1 : 0
   name          = "push-ssm-events"
   description   = "This CW Event Pushes ParameterStore events to another account's event bus. This is off by default and totally optional."
   event_pattern = <<PATTERN
@@ -30,7 +30,7 @@ PATTERN
 }
 
 resource "aws_cloudwatch_event_target" "push_event" {
-  count     = var.sandbox_deploy && var.cfgs.bastion_account_number != data.aws_caller_identity.current.account_id ? 1 : 0
+  count     = var.sandbox_deploy && var.cfgs.bastion_account_number != var.aws_account_id ? 1 : 0
   rule      = aws_cloudwatch_event_rule.push_ps_events[0].name
   target_id = "push-ps-events"
   arn       = "arn:aws:events:${data.aws_region.current.name}:${var.cfgs.bastion_account_number}:event-bus/default"
