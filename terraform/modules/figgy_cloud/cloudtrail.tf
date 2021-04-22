@@ -9,7 +9,7 @@ resource "aws_cloudwatch_log_group" "figgy_trail_log_group" {
 
 resource "aws_iam_role" "figgy_trail_to_cw_logs" {
   count = var.primary_region ? 1 : 0
-  name = "figgy-cloudtrail"
+  name = local.cloudtrail_role_name
   assume_role_policy = data.aws_iam_policy_document.figgy_trail_role_assume_policy.json
 }
 
@@ -22,6 +22,11 @@ data "aws_iam_policy_document" "figgy_trail_role_assume_policy" {
       identifiers = ["cloudtrail.amazonaws.com"]
     }
   }
+}
+
+locals {
+  cloudtrail_role_name = "figgy-cloudtrail"
+  trail_to_cw_role_arn = var.primary_region ? aws_iam_role.figgy_trail_to_cw_logs[0].arn : "arn:aws:iam::${local.account_id}:role/${local.cloudtrail_role_name}"
 }
 
 resource "aws_iam_role_policy_attachment" "figgy_trail_to_cw_logs" {
@@ -43,7 +48,7 @@ resource "aws_cloudtrail" "figgy_cloudtrail" {
 
   # CloudTrail requires the Log Stream wildcard
   cloud_watch_logs_group_arn = "${aws_cloudwatch_log_group.figgy_trail_log_group.arn}:*"
-  cloud_watch_logs_role_arn  = aws_iam_role.figgy_trail_to_cw_logs.arn
+  cloud_watch_logs_role_arn  = aws_iam_role.figgy_trail_to_cw_logs[0].arn
   depends_on                 = [
     aws_s3_bucket.figgy_bucket,
     aws_s3_bucket_policy.cloudtrail_bucket_policy,
