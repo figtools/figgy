@@ -14,7 +14,7 @@ locals {
 
 module "dynamo_stream_replicator" {
   source         = "../figgy_lambda"
-  deploy_bucket  = local.lambda_bucket
+  deploy_bucket  = aws_s3_bucket.figgy_bucket.id
   description    = "Instantly replicates source -> destination configuration changes when someone uses figgy to alter replication mappings."
   handler        = "functions/dynamo_stream_replicator.handle"
   lambda_name    = local.dynamo_stream_replicator_name

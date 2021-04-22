@@ -14,7 +14,7 @@ locals {
 
 module "config_usage_tracker" {
   source         = "../figgy_lambda"
-  deploy_bucket  = local.bucket_name
+  deploy_bucket  = aws_s3_bucket.figgy_bucket.id
   description    = "Tracks users who are fetching configurations from parameter store in figgy managed namespaces."
   handler        = "functions/config_usage_tracker.handle"
   lambda_name    = local.config_usage_tracker_name

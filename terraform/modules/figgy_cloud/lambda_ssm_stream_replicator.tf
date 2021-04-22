@@ -13,7 +13,7 @@ locals {
 
 module "ssm_stream_replicator" {
   source         = "../figgy_lambda"
-  deploy_bucket  = local.lambda_bucket
+  deploy_bucket  = aws_s3_bucket.figgy_bucket.id
   description    = "Listens to the CW event stream for SSM events and triggers replication if replication sources are changed."
   handler        = "functions/ssm_stream_replicator.handle"
   lambda_name    = local.ssm_stream_replicator_name

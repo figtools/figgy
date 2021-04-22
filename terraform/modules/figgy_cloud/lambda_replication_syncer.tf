@@ -13,7 +13,7 @@ locals {
 
 module "replication_syncer" {
   source         = "../figgy_lambda"
-  deploy_bucket  = local.lambda_bucket
+  deploy_bucket  = aws_s3_bucket.figgy_bucket.id
   description    = "Incrementally synchronizes the replication across all parameters in case something gets out-of-wack"
   handler        = "functions/replication_syncer.handle"
   lambda_name    = local.replication_syncer_name

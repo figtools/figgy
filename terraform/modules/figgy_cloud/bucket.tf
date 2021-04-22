@@ -1,14 +1,13 @@
 resource "random_uuid" "uuid" {}
 
 locals {
-  bucket_name = "${var.cfgs.s3_bucket_prefix}figgy-${substr(random_uuid.uuid.result, 0, 5)}"
+  bucket_name = "${var.cfgs.s3_bucket_prefix}figgy-${data.aws_region.current.name}-${substr(random_uuid.uuid.result, 0, 5)}"
 }
 
 # This is optional, you may also select an existing bucket, feel free to comment out.
 # If you comment this out, ensure your bucket exists, and then comment out delete the `depends_on` blocks  referencing
 # `aws_s3_bucket.figgy_bucket` in the files prefixed with `lambda_`
 resource "aws_s3_bucket" "figgy_bucket" {
-  count = var.primary_region ? 1 : 0
   bucket = local.bucket_name
   acl    = "private"
 
@@ -52,7 +51,7 @@ resource "aws_s3_bucket_policy" "cloudtrail_bucket_policy" {
               "Service": "cloudtrail.amazonaws.com"
             },
             "Action": "s3:GetBucketAcl",
-            "Resource": "arn:aws:s3:::${local.bucket_name}"
+            "Resource": "arn:aws:s3:::${aws_s3_bucket.figgy_bucket.id}"
         },
         {
             "Sid": "AWSCloudTrailWrite",
@@ -61,7 +60,7 @@ resource "aws_s3_bucket_policy" "cloudtrail_bucket_policy" {
               "Service": "cloudtrail.amazonaws.com"
             },
             "Action": "s3:PutObject",
-            "Resource": "arn:aws:s3:::${local.bucket_name}/AWSLogs/*",
+            "Resource": "arn:aws:s3:::${aws_s3_bucket.figgy_bucket.id}/AWSLogs/*",
             "Condition": {
                 "StringEquals": {
                     "s3:x-amz-acl": "bucket-owner-full-control"
