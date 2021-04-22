@@ -7,6 +7,10 @@ resource "aws_iam_policy" "figgy_access_policy" {
   name        = "figgy_${var.cfgs.role_types[count.index]}_access_${local.region}"
   description = "Dynamic figgy access policy for role: ${var.cfgs.role_types[count.index]}"
   policy      = data.aws_iam_policy_document.dynamic_policy[count.index].json
+  
+  lifecycle {
+    ignore_changes = [name]
+  }
 }
 
 # Dynamically assembled policy based on user provided configurations
