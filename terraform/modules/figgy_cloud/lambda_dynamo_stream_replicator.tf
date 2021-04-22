@@ -1,7 +1,11 @@
 
 locals {
   # Cannot pass direct reference because these policy may be created by a different region's build
-  dynamo_stream_replication_policies = [
+  dynamo_stream_replication_policies = var.primary_region ? [
+    aws_iam_policy.config_replication.arn,
+    aws_iam_policy.lambda_default.arn,
+    aws_iam_policy.read_figgy_configs.arn
+  ] :  [
     "arn:aws:iam::${local.account_id}:policy/${local.config_replication_policy_name}",
     "arn:aws:iam::${local.account_id}:policy/${local.lambda_default_policy_name}",
     "arn:aws:iam::${local.account_id}:policy/${local.read_figgy_configs_policy_name}",
