@@ -146,6 +146,10 @@ resource "aws_iam_policy" "figgy_write_cw_logs" {
   name        = "figgy-cw-logs-write-${local.region}"
   description = "Write logs to cloudwatch."
   policy      = data.aws_iam_policy_document.cloudwatch_logs_write.json
+  
+  lifecycle {
+    ignore_changes = [name]
+  }
 }
 
 data "aws_iam_policy_document" "cloudwatch_logs_write" {
