@@ -12,7 +12,7 @@ module "figgy_cloud" {
   regions = var.regions
   primary_region = true # only set for this module, false (default) otherwise
   providers = {
-    aws.region = "test"
+    aws.region = aws
   }
 }
 
