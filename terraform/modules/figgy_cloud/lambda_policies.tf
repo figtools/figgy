@@ -173,7 +173,7 @@ data "aws_iam_policy_document" "config_replication_document" {
       "dynamodb:ListShards",
       "dynamodb:DescribeStream"
     ]
-    resources = ["arn:aws:dynamodb::${local.account_id}:table/${aws_dynamodb_table.config_replication.name}"]
+    resources = ["arn:aws:dynamodb::${local.account_id}:table/${aws_dynamodb_table.config_replication.name}/*"]
   }
 
   statement {
