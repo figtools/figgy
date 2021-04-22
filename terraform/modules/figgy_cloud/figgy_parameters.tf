@@ -164,7 +164,7 @@ resource "aws_ssm_parameter" "region" {
   provider = aws.region
   name        = "/figgy/region"
   type        = "String"
-  value       = jsonencode(local.region)
+  value       = local.region
   description = "Current active region."
   overwrite   = true
 }
