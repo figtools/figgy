@@ -38,5 +38,6 @@ resource "aws_cloudwatch_event_target" "push_event" {
 
 
 resource "aws_sns_topic" "figgy_alarms" {
+  provider = aws.region
   name = "figgy-alarms"
 }

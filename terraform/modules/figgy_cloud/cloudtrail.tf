@@ -10,7 +10,7 @@ resource "aws_cloudwatch_log_group" "figgy_trail_log_group" {
 
 resource "aws_iam_role" "figgy_trail_to_cw_logs" {
   provider = aws.region
-  name = local.cloudtrail_role_name
+  name = "${local.cloudtrail_role_name}-${local.region}"
   assume_role_policy = data.aws_iam_policy_document.figgy_trail_role_assume_policy.json
 }
 
