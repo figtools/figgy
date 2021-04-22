@@ -27,7 +27,6 @@ module "config_usage_tracker" {
   sha256                  = data.archive_file.figgy.output_base64sha256
   memory_size             = 256
   concurrent_executions   = 5
-  create_role = var.primary_region
 }
 
 # We do not want to consume all Cloudtrail events, instead we only want the ones relevant to ParameterStore. This CW

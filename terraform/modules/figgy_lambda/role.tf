@@ -1,6 +1,8 @@
 
-data "aws_caller_identity" "current" {
-}
+data "aws_caller_identity" "current" {}
+
+data "aws_region" "current" {}
+
 
 locals {
   role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.lambda_name}"
@@ -8,7 +10,7 @@ locals {
 
 resource "aws_iam_role" "figgy_role" {
   count = var.create_role ? 1 : 0
-  name = var.lambda_name
+  name = "${var.lambda_name}-${data.aws_region.current.name}"
   assume_role_policy = data.aws_iam_policy_document.assume_policy.json
 }
 

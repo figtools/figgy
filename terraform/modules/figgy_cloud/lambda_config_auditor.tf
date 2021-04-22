@@ -27,7 +27,6 @@ module "config_auditor" {
   sha256                  = data.archive_file.figgy.output_base64sha256
   memory_size             = 256
   concurrent_executions   = 5
-  create_role = var.primary_region
 }
 
 module "config_auditor_trigger" {
