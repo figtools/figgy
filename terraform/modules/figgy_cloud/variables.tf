@@ -34,3 +34,8 @@ variable "regions" {
   type = list(string)
   description = "All AWS regions figgy is deployed in across this account."
 }
+
+variable "primary_region" {
+  description = "Should only be set for the primary region as this will create account-wide resources."
+  default = false
+}

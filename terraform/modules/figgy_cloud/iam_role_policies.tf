@@ -1,6 +1,6 @@
 
 locals {
-  num_role_resources = length(var.cfgs.role_types)
+  num_role_resources = var.primary_region ? length(var.cfgs.role_types): 0
 }
 
 # Policy created by
@@ -140,7 +140,8 @@ data "aws_iam_policy_document" "dynamic_policy" {
 
 
 resource "aws_iam_policy" "figgy_write_cw_logs" {
-  name        = "figgy-cw-logs-write"
+  provider = aws.region
+  name        = "figgy-cw-logs-write-${local.region}"
   description = "Write logs to cloudwatch."
   policy      = data.aws_iam_policy_document.cloudwatch_logs_write.json
 }
@@ -169,6 +170,6 @@ data "aws_iam_policy_document" "cloudwatch_logs_write" {
 
     # Ideally, all figgy logs should all be written to the /figgy CW log namespace, however at this time it is not
     # possible to have lambdas write to anywhere but /aws/lambda/${lambda_name}/ namespace.
-    resources = ["arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:*"]
+    resources = ["arn:aws:logs:${local.region}:${data.aws_caller_identity.current.account_id}:log-group:*"]
   }
 }

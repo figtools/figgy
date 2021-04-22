@@ -10,8 +10,9 @@ module "figgy_cloud" {
   webhook_url = var.webhook_url
   sandbox_deploy = var.sandbox_deploy
   regions = var.regions
+  primary_region = true # only set for this module, false (default) otherwise
   providers = {
-    aws.region = aws
+    aws.region = "test"
   }
 }
 
@@ -34,6 +35,7 @@ module "figgy_cloud" {
 //  webhook_url = var.webhook_url
 //  sandbox_deploy = var.sandbox_deploy
 //  regions = var.regions
+//  primary_region = false
 //  providers = {
 //    aws.region = aws.usw1     # <--- Update this to map to your other region blocks in 00_main.tf
 //  }
