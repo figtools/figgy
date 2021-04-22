@@ -7,7 +7,7 @@ resource "aws_lambda_function" "figgy_lambda" {
   s3_key                         = local.deploy_path
   function_name                  = var.lambda_name
   handler                        = var.handler
-  role                           = var.role_arn == null ? local.role_arn : var.role_arn
+  role                           = aws_iam_role.figgy_role.arn
   runtime                        = "python3.7"
   description                    = var.description
   timeout                        = var.lambda_timeout
