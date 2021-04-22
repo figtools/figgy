@@ -8,6 +8,7 @@ locals {
 # If you comment this out, ensure your bucket exists, and then comment out delete the `depends_on` blocks  referencing
 # `aws_s3_bucket.figgy_bucket` in the files prefixed with `lambda_`
 resource "aws_s3_bucket" "figgy_bucket" {
+  provider = aws.region
   bucket = local.bucket_name
   acl    = "private"
 
@@ -43,8 +44,7 @@ resource "aws_s3_bucket" "figgy_bucket" {
 }
 
 resource "aws_s3_bucket_policy" "cloudtrail_bucket_policy" {
-  bucket = local.bucket_name
-  depends_on = [aws_s3_bucket.figgy_bucket]
+  bucket = aws_s3_bucket.figgy_bucket.id
   policy = <<POLICY
 {
     "Version": "2012-10-17",

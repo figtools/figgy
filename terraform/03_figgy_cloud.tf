@@ -12,7 +12,7 @@ module "figgy_cloud" {
   regions = var.regions
   primary_region = true
   providers = {
-    aws = aws.default
+    aws.region = aws
   }
 }
 
@@ -23,7 +23,7 @@ module "figgy_cloud" {
 # Duplicate the below block for each extra region you want to deploy Figgy into.
 # Be sure to update the providers {} block.
 
-
+//
 //module "figgy_cloud_us_west" {
 //  source = "./modules/figgy_cloud"
 //  aws_account_id = var.aws_account_id
@@ -37,7 +37,7 @@ module "figgy_cloud" {
 //  regions = var.regions
 //  primary_region = false
 //  providers = {
-//    aws = aws.us-west-1   # <--- update this as needed.
+//    aws.region = aws.usw1
 //  }
 //
 //  depends_on = [

@@ -4,7 +4,7 @@ locals {
 
 resource "aws_lambda_function" "figgy_lambda" {
   s3_bucket                      = var.deploy_bucket
-  s3_key                         = local.deploy_path
+  s3_key                         = aws_s3_bucket_object.figgy_deploy.id
   function_name                  = var.lambda_name
   handler                        = var.handler
   role                           = aws_iam_role.figgy_role.arn

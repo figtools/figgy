@@ -29,7 +29,6 @@ terraform {
 # TODO: sense for your terraform environment. Docs: https://www.terraform.io/docs/providers/aws/index.html
 provider "aws" {
   region = "us-east-1"
-  alias = "default"
 
   assume_role {
     ## Todo: Update this to your own role, or remove this block and provide credentials to
@@ -50,10 +49,6 @@ provider "aws" {
 //provider "aws" {
 //  region = "us-west-1"
 //  alias = "usw1"
-//
-//  assume_role {
-//    role_arn     = "arn:aws:iam::${var.aws_account_id}:role/figgy-admin"
-//  }
 //}
-//
+
 

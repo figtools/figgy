@@ -1,5 +1,6 @@
 
 resource "aws_cloudwatch_log_group" "figgy_trail_log_group" {
+  provider = aws.region
   name = "/figgy/cloudtrail/default-trail"
   # We do not want to retain cloudtrail logs, we only need them long enough for our lambda
   # We parse SSM related Get/List/Describe events immediately then discard.
@@ -8,7 +9,7 @@ resource "aws_cloudwatch_log_group" "figgy_trail_log_group" {
 }
 
 resource "aws_iam_role" "figgy_trail_to_cw_logs" {
-  count = var.primary_region ? 1 : 0
+  provider = aws.region
   name = local.cloudtrail_role_name
   assume_role_policy = data.aws_iam_policy_document.figgy_trail_role_assume_policy.json
 }
