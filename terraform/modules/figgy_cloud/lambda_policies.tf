@@ -174,9 +174,7 @@ data "aws_iam_policy_document" "config_replication_document" {
       "dynamodb:DescribeStream"
     ]
     resources = [
-      "arn:aws:dynamodb::${local.account_id}:table/${aws_dynamodb_table.config_replication.name}/*",
       "arn:aws:dynamodb::${local.account_id}:table/${aws_dynamodb_table.config_replication.name}/stream/*",
-      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_replication.name}/*"
     ]
   }
 
