@@ -1,4 +1,9 @@
-data aws_region "current" {}
+
+data "aws_region" "default" {}
+
+data "aws_region" "current" {
+  provider = aws.region
+}
 
 locals {
 

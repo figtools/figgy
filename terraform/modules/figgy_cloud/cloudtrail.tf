@@ -41,7 +41,7 @@ resource "aws_iam_role_policy_attachment" "figgy_trail_to_cw_logs" {
 # See https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudtrail#data_resource
 resource "aws_cloudtrail" "figgy_cloudtrail" {
   provider = aws.region
-  name                          = "figgy-trail"
+  name                          = "figgy-trail-${local.region}"
   s3_bucket_name                = aws_s3_bucket.figgy_bucket.id
   include_global_service_events = false
   is_multi_region_trail         = false
