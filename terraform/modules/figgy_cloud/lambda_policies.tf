@@ -19,7 +19,7 @@ resource "aws_iam_policy" "config_auditor" {
   name        = local.config_auditor_name
   path        = "/"
   description = "IAM policy for figgy config-auditor lambda"
-  policy      = data.aws_iam_policy_document.config_auditor_document.json
+  policy      = data.aws_iam_policy_document.config_auditor_document[0].json
 
   # Prevents TF from always detecting changes in the name even when there are none, causing resource recreation.
   lifecycle {
@@ -64,7 +64,7 @@ resource "aws_iam_policy" "config_usage_tracker" {
   name        = local.config_usage_tracker_name
   path        = "/"
   description = "IAM policy for figgy config-usage-tracker lambda"
-  policy      = data.aws_iam_policy_document.config_usage_tracker.json
+  policy      = data.aws_iam_policy_document.config_usage_tracker[0].json
 
   # Prevents TF from always detecting changes in the name even when there are none, causing resource recreation.
   lifecycle {
@@ -100,7 +100,7 @@ resource "aws_iam_policy" "config_cache_manager" {
   name        = local.config_cache_manager_name
   path        = "/"
   description = "IAM policy for figgy config_cache_manager/syncer lambdas"
-  policy      = data.aws_iam_policy_document.config_cache_manager_document.json
+  policy      = data.aws_iam_policy_document.config_cache_manager_document[0].json
 
   # Prevents TF from always detecting changes in the name even when there are none, causing resource recreation.
   lifecycle {
@@ -138,7 +138,7 @@ resource "aws_iam_policy" "config_replication" {
   name        = local.config_replication_policy_name
   path        = "/"
   description = "IAM policy for figgy replication management lambdas"
-  policy      = data.aws_iam_policy_document.config_replication_document.json
+  policy      = data.aws_iam_policy_document.config_replication_document[0].json
 
   # Prevents TF from always detecting changes in the name even when there are none, causing resource recreation.
   lifecycle {
@@ -231,7 +231,7 @@ resource "aws_iam_policy" "lambda_read_figgy_specific_configs" {
   name        = local.read_figgy_configs_policy_name
   path        = "/"
   description = "IAM policy to enable figgy lambdas to read figgy-specific configurations"
-  policy      = data.aws_iam_policy_document.lambda_read_figgy_configs.json
+  policy      = data.aws_iam_policy_document.lambda_read_figgy_configs[0].json
 
   # Prevents TF from always detecting changes in the name even when there are none, causing resource recreation.
   lifecycle {

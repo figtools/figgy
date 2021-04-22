@@ -12,7 +12,7 @@ locals {
 resource "aws_iam_role" "figgy_role" {
   count = var.create_role ? 1 : 0
   name = local.role_name
-  assume_role_policy = data.aws_iam_policy_document.assume_policy.json
+  assume_role_policy = data.aws_iam_policy_document.assume_policy[0].json
 
   # Prevents TF from always detecting changes in the name even when there are none, causing resource recreation.
   lifecycle {
