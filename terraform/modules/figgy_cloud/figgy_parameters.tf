@@ -160,7 +160,7 @@ resource "aws_ssm_parameter" "regions" {
   overwrite   = true
 }
 
-resource "aws_ssm_parameter" "regions" {
+resource "aws_ssm_parameter" "region" {
   provider = aws.region
   name        = "/figgy/region"
   type        = "String"
