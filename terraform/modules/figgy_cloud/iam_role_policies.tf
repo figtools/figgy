@@ -62,10 +62,10 @@ data "aws_iam_policy_document" "dynamic_policy" {
     # EVERYONE gets access to /shared, it is our global namespace.
     resources = concat([
       for ns in var.cfgs.role_to_ns_access[var.cfgs.role_types[count.index]] :
-      "arn:aws:ssm::${data.aws_caller_identity.current.account_id}:parameter${ns}/*"
+      "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter${ns}/*"
       ], [
       for ns in var.cfgs.global_read_namespaces :
-      "arn:aws:ssm::${data.aws_caller_identity.current.account_id}:parameter${ns}/*"
+      "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter${ns}/*"
       ]
     )
   }
@@ -99,8 +99,8 @@ data "aws_iam_policy_document" "dynamic_policy" {
       "ssm:GetParameters"
     ]
     resources = [
-      "arn:aws:ssm::${data.aws_caller_identity.current.account_id}:parameter/figgy/integrations/*",
-      "arn:aws:ssm::${data.aws_caller_identity.current.account_id}:parameter/admin/*"
+      "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter/figgy/integrations/*",
+      "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter/admin/*"
     ]
   }
 
@@ -115,13 +115,13 @@ data "aws_iam_policy_document" "dynamic_policy" {
 
     # The arns ending in /* allow access to Global Secondary Indices
     resources = [
-      "arn:aws:dynamodb::${local.account_id}:table/${aws_dynamodb_table.config_replication.name}",
-      "arn:aws:dynamodb::${local.account_id}:table/${aws_dynamodb_table.config_auditor.name}",
-      "arn:aws:dynamodb::${local.account_id}:table/${aws_dynamodb_table.config_auditor.name}/*",
-      "arn:aws:dynamodb::${local.account_id}:table/${aws_dynamodb_table.config_cache.name}",
-      "arn:aws:dynamodb::${local.account_id}:table/${aws_dynamodb_table.user_cache.name}",
-      "arn:aws:dynamodb::${local.account_id}:table/${aws_dynamodb_table.config_usage_tracker.name}",
-      "arn:aws:dynamodb::${local.account_id}:table/${aws_dynamodb_table.config_usage_tracker.name}/*",
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_replication.name}",
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_auditor.name}",
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_auditor.name}/*",
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_cache.name}",
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.user_cache.name}",
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_usage_tracker.name}",
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_usage_tracker.name}/*",
     ]
   }
 
