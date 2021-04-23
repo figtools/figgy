@@ -140,9 +140,9 @@ resource "aws_iam_policy" "kms_decrypt" {
   policy      = data.aws_iam_policy_document.figgy_kms_document.json
 
 //  # Prevents TF from always detecting changes in the name even when there are none, causing resource recreation.
-//  lifecycle {
-//    ignore_changes = [name]
-//  }
+  lifecycle {
+    ignore_changes = [name]
+  }
 }
 
 data "aws_iam_policy_document" "figgy_kms_document" {
