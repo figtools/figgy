@@ -3,11 +3,13 @@ locals {
   stream_replicator_policies = var.primary_region ? [
     aws_iam_policy.config_replication[0].arn,
     aws_iam_policy.lambda_default[0].arn,
-    aws_iam_policy.lambda_read_figgy_specific_configs[0].arn
+    aws_iam_policy.lambda_read_figgy_specific_configs[0].arn,
+    aws_iam_policy.kms_decrypt.arn
   ] :  [
     "arn:aws:iam::${local.account_id}:policy/${local.config_replication_policy_name}",
     "arn:aws:iam::${local.account_id}:policy/${local.lambda_default_policy_name}",
     "arn:aws:iam::${local.account_id}:policy/${local.read_figgy_configs_policy_name}",
+    aws_iam_policy.kms_decrypt.arn
   ]
 }
 

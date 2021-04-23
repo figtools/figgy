@@ -23,7 +23,7 @@ resource "aws_iam_role" "figgy_role" {
 # If creating role, attach policies AFTER role creation.
 resource "aws_iam_role_policy_attachment" "role_policy_attachment_on_create" {
   count      = var.create_role ? length(var.policies) : 0
-  role       = aws_iam_role.figgy_role.arn
+  role       = aws_iam_role.figgy_role[0].arn
   policy_arn = var.policies[count.index]
 }
 
