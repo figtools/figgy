@@ -24,4 +24,7 @@ resource "aws_lambda_permission" "lamda_permissions" {
   function_name = var.lambda_name
   principal     = "logs.${data.aws_region.current.name}.amazonaws.com"
   source_arn    = "${var.log_group_arn}:*"
+  lifecycle {
+    ignore_changes = [principal]
+  }
 }
