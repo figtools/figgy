@@ -12,6 +12,10 @@ resource "aws_iam_role" "figgy_trail_to_cw_logs" {
   provider = aws.region
   name = "${local.cloudtrail_role_name}-${local.region}"
   assume_role_policy = data.aws_iam_policy_document.figgy_trail_role_assume_policy.json
+
+  lifecycle {
+    ignore_changes = [name]
+  }
 }
 
 data "aws_iam_policy_document" "figgy_trail_role_assume_policy" {
@@ -55,4 +59,8 @@ resource "aws_cloudtrail" "figgy_cloudtrail" {
     aws_s3_bucket_policy.cloudtrail_bucket_policy,
     aws_cloudwatch_log_group.figgy_trail_log_group
   ]
+
+  lifecycle {
+    ignore_changes = [name]
+  }
 }
