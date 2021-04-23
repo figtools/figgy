@@ -20,12 +20,18 @@ resource "aws_iam_role" "figgy_role" {
 //  }
 }
 
-# Then parse through the list using count
-resource "aws_iam_role_policy_attachment" "role_policy_attachment" {
+# If creating role, attach policies AFTER role creation.
+resource "aws_iam_role_policy_attachment" "role_policy_attachment_on_create" {
   count      = var.create_role ? length(var.policies) : 0
-  role       = aws_iam_role.figgy_role[0].name
+  role       = aws_iam_role.figgy_role.arn
   policy_arn = var.policies[count.index]
-  depends_on = [aws_iam_role.figgy_role]
+}
+
+# If role exists, attach policies to role.
+resource "aws_iam_role_policy_attachment" "role_policy_attachment_on_existing" {
+  count      = var.create_role ?  0 : length(var.policies)
+  role       = local.role_arn
+  policy_arn = var.policies[count.index]
 }
 
 data "aws_iam_policy_document" "assume_policy" {
