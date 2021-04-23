@@ -134,7 +134,7 @@ data "aws_iam_policy_document" "config_cache_manager_document" {
 
 # KMS Decrypt by Region Policy
 resource "aws_iam_policy" "kms_decrypt" {
-  name        = local.kms_decrypt_policy_name
+  name        = "${local.kms_decrypt_policy_name}-${local.region}"
   path        = "/"
   description = "IAM policy for lambdas to decrypt configurations."
   policy      = data.aws_iam_policy_document.figgy_kms_document.json
