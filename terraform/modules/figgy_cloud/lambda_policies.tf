@@ -132,6 +132,34 @@ data "aws_iam_policy_document" "config_cache_manager_document" {
   }
 }
 
+# KMS Decrypt by Region Policy
+resource "aws_iam_policy" "kms_decrypt" {
+  name        = local.kms_decrypt_policy_name
+  path        = "/"
+  description = "IAM policy for lambdas to decrypt configurations."
+  policy      = data.aws_iam_policy_document.figgy_kms_document.json
+
+//  # Prevents TF from always detecting changes in the name even when there are none, causing resource recreation.
+//  lifecycle {
+//    ignore_changes = [name]
+//  }
+}
+
+data "aws_iam_policy_document" "figgy_kms_document" {
+  provider = aws.region
+
+  statement {
+    sid = "FiggyKMSAccess"
+    actions = [
+      "kms:DescribeKey",
+      "kms:Decrypt",
+      "kms:Encrypt"
+    ]
+
+    resources = concat([for x in aws_kms_key.encryption_key : x.arn], [aws_kms_key.replication_key.arn])
+  }
+}
+
 # Replication lambdas policy
 resource "aws_iam_policy" "config_replication" {
   count = var.primary_region ? 1 : 0
@@ -176,17 +204,6 @@ data "aws_iam_policy_document" "config_replication_document" {
     resources = [
       "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_replication.name}/stream/*",
     ]
-  }
-
-  statement {
-    sid = "FiggyKMSAccess"
-    actions = [
-      "kms:DescribeKey",
-      "kms:Decrypt",
-      "kms:Encrypt"
-    ]
-
-    resources = concat([for x in aws_kms_key.encryption_key : x.arn], [aws_kms_key.replication_key.arn])
   }
 
   statement {
