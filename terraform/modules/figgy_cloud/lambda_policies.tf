@@ -42,7 +42,7 @@ data "aws_iam_policy_document" "config_auditor_document" {
       "dynamodb:UpdateTimeToLive"
     ]
     resources = [
-      "arn:aws:dynamodb::${local.account_id}:table/${aws_dynamodb_table.config_replication.name}"
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_auditor.name}"
     ]
   }
 
