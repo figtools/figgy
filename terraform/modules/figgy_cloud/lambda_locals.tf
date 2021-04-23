@@ -11,5 +11,5 @@ locals {
   lambda_default_policy_name = "figgy-lambda-default"
   config_replication_policy_name = "config-replication"
   read_figgy_configs_policy_name = "figgy-lambda-read-figgy-specific-configs"
-  kms_decrypt_policy_name = 'figgy-kms-decrypt'
+  kms_decrypt_policy_name = "figgy-kms-decrypt"
 }
