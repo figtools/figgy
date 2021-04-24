@@ -285,10 +285,10 @@ data "aws_iam_policy_document" "lambda_read_figgy_configs" {
 # Read configs under user defined namespaces
 resource "aws_iam_policy" "lambda_read_user_namespaced_configs" {
   count = var.primary_region ? 1 : 0
-  name        = local.read_figgy_configs_policy_name
+  name        = local.read_user_namespaced_configs
   path        = "/"
-  description = "IAM policy to enable figgy lambdas to read figgy-specific configurations"
-  policy      = data.aws_iam_policy_document.lambda_read_figgy_configs[0].json
+  description = "IAM policy to enable figgy lambdas to read figgy-managed namespaced configurations"
+  policy      = data.aws_iam_policy_document.read_user_ns_configs[0].json
 
 //  # Prevents TF from always detecting changes in the name even when there are none, causing resource recreation.
 //  lifecycle {
