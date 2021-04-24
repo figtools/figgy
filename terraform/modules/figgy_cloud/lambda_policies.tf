@@ -278,3 +278,50 @@ data "aws_iam_policy_document" "lambda_read_figgy_configs" {
     resources = ["*"]
   }
 }
+
+#Todo -- add back read for all configs -- cache syncer needs it.
+
+
+# Read configs under user defined namespaces
+resource "aws_iam_policy" "lambda_read_user_namespaced_configs" {
+  count = var.primary_region ? 1 : 0
+  name        = local.read_figgy_configs_policy_name
+  path        = "/"
+  description = "IAM policy to enable figgy lambdas to read figgy-specific configurations"
+  policy      = data.aws_iam_policy_document.lambda_read_figgy_configs[0].json
+
+//  # Prevents TF from always detecting changes in the name even when there are none, causing resource recreation.
+//  lifecycle {
+//    ignore_changes = [name]
+//  }
+}
+
+
+data "aws_iam_policy_document" "read_user_ns_configs" {
+  count = var.primary_region ? 1 : 0
+
+  statement {
+    sid = "FiggyReadUserNamespacesOnly"
+    actions = [
+      "ssm:GetParameter",
+      "ssm:GetParameters",
+      "ssm:GetParameterHistory",
+      "ssm:GetParametersByPath"
+    ]
+
+    resources = concat([
+      for ns in var.cfgs.role_to_ns_access[var.cfgs.role_types[count.index]] :
+      "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter${ns}/*"
+      ], [
+      for ns in var.cfgs.global_read_namespaces :
+      "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter${ns}/*"
+      ]
+    )
+  }
+
+  statement {
+    sid       = "SSMDescribe"
+    actions   = ["ssm:DescribeParameters"]
+    resources = ["*"]
+  }
+}

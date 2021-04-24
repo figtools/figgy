@@ -1,6 +1,7 @@
 locals {
   # If primary region, attach X policies, if not, attach these other ones.
   cache_syncer_policies = var.primary_region ? [
+    aws_iam_policy.lambda_read_user_namespaced_configs[0].arn,
     aws_iam_policy.config_cache_manager[0].arn,
     aws_iam_policy.lambda_default[0].arn,
     aws_iam_policy.lambda_read_figgy_specific_configs[0].arn
