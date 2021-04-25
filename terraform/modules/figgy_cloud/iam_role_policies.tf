@@ -2,17 +2,21 @@
 
 # Policy created by
 resource "aws_iam_policy" "figgy_access_policy" {
+  provider = aws.region
   count       = length(var.cfgs.role_types)
-  name        = "figgy_${var.cfgs.role_types[count.index]}_access"
+  name        = "figgy_${var.cfgs.role_types[count.index]}_access_${local.region}"
   description = "Dynamic figgy access policy for role: ${var.cfgs.role_types[count.index]}"
   policy      = data.aws_iam_policy_document.dynamic_policy[count.index].json
+
+  lifecycle {
+    ignore_changes = [name]
+  }
 }
-
-
 
 # Dynamically assembled policy based on user provided configurations
 data "aws_iam_policy_document" "dynamic_policy" {
   count = length(var.cfgs.role_types)
+
   statement {
     sid = "KmsDecryptPermissions"
     actions = [
@@ -109,10 +113,15 @@ data "aws_iam_policy_document" "dynamic_policy" {
       "dynamodb:Scan"
     ]
 
+    # The arns ending in /* allow access to Global Secondary Indices
     resources = [
-      aws_dynamodb_table.config_replication.arn,
-      aws_dynamodb_table.config_auditor.arn,
-      aws_dynamodb_table.config_cache.arn
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_replication.name}",
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_auditor.name}",
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_auditor.name}/*",
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_cache.name}",
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.user_cache.name}",
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_usage_tracker.name}",
+      "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.config_usage_tracker.name}/*",
     ]
   }
 
@@ -129,5 +138,44 @@ data "aws_iam_policy_document" "dynamic_policy" {
       resources = [aws_kms_key.replication_key.arn]
     }
   }
+}
 
+
+resource "aws_iam_policy" "figgy_write_cw_logs" {
+  provider = aws.region
+  name        = "figgy-cw-logs-write-${local.region}"
+  description = "Write logs to cloudwatch."
+  policy      = data.aws_iam_policy_document.cloudwatch_logs_write.json
+
+  lifecycle {
+    ignore_changes = [name]
+  }
+}
+
+data "aws_iam_policy_document" "cloudwatch_logs_write" {
+  statement {
+    sid = "CWLogsWrite"
+    actions = [
+      "cloudwatch:Describe*",
+      "cloudwatch:Get*",
+      "cloudwatch:List*",
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:TestMetricFilter",
+    ]
+
+    # Required to create the log group
+    resources = ["*"]
+  }
+
+  statement {
+    sid = "PutLogEvents"
+    actions = [
+      "logs:PutLogEvents",
+    ]
+
+    # Ideally, all figgy logs should all be written to the /figgy CW log namespace, however at this time it is not
+    # possible to have lambdas write to anywhere but /aws/lambda/${lambda_name}/ namespace.
+    resources = ["arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:*"]
+  }
 }

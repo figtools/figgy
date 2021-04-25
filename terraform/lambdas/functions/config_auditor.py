@@ -1,16 +1,14 @@
-import random
+import logging
 import time
-from datetime import datetime
 
 import boto3
-import time
-import logging
+
 from config.constants import *
-from lib.models.replication_config import ReplicationConfig
 from lib.data.dynamo.audit_dao import AuditDao
 from lib.data.ssm import SsmDao
 from lib.models.slack import FigDeletedMessage, SlackColor, SimpleSlackMessage
 from lib.svcs.slack import SlackService
+from lib.utils.ssm_event_parser import SSMErrorDetected, SSMEvent
 from lib.utils.utils import Utils
 
 log = Utils.get_logger(__name__, logging.INFO)
@@ -49,67 +47,48 @@ def handle(event, context):
         return
 
     try:
-        log.info(f"Event: {event}")
-        detail = event["detail"]
-        user_arn = detail.get("userIdentity", {}).get("arn", "UserArnUnknown")
-        user = user_arn.split("/")[-1:][0]
-        action = detail.get("eventName")
+        detail = event.get('detail')
+        log.info(f'Got event details: {detail}')
+        ssm_event = SSMEvent(detail)
 
-        if 'errorMessage' in detail:
-            log.info(f'Not processing event due to this being an error event with message: {detail["errorMessage"]}')
+        if ssm_event.is_error():
+            log.info(f'Not processing event due to error Message {ssm_event.error_message} '
+                     f'and Code: {ssm_event.error_code}')
             return
 
-        if 'errorCode' in detail:
-            log.info(f'Not processing event due to error code: {detail["errorCode"]}')
-            return
+        log.info(f"Got user: {ssm_event.user}, action: {ssm_event.action} for parameter(s) {ssm_event.parameters}")
 
-        request_params = detail.get('requestParameters', {})
-        ps_names = request_params.get('names', [])
-        ps_name = [request_params['name']] if 'name' in request_params else []
-        ps_names = ps_names + ps_name
-        event_time = detail.get('eventTime')
-
-        # Convert to millis since epoch
-        if event_time:
-            event_time = int(datetime.strptime(event_time, "%Y-%m-%dT%H:%M:%SZ").timestamp() * 1000)
-        else:
-            event_time = int(time.time() * 1000)
-
-        log.info(f"Got user: {user}, action: {action} for parameter(s) {ps_names}")
-
-        for ps_name in ps_names:
+        for ps_name in ssm_event.parameters:
             ps_name = f'/{ps_name}' if not ps_name.startswith('/') else ps_name
+            matching_ns = [ns for ns in FIGGY_NAMESPACES if ps_name.startswith(ns)]
 
-            if action == DELETE_PARAM_ACTION or action == DELETE_PARAMS_ACTION:
-                audit.put_delete_log(user, action, ps_name, timestamp=event_time)
-                notify_delete(ps_name, user)
-            elif action == PUT_PARAM_ACTION:
-                ps_value = request_params.get("value")
-                ps_type = request_params.get("type")
-                ps_description = request_params.get("description")
-                ps_version = detail.get("responseElements", {}).get("version", 1)
-                ps_key_id = request_params.get("keyId")
+            if not matching_ns:
+                log.info(f'PS Name: {ps_name} - is not maintained by Figgy. Skipping..')
+                continue
 
-                if not ps_value:
-                    ps_value = ssm.get_parameter_value(ps_name)
+            if ssm_event.action == DELETE_PARAM_ACTION or ssm_event.action == DELETE_PARAMS_ACTION:
+                audit.put_delete_log(ssm_event.user, ssm_event.action, ps_name, timestamp=ssm_event.time)
+                notify_delete(ps_name, ssm_event.user)
+            elif ssm_event.action == PUT_PARAM_ACTION:
+                if not ssm_event.value:
+                    ssm_event.value = ssm.get_parameter_value_encrypted(ps_name)
 
                 audit.put_audit_log(
-                    user,
-                    action,
+                    ssm_event.user,
+                    ssm_event.action,
                     ps_name,
-                    ps_value,
-                    ps_type,
-                    ps_key_id,
-                    ps_description,
-                    ps_version,
-                    timestamp=event_time,
+                    ssm_event.value,
+                    ssm_event.type,
+                    ssm_event.key_id,
+                    ssm_event.description,
+                    ssm_event.version,
+                    timestamp=ssm_event.time,
                 )
             else:
-                log.info(f"Unsupported action type found! --> {action}")
+                log.info(f"Unsupported action type found! --> {ssm_event.action}")
 
-        # This will occassionally cleanup parameters with the explict value of DELETE_ME.
-        # Great for testing and adding PS parameters
-        # you don't want to be restored later on.
+        # This will occasionally cleanup parameters with the explict value of DELETE_ME.
+        # Great for testing and adding PS parameters you don't want to be restored later on.
         if time.time() - CLEANUP_INTERVAL > LAST_CLEANUP:
             log.info("Cleaning up.")
             audit.cleanup_test_logs()

@@ -2,7 +2,6 @@
 # Triggers a SNS notification when this lambda exits with an error status.
 
 resource "aws_cloudwatch_metric_alarm" "alarm" {
-
   alarm_name          = "${var.lambda_name}-error-alarm"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = 60

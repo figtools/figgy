@@ -32,6 +32,23 @@ AUDIT_KEYID_ATTR = "key_id"
 AUDIT_DESCRIPTION_ATTR = "description"
 AUDIT_VERSION_ATTR = "version"
 
+# Config Usage Tracker
+CONFIG_USAGE_TABLE_NAME = "figgy-config-usage-tracker"
+CONFIG_USAGE_PARAMETER_KEY = "parameter_name"
+CONFIG_USAGE_LAST_UPDATED_KEY = "last_updated"
+CONFIG_USAGE_USER_KEY = "user"
+CONFIG_USAGE_EMPTY_KEY = "empty_indexable_key"
+CONFIG_USAGE_EMPTY_IDX_VALUE = "empty"
+
+# User cache table
+USER_CACHE_TABLE_NAME = "figgy-user-cache"
+USER_CACHE_PARAM_NAME_KEY = "user_name"
+USER_CACHE_STATE_ATTR_NAME = "state"
+USER_CACHE_LAST_UPDATED_KEY = "last_updated"
+USER_CACHE_STATE_DELETED = 'DELETED'
+USER_CACHE_STATE_ACTIVE = 'ACTIVE'
+
+
 # Generic
 PUT_PARAM_ACTION = "PutParameter"
 DELETE_PARAM_ACTION = "DeleteParameter"

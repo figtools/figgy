@@ -1,4 +1,5 @@
-# You do not need to tweak anything in this file - Please do not touch unles you 100% know what you're doing!
+# Important: You do not need to tweak anything in this file - Please do not touch unless you 100% know what you're doing!
+
 locals {
   other_cfgs = {
     # This links your version of Figgy Cloud to the FiggyCLI.
@@ -24,8 +25,6 @@ locals {
     bastion_principal = [
       local.bastion_cfgs.bastion_account_number]
 
-    # Todo: Later do an auto-pip install from local, then zip up dependencies, add as layer, then pass layer ARN into
-    # Todo: the functions. (Wrap in a make command perhaps)
     aws_sdk_layer_map = {
       ap-northeast-1: "arn:aws:lambda:ap-northeast-1:249908578461:layer:AWSLambda-Python-AWS-SDK:4"
       us-east-1: "arn:aws:lambda:us-east-1:668099181075:layer:AWSLambda-Python-AWS-SDK:4"
