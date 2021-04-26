@@ -83,7 +83,7 @@ def handle(event, context):
             log.info(f"Unsupported action type found! --> {action}")
 
     except Exception as e:
-        log.error(e)
+        log.exception("Caught irrecoverable error while executing.")
         title = "Figgy experienced an irrecoverable error!"
         message = f"The following error occurred in an the figgy-ssm-stream-replicator lambda. \n" \
                   f"Figgy is designed to backoff and continually retry in the face of errors. \n" \

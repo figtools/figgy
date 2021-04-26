@@ -62,7 +62,7 @@ def handle(event, context):
         remove_old_deleted_items()
 
     except Exception as e:
-        log.error(e)
+        log.exception("Caught irrecoverable error while executing.")
         title = "Figgy experienced an irrecoverable error!"
         message = f"The following error occurred in an the figgy-ssm-stream-replicator lambda. "\
                   f"If this appears to be a bug with figgy, please tell us by submitting a GitHub issue!"\

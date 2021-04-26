@@ -67,7 +67,7 @@ def handle(event, context):
         else:
             log.info(f"Unsupported action type found! --> {action}")
     except Exception as e:
-        log.error(e)
+        log.exception("Caught irrecoverable error while executing.")
         title = f"Figgy experienced an irrecoverable error! In account: {ACCOUNT_ID[0:5]}[REDACTED]"
         message = f"The following error occurred in an the figgy-config-cache-manager lambda. "
         f"If this appears to be a bug with figgy, please tell us by submitting a GitHub issue!"

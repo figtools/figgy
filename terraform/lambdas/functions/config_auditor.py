@@ -95,7 +95,7 @@ def handle(event, context):
             LAST_CLEANUP = time.time()
 
     except Exception as e:
-        log.error(e)
+        log.exception("Caught irrecoverable error while executing.")
         message = f"The following error occurred in an the figgy-ssm-stream-replicator lambda. " \
                   f"If this appears to be a bug with Figgy, please tell us by submitting a GitHub issue!" \
                   f" \n\n{Utils.printable_exception(e)}"

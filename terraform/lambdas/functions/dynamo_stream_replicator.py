@@ -48,7 +48,7 @@ def handle(event, context):
             else:
                 log.info("Event is a delete event, skipping!")
     except Exception as e:
-        log.error(e)
+        log.exception("Caught irrecoverable error while executing.")
         title = "Figgy Dynamo Stream Replicator experienced and irrecoverable error!"
         message = f"The following error occurred in an the *figgy-dynamo-stream-replicator* lambda.\n"\
                   f"Figgy is designed to continually backoff and retry in the face of error. \n```{Utils.printable_exception(e)}```"

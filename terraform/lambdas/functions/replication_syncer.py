@@ -37,7 +37,7 @@ def handle(event, context):
             if updated:
                 notify_slack(config)
     except Exception as e:
-        log.error(e)
+        log.exception("Caught irrecoverable error while executing.")
         title = "Figgy experienced an irrecoverable error!"
         message=f"The following error occurred in an the *figgy-replication-syncer* lambda. " \
                 f"If this appears to be a bug with figgy, please tell us by submitting a GitHub issue!" \
