@@ -18,7 +18,7 @@ Join our Slack community:
 
 https://slack.figgy.dev
 
-### Figgy is now in beta!
+### Figgy 1.0 is now out!
 
 Figgy is a **_free_** and **_opensource_** serverless application config framework designed to bring simplicity, security, and resilience to 
 application config management. Figgy is built on top of AWS ParameterStore and leverages native AWS constructs such as AWS IAM, 
@@ -55,6 +55,8 @@ Figgy supports SAML based SSO integrations with multi-factor authentication. Sim
 
 <br/>
 
+#### Figgy UI
+![Figgy UI](https://user-images.githubusercontent.com/26939612/116593512-2a952680-a8ef-11eb-98d4-18b3105ff184.mp4)
 
 #### Get a configuration
 ![Figgy Get](.assets/gifs/get.gif)
