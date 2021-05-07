@@ -75,7 +75,7 @@ def handle(event, context):
                 continue
 
             log.info(f"Got user: {ssm_event.user}, action: {ssm_event.action} for parameter(s) {ssm_event.parameters}")
-            if ssm_event.user.startswith('figgy'):
+            if ssm_event.user.startswith('figgy') and ssm_event.user != 'figgy-demo@mailinator.com':
                 log.info(f'Found event from figgy, not logging.')
                 return
 
