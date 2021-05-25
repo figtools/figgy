@@ -92,6 +92,16 @@ data "aws_iam_policy_document" "config_usage_tracker" {
       "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.user_cache.name}"
     ]
   }
+
+  statement {
+    sid = "UsageTrackerTableDDBAccess"
+    actions = [
+      "s3:GetObject*",
+    ]
+    resources = [
+      "arn:aws:s3:::${aws_s3_bucket.figgy_bucket.id}/*"
+    ]
+  }
 }
 
 # Config cache manager / syncer lambdas
