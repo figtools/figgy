@@ -37,7 +37,7 @@ module "config_usage_tracker_trigger" {
   bucket_name = aws_s3_bucket.figgy_bucket.id
   filter_prefix = "AWSLogs/"
   filter_suffix = ".json.gz"
-  s3_event_types = ["s3:ObjectCreated"]
+  s3_event_types = ["s3:ObjectCreated:*"]
 
   providers = {
     aws = aws.region
