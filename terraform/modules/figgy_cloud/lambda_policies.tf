@@ -94,7 +94,7 @@ data "aws_iam_policy_document" "config_usage_tracker" {
   }
 
   statement {
-    sid = "UsageTrackerTableDDBAccess"
+    sid = "UsageTrackerS3Access"
     actions = [
       "s3:GetObject*",
     ]
