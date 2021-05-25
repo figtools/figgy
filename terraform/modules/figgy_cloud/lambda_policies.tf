@@ -108,7 +108,7 @@ resource "aws_iam_policy" "config_usage_tracker_s3" {
   name        = "${local.config_usage_tracker_name}-s3-${data.aws_region.current.name}"
   path        = "/"
   description = "IAM policy for figgy config-usage-tracker lambda in region: ${data.aws_region.current.name}"
-  policy      = data.aws_iam_policy_document.config_usage_tracker_s3.id
+  policy      = data.aws_iam_policy_document.config_usage_tracker_s3.json
 }
 
 
