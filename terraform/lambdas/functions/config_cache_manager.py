@@ -8,7 +8,7 @@ from lib.data.ssm import SsmDao
 from lib.models.slack import SimpleSlackMessage, SlackColor
 from lib.svcs.slack import SlackService
 from lib.utils.utils import Utils
-from config.constants import *
+from lib.config.constants import *
 from lib.data.dynamo.config_cache_dao import ConfigCacheDao, ConfigItem
 
 log = Utils.get_logger(__name__, logging.INFO)

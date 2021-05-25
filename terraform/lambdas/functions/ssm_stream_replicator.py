@@ -1,12 +1,11 @@
 import boto3
 import logging
-import re
 from typing import List, Dict
-from config.constants import *
+from lib.config.constants import *
 from lib.models.replication_config import ReplicationType, ReplicationConfig
 from lib.data.dynamo.replication_dao import ReplicationDao
 from lib.data.ssm.ssm import SsmDao
-from lib.models.slack import SlackMessage, SlackColor, FigReplicationMessage, SimpleSlackMessage
+from lib.models.slack import SlackColor, FigReplicationMessage, SimpleSlackMessage
 from lib.svcs.replication import ReplicationService
 from lib.svcs.slack import SlackService
 from lib.utils.utils import Utils

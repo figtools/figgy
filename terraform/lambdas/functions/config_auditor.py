@@ -3,12 +3,12 @@ import time
 
 import boto3
 
-from config.constants import *
+from lib.config.constants import *
 from lib.data.dynamo.audit_dao import AuditDao
 from lib.data.ssm import SsmDao
 from lib.models.slack import FigDeletedMessage, SlackColor, SimpleSlackMessage
 from lib.svcs.slack import SlackService
-from lib.utils.ssm_event_parser import SSMErrorDetected, SSMEvent
+from lib.utils.ssm_event_parser import SSMEvent
 from lib.utils.utils import Utils
 
 log = Utils.get_logger(__name__, logging.INFO)
