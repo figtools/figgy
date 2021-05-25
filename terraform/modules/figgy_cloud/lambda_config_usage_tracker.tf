@@ -4,7 +4,9 @@ locals {
     aws_iam_policy.config_usage_tracker[0].arn,
     aws_iam_policy.lambda_default[0].arn,
     aws_iam_policy.lambda_read_figgy_specific_configs[0].arn
-  ] : []
+  ] : [
+    aws_iam_policy.config_usage_tracker_s3.arn
+  ]
 }
 
 module "config_usage_tracker" {

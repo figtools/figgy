@@ -104,6 +104,27 @@ data "aws_iam_policy_document" "config_usage_tracker" {
   }
 }
 
+resource "aws_iam_policy" "config_usage_tracker_s3" {
+  count = var.primary_region ? 1 : 0
+  name        = "${local.config_usage_tracker_name}-s3-${data.aws_region.current.name}"
+  path        = "/"
+  description = "IAM policy for figgy config-usage-tracker lambda in region: ${data.aws_region.current.name}"
+  policy      = data.aws_iam_policy_document.config_usage_tracker_s3.id
+}
+
+
+data "aws_iam_policy_document" "config_usage_tracker_s3" {
+  statement {
+    sid = "UsageTrackerS3Access"
+    actions = [
+      "s3:GetObject*",
+    ]
+    resources = [
+      "arn:aws:s3:::${aws_s3_bucket.figgy_bucket.id}/*"
+    ]
+  }
+}
+
 # Config cache manager / syncer lambdas
 resource "aws_iam_policy" "config_cache_manager" {
   count = var.primary_region ? 1 : 0
