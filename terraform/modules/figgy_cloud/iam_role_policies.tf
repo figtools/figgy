@@ -3,7 +3,7 @@ locals {
   global_kms_keys = concat(
       [], # [] is used b/c later we'll likely add more.
       [
-        one(aws_kms_key.figgy_ots_key[*].arn),
+        aws_kms_key.figgy_ots_key[*].arn
       ]
   )
 }
