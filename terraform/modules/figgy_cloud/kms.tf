@@ -1,10 +1,10 @@
 # Constants
 locals {
   replication_key_alias_name = "replication"
-  figgy_default_key_alias_name = "figgy-default"
+  figgy_ots_key_alias_name = "figgy-ots"
   alias_suffix               = "-key"
   replication_key_alias      = "alias/${local.replication_key_alias_name}${local.alias_suffix}"
-  figgy_default_key_alias    = "alias/${local.figgy_default_key_alias_name}${local.alias_suffix}"
+  figgy_ots_key_alias    = "alias/${local.figgy_ots_key_alias_name}${local.alias_suffix}"
 }
 
 # The `tags` blocks with `created_by: figgy` are important because they are leveraged by conditional blocks in
@@ -29,19 +29,20 @@ resource "aws_kms_alias" "encryption_key_alias" {
 }
 
 ## Figgy encryption key(s)
-resource "aws_kms_key" "figgy_default_key" {
+resource "aws_kms_key" "figgy_ots_key" {
   provider    = aws.region
-  count       = length(var.cfgs.figgy_encryption_keys)
-  description = "Key used for encryption / decryption of figgy-specific secrets. Also used by some figgy utilities."
+  count       = var.cfgs.utility_account_alias == var.env_alias ? 1 : 0
+  description = "Key used for encryption / decryption of one-time-secrets."
   tags = {
     "created_by" : "figgy"
   }
 }
 
-resource "aws_kms_alias" "figgy_default_key" {
+resource "aws_kms_alias" "figgy_ots_key" {
   provider      = aws.region
-  name          = local.figgy_default_key_alias
-  target_key_id = aws_kms_key.figgy_default_key.id
+  count         = var.cfgs.utility_account_alias == var.env_alias ? 1 : 0
+  name          = local.figgy_ots_key_alias
+  target_key_id = aws_kms_key.figgy_ots_key.id
 }
 
 ## Replication encryption key - this is required by figgy for the configuration sharing features (essential)

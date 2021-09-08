@@ -1,7 +1,7 @@
 locals {
   # All roles will be provided access to use these KMS keys.
   global_kms_keys =  [
-      aws_kms_key.figgy_default_key.arn
+      aws_kms_key.figgy_ots_key.arn
   ]
 }
 
