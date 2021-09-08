@@ -8,7 +8,7 @@ locals {
     # Global read namespaces
     global_read_namespaces = [
       "/shared",
-      "/figgy"
+      "/figgy",
     ]
 
     # Merged config based on user selections

@@ -1,4 +1,9 @@
-
+locals {
+  # All roles will be provided access to use these KMS keys.
+  global_kms_keys =  [
+      aws_kms_key.figgy_default_key.arn
+  ]
+}
 
 # Policy created by
 resource "aws_iam_policy" "figgy_access_policy" {
@@ -23,21 +28,22 @@ data "aws_iam_policy_document" "dynamic_policy" {
       "kms:DescribeKey",
       "kms:Decrypt"
     ]
-    resources = [
+    resources = concat([
       # Looks up the keys the role has access to, then looks up the ARN from the provisioned key for that type
       for key_name in var.cfgs.role_to_kms_access[var.cfgs.role_types[count.index]] :
       aws_kms_key.encryption_key[index(var.cfgs.encryption_keys, key_name)].arn
-    ]
+    ], local.global_kms_keys)
+
   }
 
   statement {
     sid     = "KmsEncryptPermissions"
     actions = ["kms:Encrypt"]
-    resources = [
+    resources = concat([
       # Looks up the keys the role has access to, then looks up the ARN from the provisioned key for that type
       for key_name in var.cfgs.role_to_kms_access[var.cfgs.role_types[count.index]] :
       aws_kms_key.encryption_key[index(var.cfgs.encryption_keys, key_name)].arn
-    ]
+    ], local.global_kms_keys)
   }
 
   statement {

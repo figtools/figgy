@@ -1,4 +1,4 @@
-# Provisions figgy_cloud from the module - beware if you mess with this!
+# Provisions figgy_cloud
 module "figgy_cloud" {
   source = "./modules/figgy_cloud"
   aws_account_id = var.aws_account_id

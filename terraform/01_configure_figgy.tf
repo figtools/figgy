@@ -53,7 +53,6 @@ locals {
     # Options: "okta", "google", "bastion", "standard"
     auth_type = "bastion"
 
-
     # Environments with replication key access. This will give all user types access to the figgy replication key.
     # and enable users to run services locally and decrypt secrets shared with their application. Ideal for
     # local development. More details: https://www.figgy.dev/docs/advanced/confidentiality.html
@@ -63,5 +62,9 @@ locals {
     # This is optional. If you'd like to receive notifications for configuration events, input a webhook url here.
     # You may enter it here, or instead update the vars/ files.
     slack_webhook_url = var.webhook_url
+
+    # This is the alias for the account you will want custom figgy utilities to be installed. These utilities are not
+    # specific to any environment. One example utility is the one-time-secret sharing mechanism provided by figgy.
+    utility_account_alias = "mgmt"
   }
 }

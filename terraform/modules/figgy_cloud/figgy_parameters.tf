@@ -187,3 +187,13 @@ resource "aws_ssm_parameter" "slack_webhook" {
   value = var.cfgs.slack_webhook_url
   overwrite = true
 }
+
+## Figgy default kms key id
+resource "aws_ssm_parameter" "region" {
+  provider = aws.region
+  name        = "/figgy/kms/${local.figgy_default_key_alias_name}-key-id"
+  type        = "String"
+  value       = aws_kms_key.figgy_default_key.key_id
+  description = "The ARN of the figgy-default KMS key."
+  overwrite   = true
+}
