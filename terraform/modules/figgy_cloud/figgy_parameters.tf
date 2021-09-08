@@ -194,7 +194,7 @@ resource "aws_ssm_parameter" "ots_kms_key_id" {
   count         = var.cfgs.utility_account_alias == var.env_alias ? 1 : 0
   name        = "/figgy/kms/${local.figgy_ots_key_alias_name}-key-id"
   type        = "String"
-  value       = aws_kms_key.figgy_ots_key.key_id
+  value       = aws_kms_key.figgy_ots_key[count.index].key_id
   description = "The ARN of the figgy one-time-secret KMS key."
   overwrite   = true
 }
