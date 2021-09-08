@@ -2,7 +2,10 @@ locals {
   # All roles will be provided access to use these KMS keys.
   global_kms_keys = concat(
       [], # [] is used b/c later we'll likely add more.
-      aws_kms_key.figgy_ots_key.*.arn)
+      [
+        one(aws_kms_key.figgy_ots_key[*].arn),
+      ]
+  )
 }
 
 # Policy created by
