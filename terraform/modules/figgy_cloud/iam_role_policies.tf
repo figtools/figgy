@@ -190,7 +190,7 @@ data "aws_iam_policy_document" "cloudwatch_logs_write" {
 # Used by figgy one-time-secret sharing service.
 resource "aws_iam_policy" "figgy_ots_policy" {
   provider    = aws.region
-  count       = var.cfgs.utility_account_id == var.aws_account_id ? 1 : 0
+  count       = var.cfgs.utility_account_id == var.aws_account_id && var.primary_region ? 1 : 0
   name        = "figgy-ots-access"
   description = "Provides access to use the figgy one-time-secret utility"
   policy      = data.aws_iam_policy_document.figgy_ots[count.index].json
@@ -224,13 +224,42 @@ data "aws_iam_policy_document" "figgy_ots" {
   statement {
     sid = "ParameterStorePermissions"
     actions = [
+      "ssm:DeleteParameter",
+      "ssm:DeleteParameters",
+      "ssm:GetParameter",
+      "ssm:GetParameters",
+      "ssm:GetParameterHistory",
+      "ssm:GetParametersByPath",
+      "ssm:PutParameter",
+      "ssm:AddTagsToResource"
+    ]
+
+    # EVERYONE gets access to /shared, it is our global namespace.
+    resources = [
+      "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter/figgy/ots/*"
+    ]
+  }
+}
+
+# Figgy default policy
+resource "aws_iam_policy" "figgy_default" {
+  provider    = aws.region
+  count       = var.primary_region ? 1 : 0
+  name        = "figgy-default"
+  description = "Provides basic figgy access required by ALL users."
+  policy      = data.aws_iam_policy_document.figgy_default.json
+}
+
+data "aws_iam_policy_document" "figgy_default" {
+  statement {
+    sid = "ParameterStorePermissions"
+    actions = [
       "ssm:GetParameter",
       "ssm:GetParameters",
       "ssm:GetParameterHistory",
       "ssm:GetParametersByPath",
     ]
 
-    # EVERYONE gets access to /shared, it is our global namespace.
     resources = [
       "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter/figgy/*"
     ]
