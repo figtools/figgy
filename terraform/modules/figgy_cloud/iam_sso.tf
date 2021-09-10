@@ -20,6 +20,13 @@ resource "aws_iam_role" "sso_user_role" {
   max_session_duration = var.max_session_duration
 }
 
+resource "aws_iam_role" "ots_role" {
+  count                = var.cfgs.utility_account_id == var.aws_account_id ? 1 : 0
+  name                 = "figgy-ots"
+  assume_role_policy   = var.cfgs.enable_sso ? data.aws_iam_policy_document.sso_role_policy[0].json : ""
+  max_session_duration = var.max_session_duration
+}
+
 # SSO SAML sts policy
 data "aws_iam_policy_document" "sso_role_policy" {
   count = var.cfgs.enable_sso && var.primary_region  ? 1 : 0
@@ -47,4 +54,10 @@ resource "aws_iam_role_policy_attachment" "figgy_access_policy_attachment" {
   count      = var.cfgs.enable_sso ? length(var.cfgs.role_types) : 0
   role       = "figgy-${var.env_alias}-${var.cfgs.role_types[count.index]}"
   policy_arn = aws_iam_policy.figgy_access_policy[count.index].arn
+}
+
+resource "aws_iam_role_policy_attachment" "figgy_ots_policy_attachment" {
+  count      = var.cfgs.utility_account_id == var.aws_account_id ? 1 : 0
+  role       = "figgy-ots"
+  policy_arn = aws_iam_policy.figgy_ots_policy.arn
 }
