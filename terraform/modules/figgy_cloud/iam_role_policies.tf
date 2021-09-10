@@ -192,7 +192,7 @@ resource "aws_iam_policy" "figgy_ots_policy" {
   count       = var.cfgs.utility_account_id == var.aws_account_id ? 1 : 0
   name        = "figgy-ots-access"
   description = "Provides access to use the figgy one-time-secret utility"
-  policy      = data.aws_iam_policy_document.figgy_ots.json
+  policy      = data.aws_iam_policy_document.figgy_ots[count.index].json
 }
 
 data "aws_iam_policy_document" "figgy_ots" {
