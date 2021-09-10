@@ -17,7 +17,7 @@ resource "aws_iam_role_policy_attachment" "figgy_ots_policy_attachment" {
   policy_arn = aws_iam_policy.figgy_ots_policy[count.index].arn
 }
 
-resource "aws_iam_role_policy_attachment" "figgy_ots_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "figgy_default_policy_attachment" {
   count      = var.cfgs.utility_account_id == var.aws_account_id && var.primary_region ? 1 : 0
   role       = aws_iam_role.default_role[count.index].name
   policy_arn = aws_iam_policy.figgy_default[count.index].arn
