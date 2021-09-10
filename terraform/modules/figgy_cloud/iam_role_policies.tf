@@ -224,19 +224,15 @@ data "aws_iam_policy_document" "figgy_ots" {
   statement {
     sid = "ParameterStorePermissions"
     actions = [
-      "ssm:DeleteParameter",
-      "ssm:DeleteParameters",
       "ssm:GetParameter",
       "ssm:GetParameters",
       "ssm:GetParameterHistory",
       "ssm:GetParametersByPath",
-      "ssm:PutParameter",
-      "ssm:AddTagsToResource"
     ]
 
     # EVERYONE gets access to /shared, it is our global namespace.
     resources = [
-      "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter/figgy/ots/*"
+      "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter/figgy/*"
     ]
   }
 }
