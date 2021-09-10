@@ -16,7 +16,7 @@ resource "aws_iam_role" "sso_user_role" {
   # This name must remain this name: figgy-env-role (not figgy-role-env). If updated, must update bastion cross account
   # role assumption policies.
   name                 = "figgy-${var.env_alias}-${var.cfgs.role_types[count.index]}"
-  assume_role_policy   = var.cfgs.enable_sso ? data.aws_iam_policy_document.sso_role_policy[0].json : ""
+  assume_role_policy   = data.aws_iam_policy_document.sso_role_policy[count.index].json
   max_session_duration = var.max_session_duration
 }
 

@@ -187,6 +187,7 @@ data "aws_iam_policy_document" "cloudwatch_logs_write" {
   }
 }
 
+# Used by figgy one-time-secret sharing service.
 resource "aws_iam_policy" "figgy_ots_policy" {
   provider    = aws.region
   count       = var.cfgs.utility_account_id == var.aws_account_id ? 1 : 0
