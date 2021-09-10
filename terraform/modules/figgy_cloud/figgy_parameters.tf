@@ -191,7 +191,7 @@ resource "aws_ssm_parameter" "slack_webhook" {
 ## Figgy one-time-secret kms key id
 resource "aws_ssm_parameter" "ots_kms_key_id" {
   provider = aws.region
-  count         = var.cfgs.utility_account_alias == var.env_alias ? 1 : 0
+  count       = var.cfgs.utility_account_id == data.aws_caller_identity.current.account_id ? 1 : 0
   name        = "/figgy/kms/${local.figgy_ots_key_alias_name}-key-id"
   type        = "String"
   value       = aws_kms_key.figgy_ots_key[count.index].key_id
@@ -201,9 +201,9 @@ resource "aws_ssm_parameter" "ots_kms_key_id" {
 
 resource "aws_ssm_parameter" "utility_account" {
   provider = aws.region
-  name        = "/figgy/utility-account-alias"
+  name        = "/figgy/utility-account-id"
   type        = "String"
-  value       = var.cfgs.utility_account_alias
-  description = "Account alias for the designated figgy utility-account"
+  value       = var.cfgs.utility_account_id
+  description = "Account id for the designated figgy utility-account"
   overwrite   = true
 }

@@ -31,7 +31,7 @@ resource "aws_kms_alias" "encryption_key_alias" {
 ## Figgy encryption key(s)
 resource "aws_kms_key" "figgy_ots_key" {
   provider    = aws.region
-  count       = var.cfgs.utility_account_alias == var.env_alias ? 1 : 0
+  count       = var.cfgs.utility_account_id == data.aws_caller_identity.current.account_id ? 1 : 0
   description = "Key used for encryption / decryption of one-time-secrets."
   tags = {
     "created_by" : "figgy"
@@ -40,7 +40,7 @@ resource "aws_kms_key" "figgy_ots_key" {
 
 resource "aws_kms_alias" "figgy_ots_key" {
   provider      = aws.region
-  count         = var.cfgs.utility_account_alias == var.env_alias ? 1 : 0
+  count         = var.cfgs.utility_account_id == data.aws_caller_identity.current.account_id ? 1 : 0
   name          = local.figgy_ots_key_alias
   target_key_id = aws_kms_key.figgy_ots_key[count.index].id
 }
