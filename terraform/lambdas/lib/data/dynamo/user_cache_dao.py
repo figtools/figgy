@@ -1,6 +1,6 @@
 import time
 
-from config.constants import *
+from lib.config.constants import *
 
 
 class UserCacheDao:

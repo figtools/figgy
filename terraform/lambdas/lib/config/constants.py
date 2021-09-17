@@ -1,5 +1,4 @@
 # Constants
-PS_ROOT_NAMESPACES = ['/app', '/shared', '/data', '/devops', '/sre', '/dba']
 
 # Replication Table
 REPL_TABLE_NAME = "figgy-config-replication"
@@ -61,6 +60,8 @@ ACCOUNT_ENV_PS_PATH = "/figgy/env_alias"
 NOTIFY_DELETES_PS_PATH = "/figgy/integrations/slack/notify-deletes"
 FIGGY_WEBHOOK_URL_PATH = "/figgy/integrations/slack/webhook-url"
 FIGGY_NAMESPACES_PATH = "/figgy/namespaces"
+FIGGY_OTS_NAMESPACE = "/figgy/ots"
+FIGGY_NAMESPACE = "/figgy"
 
 # For PS items stored with this value, we will auto-clean them up. Used for automated E2E testing.
 DELETE_ME_VALUE = 'DELETE_ME'

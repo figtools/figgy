@@ -1,7 +1,7 @@
 from boto3.dynamodb.conditions import Key, Attr
 from decimal import *
-from config.constants import *
-from typing import Dict, List, Optional
+from lib.config.constants import *
+from typing import List, Optional
 from lib.models.replication_config import ReplicationConfig, ReplicationType
 
 

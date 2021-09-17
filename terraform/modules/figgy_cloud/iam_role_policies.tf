@@ -1,4 +1,10 @@
-
+locals {
+  # All roles will be provided access to use these KMS keys.
+  global_kms_keys = concat(
+      [], # [] is used b/c later we'll likely add more.
+      length(aws_kms_key.figgy_ots_key[*].arn) > 0 ? aws_kms_key.figgy_ots_key[*].arn : []
+  )
+}
 
 # Policy created by
 resource "aws_iam_policy" "figgy_access_policy" {
@@ -28,6 +34,7 @@ data "aws_iam_policy_document" "dynamic_policy" {
       for key_name in var.cfgs.role_to_kms_access[var.cfgs.role_types[count.index]] :
       aws_kms_key.encryption_key[index(var.cfgs.encryption_keys, key_name)].arn
     ]
+
   }
 
   statement {
@@ -177,5 +184,84 @@ data "aws_iam_policy_document" "cloudwatch_logs_write" {
     # Ideally, all figgy logs should all be written to the /figgy CW log namespace, however at this time it is not
     # possible to have lambdas write to anywhere but /aws/lambda/${lambda_name}/ namespace.
     resources = ["arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:*"]
+  }
+}
+
+# Used by figgy one-time-secret sharing service.
+resource "aws_iam_policy" "figgy_ots_policy" {
+  provider    = aws.region
+  count       = var.cfgs.utility_account_id == var.aws_account_id && var.primary_region ? 1 : 0
+  name        = "figgy-ots-access"
+  description = "Provides access to use the figgy one-time-secret utility"
+  policy      = data.aws_iam_policy_document.figgy_ots[count.index].json
+}
+
+data "aws_iam_policy_document" "figgy_ots" {
+  count = var.cfgs.utility_account_id == var.aws_account_id ? 1 : 0
+
+  statement {
+    sid = "KmsDecryptPermissions"
+    actions = [
+      "kms:DescribeKey",
+      "kms:Decrypt"
+    ]
+    resources = local.global_kms_keys
+
+  }
+
+  statement {
+    sid     = "KmsEncryptPermissions"
+    actions = ["kms:Encrypt"]
+    resources = local.global_kms_keys
+  }
+
+  statement {
+    sid       = "ListKeys"
+    actions   = ["kms:ListKeys"]
+    resources = ["*"]
+  }
+
+  statement {
+    sid = "ParameterStorePermissions"
+    actions = [
+      "ssm:DeleteParameter",
+      "ssm:DeleteParameters",
+      "ssm:GetParameter",
+      "ssm:GetParameters",
+      "ssm:GetParameterHistory",
+      "ssm:GetParametersByPath",
+      "ssm:PutParameter",
+      "ssm:AddTagsToResource"
+    ]
+
+    # EVERYONE gets access to /shared, it is our global namespace.
+    resources = [
+      "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter/figgy/ots/*"
+    ]
+  }
+}
+
+# Figgy default policy
+resource "aws_iam_policy" "figgy_default" {
+  provider    = aws.region
+  count       = var.primary_region ? 1 : 0
+  name        = "figgy-default"
+  description = "Provides basic figgy access required by ALL users."
+  policy      = data.aws_iam_policy_document.figgy_default.json
+}
+
+data "aws_iam_policy_document" "figgy_default" {
+  statement {
+    sid = "ParameterStorePermissions"
+    actions = [
+      "ssm:GetParameter",
+      "ssm:GetParameters",
+      "ssm:GetParameterHistory",
+      "ssm:GetParametersByPath",
+    ]
+
+    resources = [
+      "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter/figgy/*"
+    ]
   }
 }

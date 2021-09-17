@@ -1,6 +1,6 @@
 import getpass
 from typing import Dict, List
-from config.constants import *
+from lib.config.constants import *
 from lib.utils.utils import Utils
 from lib.models.run_env import RunEnv
 

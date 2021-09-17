@@ -20,6 +20,7 @@ resource "aws_iam_role" "sso_user_role" {
   max_session_duration = var.max_session_duration
 }
 
+
 # SSO SAML sts policy
 data "aws_iam_policy_document" "sso_role_policy" {
   count = var.cfgs.enable_sso && var.primary_region  ? 1 : 0

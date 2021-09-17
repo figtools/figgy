@@ -1,11 +1,11 @@
-from typing import List, Set
+from typing import Set
 
 import boto3
 import logging
 import time
 import json
-from config.constants import *
-from lib.data.dynamo.config_cache_dao import ConfigCacheDao, ConfigItem, ConfigState
+from lib.config.constants import *
+from lib.data.dynamo.config_cache_dao import ConfigCacheDao, ConfigItem
 from lib.data.ssm.ssm import SsmDao
 from lib.models.slack import SimpleSlackMessage, SlackColor
 from lib.svcs.slack import SlackService
@@ -19,7 +19,7 @@ log = Utils.get_logger(__name__, logging.INFO)
 MAX_DELETED_AGE = 60 * 60 * 24 * 14 * 1000  # 2 weeks in MS
 
 webhook_url = ssm_dao.get_parameter_value(FIGGY_WEBHOOK_URL_PATH)
-namespaces = json.loads(ssm_dao.get_parameter_value(FIGGY_NAMESPACES_PATH))
+namespaces = json.loads(ssm_dao.get_parameter_value(FIGGY_NAMESPACES_PATH)) + [FIGGY_NAMESPACE]
 slack: SlackService = SlackService(webhook_url=webhook_url)
 
 
@@ -35,13 +35,17 @@ def remove_old_deleted_items():
             cache_dao.delete(item)
 
 
+def is_cacheable(param_name: str):
+    return not param_name.startswith(f"{FIGGY_OTS_NAMESPACE}/")
+
 def handle(event, context):
     try:
         param_names = ssm_dao.get_all_param_names(namespaces)
+        cacheable_params = set([x for x in param_names if is_cacheable(x)])
         cached_configs: Set[ConfigItem] = cache_dao.get_active_configs()
         cached_names = set([config.name for config in cached_configs])
-        missing_params: Set[str] = param_names.difference(cached_names)
-        names_to_delete: Set[str] = cached_names.difference(param_names)
+        missing_params: Set[str] = cacheable_params.difference(cached_names)
+        names_to_delete: Set[str] = cached_names.difference(cacheable_params)
 
         for param in missing_params:
             log.info(f"Storing in cache: {param}")
@@ -64,8 +68,8 @@ def handle(event, context):
     except Exception as e:
         log.exception("Caught irrecoverable error while executing.")
         title = "Figgy experienced an irrecoverable error!"
-        message = f"The following error occurred in an the figgy-ssm-stream-replicator lambda. "\
-                  f"If this appears to be a bug with figgy, please tell us by submitting a GitHub issue!"\
+        message = f"The following error occurred in an the figgy-ssm-stream-replicator lambda. " \
+                  f"If this appears to be a bug with figgy, please tell us by submitting a GitHub issue!" \
                   f" \n\n{Utils.printable_exception(e)}"
 
         message = SimpleSlackMessage(

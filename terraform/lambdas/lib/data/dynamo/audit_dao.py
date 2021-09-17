@@ -3,7 +3,7 @@ import logging
 from typing import Optional
 from boto3.dynamodb.conditions import Attr
 from lib.utils.utils import Utils
-from config.constants import *
+from lib.config.constants import *
 
 log = Utils.get_logger(__name__, logging.INFO)
 
