@@ -22,6 +22,10 @@ slack: SlackService = SlackService(webhook_url=webhook_url)
 ACCOUNT_ID = ssm.get_parameter_value(ACCOUNT_ID_PS_PATH)
 
 
+def is_cacheable(param_name: str):
+    return not param_name.startswith(f"{FIGGY_OTS_NAMESPACE}/")
+
+
 def handle(event, context):
     # Don't process other account's events.
     originating_account = event.get('account')
@@ -60,10 +64,12 @@ def handle(event, context):
                 [cache_dao.delete(item) for item in sorted_items[:-1]]  # Delete all but the most recent item.
                 cache_dao.mark_deleted(sorted_items[-1])
         elif action == PUT_PARAM_ACTION:
-            items: Set[ConfigItem] = cache_dao.get_items(ps_name)
-            [cache_dao.delete(item) for item in items]  # If any stragglers exist, get rid of em
-            log.info(f"Putting in cache: {ps_name}")
-            cache_dao.put_in_cache(ps_name)
+            if is_cacheable(ps_name):
+                items: Set[ConfigItem] = cache_dao.get_items(ps_name)
+                [cache_dao.delete(item) for item in items]  # If any stragglers exist, get rid of em
+                log.info(f"Putting in cache: {ps_name}")
+                cache_dao.put_in_cache(ps_name)
+
         else:
             log.info(f"Unsupported action type found! --> {action}")
     except Exception as e:

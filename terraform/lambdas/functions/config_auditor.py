@@ -64,7 +64,7 @@ def handle(event, context):
             matching_ns = [ns for ns in FIGGY_NAMESPACES if ps_name.startswith(ns)]
 
             if not matching_ns:
-                log.info(f'PS Name: {ps_name} - is not maintained by Figgy. Skipping..')
+                log.info(f'PS Name: {ps_name} - is not maintained by the Figgy auditor. Skipping..')
                 continue
 
             if ssm_event.action == DELETE_PARAM_ACTION or ssm_event.action == DELETE_PARAMS_ACTION:
