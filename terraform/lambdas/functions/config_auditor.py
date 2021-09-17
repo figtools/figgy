@@ -1,9 +1,10 @@
 import logging
 import time
+import json
 
 import boto3
 
-from config.constants import *
+from lib.config.constants import *
 from lib.data.dynamo.audit_dao import AuditDao
 from lib.data.ssm import SsmDao
 from lib.models.slack import FigDeletedMessage, SlackColor, SimpleSlackMessage
@@ -25,7 +26,7 @@ ACCOUNT_ENV = ssm.get_parameter_value(ACCOUNT_ENV_PS_PATH)
 NOTIFY_DELETES = ssm.get_parameter_value(NOTIFY_DELETES_PS_PATH)
 NOTIFY_DELETES = NOTIFY_DELETES.lower() == "true" if NOTIFY_DELETES else False
 
-FIGGY_NAMESPACES = ssm.get_parameter_value(FIGGY_NAMESPACES_PATH)
+FIGGY_NAMESPACES = json.loads(ssm.get_parameter_value(FIGGY_NAMESPACES_PATH))
 CLEANUP_INTERVAL = 60 * 60  # Cleanup hourly
 LAST_CLEANUP = 0
 
@@ -70,7 +71,7 @@ def handle(event, context):
                 audit.put_delete_log(ssm_event.user, ssm_event.action, ps_name, timestamp=ssm_event.time)
                 notify_delete(ps_name, ssm_event.user)
             elif ssm_event.action == PUT_PARAM_ACTION:
-                if not ssm_event.value:
+                if not ssm_event.value or ssm_event.value == 'HIDDEN_DUE_TO_SECURITY_REASONS':
                     ssm_event.value = ssm.get_parameter_value_encrypted(ps_name)
 
                 audit.put_audit_log(

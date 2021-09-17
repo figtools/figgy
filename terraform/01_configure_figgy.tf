@@ -65,7 +65,7 @@ locals {
 
     # This is the account id for the account you will want custom figgy utilities to be installed. These utilities are not
     # specific to any environment. One example utility is the one-time-secret sharing mechanism provided by figgy.
-    # The value here must match the value of `env_alias` in one of your vars/*.tfvars files.
+    # The value here must match the value of `aws_account_id` values in one of your vars/*.tfvars files.
     utility_account_id = "99999999"
   }
 }

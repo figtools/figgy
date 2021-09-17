@@ -6,7 +6,7 @@ import boto3
 import base64
 import gzip
 
-from config.constants import *
+from lib.config.constants import *
 from lib.data.dynamo.usage_tracker_dao import UsageTrackerDao
 from lib.data.dynamo.user_cache_dao import UserCacheDao
 from lib.data.ssm import SsmDao

@@ -9,8 +9,8 @@ from lib.data.ssm.ssm import SsmDao
 from lib.models.replication_config import ReplicationConfig
 from lib.svcs.replication import ReplicationService
 from lib.svcs.slack import SlackService
-from lib.models.slack import SlackColor, SlackMessage, FigReplicationMessage, SimpleSlackMessage
-from config.constants import FIGGY_WEBHOOK_URL_PATH
+from lib.models.slack import SlackColor, FigReplicationMessage, SimpleSlackMessage
+from lib.config.constants import FIGGY_WEBHOOK_URL_PATH
 from lib.utils.utils import Utils
 
 repl_dao: ReplicationDao = ReplicationDao(boto3.resource('dynamodb'))

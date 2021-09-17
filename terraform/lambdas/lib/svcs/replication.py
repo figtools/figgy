@@ -1,8 +1,8 @@
 import re
-from config.constants import *
+from lib.config.constants import *
 from lib.data.dynamo.replication_dao import ReplicationDao
 from lib.data.ssm.ssm import SsmDao
-from urllib.parse import quote_plus, urlencode
+from urllib.parse import quote_plus
 from lib.models.replication_config import ReplicationConfig
 
 

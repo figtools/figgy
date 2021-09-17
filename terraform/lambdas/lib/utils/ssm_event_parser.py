@@ -4,7 +4,7 @@ import logging
 from typing import Dict, List
 from datetime import datetime
 
-from config.constants import PUT_PARAM_ACTION
+from lib.config.constants import PUT_PARAM_ACTION
 
 log = logging.getLogger(__name__)
 

@@ -6,9 +6,9 @@ from enum import Enum
 from boto3.dynamodb.conditions import Key, Attr
 
 from lib.utils.utils import Utils
-from typing import Set, Dict, List, Any
+from typing import Set, Dict, Any
 
-from config.constants import *
+from lib.config.constants import *
 
 log = Utils.get_logger(__name__, logging.INFO)
 
