@@ -24,24 +24,6 @@ jobs:
         echo "Setting release version to $VERSION"
         echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
 
-    - name: Prep Release
-      id: prep
-      run: |
-        cd src
-        # Parse version
-        VERSION=$(../scripts/get_version.sh)
-        echo "Setting release version to $VERSION"
-        echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
-
-        # Parse changelog
-        CHANGELOG=$(../scripts/parse_changelog.sh)
-        CHANGELOG="${CHANGELOG//'%'/'%25'}"
-        CHANGELOG="${CHANGELOG//$'\n'/'%0A'}"
-        CHANGELOG="${CHANGELOG//$'\r'/'%0D'}"
-
-        echo "Got changelog: $CHANGELOG"
-        echo "::set-output name=changelog::$CHANGELOG"
-
     - name: Create Release
       id: create_release
       uses: actions/create-release@main
