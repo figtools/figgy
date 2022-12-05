@@ -1,5 +1,10 @@
 Figgy Cloud Changelog:
 
+# Changelog
+
+# 1.1.2
+- Fixing a bug where parsed CW Events have no "requestParameters" logged if they are throttled by AWS APIs. This causes issues with parsing and tracking these events.
+
 # 1.1.1 
 - Fixing a bug with provisioning some ssm parameters required for one-time-secret sharing. 
 

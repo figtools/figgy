@@ -60,6 +60,7 @@ ACCOUNT_ENV_PS_PATH = "/figgy/env_alias"
 NOTIFY_DELETES_PS_PATH = "/figgy/integrations/slack/notify-deletes"
 FIGGY_WEBHOOK_URL_PATH = "/figgy/integrations/slack/webhook-url"
 FIGGY_NAMESPACES_PATH = "/figgy/namespaces"
+
 FIGGY_OTS_NAMESPACE = "/figgy/ots"
 FIGGY_NAMESPACE = "/figgy"
 

@@ -51,9 +51,6 @@ resource "aws_cloudtrail" "figgy_cloudtrail" {
   is_multi_region_trail         = false
   is_organization_trail         = false
 
-  # CloudTrail requires the Log Stream wildcard
-  cloud_watch_logs_group_arn = "${aws_cloudwatch_log_group.figgy_trail_log_group.arn}:*"
-  cloud_watch_logs_role_arn  = aws_iam_role.figgy_trail_to_cw_logs.arn
   depends_on                 = [
     aws_s3_bucket.figgy_bucket,
     aws_s3_bucket_policy.cloudtrail_bucket_policy,
@@ -64,3 +61,34 @@ resource "aws_cloudtrail" "figgy_cloudtrail" {
     ignore_changes = [name]
   }
 }
+//
+//# This trail will write to a CW Log group for deeper insights into Secret and Parameter utilization. Ths is required
+//# For various functionality in Figgy UI / Figgy Pro -- This trail is separate so we can limit volume of logs
+//# ingested into AWS Cloudwatch (which can become expensive)
+//resource "aws_cloudtrail" "figgy_read_cloudtrail" {
+//  provider = aws.region
+//  name                          = "figgy-read-trail-${local.region}"
+//  s3_bucket_name                = aws_s3_bucket.figgy_bucket.id
+//  include_global_service_events = false
+//  is_multi_region_trail         = false
+//  is_organization_trail         = false
+//
+//  # CloudTrail requires the Log Stream wildcard
+//  cloud_watch_logs_group_arn = "${aws_cloudwatch_log_group.figgy_trail_log_group.arn}:*"
+//  cloud_watch_logs_role_arn  = aws_iam_role.figgy_trail_to_cw_logs.arn
+//
+//  event_selector {
+//    read_write_type = "Read"
+//    include_management_events = false
+//  }
+//
+//  depends_on                 = [
+//    aws_s3_bucket.figgy_bucket,
+//    aws_s3_bucket_policy.cloudtrail_bucket_policy,
+//    aws_cloudwatch_log_group.figgy_trail_log_group
+//  ]
+//
+//  lifecycle {
+//    ignore_changes = [name]
+//  }
+//}

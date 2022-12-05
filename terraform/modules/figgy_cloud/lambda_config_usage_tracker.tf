@@ -4,7 +4,9 @@ locals {
     aws_iam_policy.config_usage_tracker[0].arn,
     aws_iam_policy.lambda_default[0].arn,
     aws_iam_policy.lambda_read_figgy_specific_configs[0].arn
-  ] : []
+  ] : [
+    aws_iam_policy.config_usage_tracker_s3.arn
+  ]
 }
 
 module "config_usage_tracker" {
@@ -29,25 +31,43 @@ module "config_usage_tracker" {
   }
 }
 
-# We do not want to consume all Cloudtrail events, instead we only want the ones relevant to ParameterStore. This CW
-# filter will ensure we only process relevant events. In the future, once AWS allows us to only publish cloudtrail
-# events to the log group that are SSM events, we can limit this filter.
-locals {
-  is_get_param_event = "$.eventName = \"GetParameterHistory\" || $.eventName = \"GetParameter\" || $.eventName = \"GetParameters\" || $.eventName = \"GetParametersByPath\""
-  is_api_call        = "$.eventType = \"AwsApiCall\""
-  is_ssm_event       = "$.eventSource = \"ssm.amazonaws.com\" "
-}
-
+// We are parsing events from AWS Cloudtrail event buckets and not CW Log groups because "Management" types of events are not available
+// in Cloudwatch logs at this time.
 module "config_usage_tracker_trigger" {
-  source               = "../triggers/cw_log_trigger"
-  lambda_name          = module.config_usage_tracker.name
-  lambda_arn           = module.config_usage_tracker.arn
-  log_group_name       = aws_cloudwatch_log_group.figgy_trail_log_group.name
-  log_group_arn        = aws_cloudwatch_log_group.figgy_trail_log_group.arn
-  cw_filter_expression = "{ ${local.is_api_call} && ${local.is_ssm_event} && ( ${local.is_get_param_event} ) }"
+  source               = "../triggers/s3_event_trigger"
+  lambda_arn = module.config_usage_tracker.arn
+  lambda_name = module.config_usage_tracker.name
+  bucket_name = aws_s3_bucket.figgy_bucket.id
+  filter_prefix = "AWSLogs/"
+  filter_suffix = ".json.gz"
+  s3_event_types = ["s3:ObjectCreated:*"]
 
   providers = {
     aws = aws.region
   }
 }
 
+
+
+# We do not want to consume all Cloudtrail events, instead we only want the ones relevant to ParameterStore. This CW
+# filter will ensure we only process relevant events. In the future, once AWS allows us to only publish cloudtrail
+# events to the log group that are SSM events, we can limit this filter.
+//locals {
+//  is_get_param_event = "$.eventName = \"GetParameterHistory\" || $.eventName = \"GetParameter\" || $.eventName = \"GetParameters\" || $.eventName = \"GetParametersByPath\""
+//  is_api_call        = "$.eventType = \"AwsApiCall\""
+//  is_ssm_event       = "$.eventSource = \"ssm.amazonaws.com\" "
+//}
+
+//module "config_usage_tracker_trigger" {
+//  source               = "../triggers/cw_log_trigger"
+//  lambda_name          = module.config_usage_tracker.name
+//  lambda_arn           = module.config_usage_tracker.arn
+//  log_group_name       = aws_cloudwatch_log_group.figgy_trail_log_group.name
+//  log_group_arn        = aws_cloudwatch_log_group.figgy_trail_log_group.arn
+//  cw_filter_expression = "{ ${local.is_api_call} && ${local.is_ssm_event} && ( ${local.is_get_param_event} ) }"
+//
+//  providers = {
+//    aws = aws.region
+//  }
+//}
+//

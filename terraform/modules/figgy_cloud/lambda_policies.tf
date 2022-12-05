@@ -92,6 +92,36 @@ data "aws_iam_policy_document" "config_usage_tracker" {
       "arn:aws:dynamodb:*:${local.account_id}:table/${aws_dynamodb_table.user_cache.name}"
     ]
   }
+
+  statement {
+    sid = "UsageTrackerS3Access"
+    actions = [
+      "s3:GetObject*",
+    ]
+    resources = [
+      "arn:aws:s3:::${aws_s3_bucket.figgy_bucket.id}/*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "config_usage_tracker_s3" {
+  name        = "${local.config_usage_tracker_name}-s3-${data.aws_region.current.name}"
+  path        = "/"
+  description = "IAM policy for figgy config-usage-tracker lambda in region: ${data.aws_region.current.name}"
+  policy      = data.aws_iam_policy_document.config_usage_tracker_s3.json
+}
+
+
+data "aws_iam_policy_document" "config_usage_tracker_s3" {
+  statement {
+    sid = "UsageTrackerS3Access"
+    actions = [
+      "s3:GetObject*",
+    ]
+    resources = [
+      "arn:aws:s3:::${aws_s3_bucket.figgy_bucket.id}/*"
+    ]
+  }
 }
 
 # Config cache manager / syncer lambdas

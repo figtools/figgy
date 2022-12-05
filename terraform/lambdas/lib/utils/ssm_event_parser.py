@@ -41,9 +41,11 @@ class SSMEvent:
         self.request_params = self.event.get('requestParameters', {})
         self.response_elements = self.event.get("responseElements", {})
 
-        ps_names = self.request_params.get('names', [])
-        ps_name = [self.request_params['name']] if 'name' in self.request_params else []
-        self.parameters = ps_names + ps_name
+        if self.request_params:
+            ps_names = self.request_params.get('names', [])
+            ps_name = [self.request_params['name']] if 'name' in self.request_params else []
+            self.parameters = ps_names + ps_name
+
         event_time = self.event.get('eventTime')
 
         if self.response_elements:
