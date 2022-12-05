@@ -32,7 +32,7 @@ provider "aws" {
 
   assume_role {
     ## Todo: Update this to your own role, or remove this block and provide credentials to
-    ## Terraform some other way.
+    ## Todo: Terraform some other way.
     role_arn     = "arn:aws:iam::${var.aws_account_id}:role/figgy-admin"
   }
 }

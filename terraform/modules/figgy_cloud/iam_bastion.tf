@@ -7,7 +7,7 @@ locals {
 resource "aws_iam_role" "bastion_user_role" {
   count                = local.bastion_enabled && var.primary_region ? length(var.cfgs.role_types) : 0
   name                 = "figgy-${var.env_alias}-${var.cfgs.role_types[count.index]}"
-  assume_role_policy   = local.bastion_enabled ? data.aws_iam_policy_document.bastion_role_policy[count.index].json : ""
+  assume_role_policy   = local.bastion_enabled ? data.aws_iam_policy_document.bastion_role_policy[count.index].json : null
   max_session_duration = var.max_session_duration
 }
 

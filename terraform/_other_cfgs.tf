@@ -3,12 +3,12 @@
 locals {
   other_cfgs = {
     # This links your version of Figgy Cloud to the FiggyCLI.
-    version = "1.0.0"
+    version = "1.1.1"
 
     # Global read namespaces
     global_read_namespaces = [
       "/shared",
-      "/figgy"
+      "/figgy",
     ]
 
     # Merged config based on user selections

@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9.7
+
+    - name: Get Version
+      id: version
+      run: |
+        # Parse version
+        VERSION=$(scripts/get_version.sh)
+        echo "Setting release version to $VERSION"
+        echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@main
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ env.RELEASE_VERSION }}
+        release_name: Release ${{ env.RELEASE_VERSION }}
+        body: ${{ steps.prep.outputs.changelog }}
+        draft: false
+        prerelease: true
