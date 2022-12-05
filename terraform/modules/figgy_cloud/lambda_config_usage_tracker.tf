@@ -31,7 +31,8 @@ module "config_usage_tracker" {
   }
 }
 
-
+// We are parsing events from AWS Cloudtrail event buckets and not CW Log groups because "Management" types of events are not available
+// in Cloudwatch logs at this time.
 module "config_usage_tracker_trigger" {
   source               = "../triggers/s3_event_trigger"
   lambda_arn = module.config_usage_tracker.arn
